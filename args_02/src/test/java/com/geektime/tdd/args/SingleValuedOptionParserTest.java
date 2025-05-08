@@ -12,24 +12,24 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class SingleValuedOptionParserTest {
     @Test
     public void should_not_accept_extra_argument_for_single_valued_option() {
-        TooManyArgumentsException e = assertThrows(TooManyArgumentsException.class,()->
+        TooManyArgumentsException e = assertThrows(TooManyArgumentsException.class, () ->
                 new SingleValueOptionParser<Integer>(0, Integer::parseInt)
-                        .parse(asList("-p","8080","8081"),option("p")));
-        assertEquals("p",e.getOption());
+                        .parse(asList("-p", "8080", "8081"), option("p")));
+        assertEquals("p", e.getOption());
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"-p -l","-p"})
-    public void should_not_accept_insufficient_argument_for_single_valued_option(String arguments) throws Exception{
-        InsufficientException e = assertThrows(InsufficientException.class,()->
+    @ValueSource(strings = {"-p -l", "-p"})
+    public void should_not_accept_insufficient_argument_for_single_valued_option(String arguments) throws Exception {
+        InsufficientException e = assertThrows(InsufficientException.class, () ->
                 new SingleValueOptionParser<Integer>(0, Integer::parseInt)
-                        .parse(asList(arguments.split(" ")),option("p")));
-        assertEquals("p",e.getOption());
+                        .parse(asList(arguments.split(" ")), option("p")));
+        assertEquals("p", e.getOption());
     }
 
     @Test
     public void should_set_default_value_to_0_for_int_option() throws Exception {
-        assertEquals(0, new SingleValueOptionParser<>(0, Integer::parseInt).parse(asList(), option("-p")));
+        assertEquals(0, new SingleValueOptionParser<>(0, Integer::parseInt).parse(asList(), option("p")));
     }
 
     @Test
@@ -38,6 +38,12 @@ public class SingleValuedOptionParserTest {
                 new SingleValueOptionParser<>("", String::valueOf)
                         .parse(asList("-d", "/usr/logs", "/usr/vars"), option("d")));
         assertEquals("d", e.getOption());
+    }
+
+    @Test//Happy path
+    public void should_parse_value_if_flag_present() throws Exception {
+        assertEquals(8080, new SingleValueOptionParser<>(0, Integer::parseInt)
+                .parse(asList("-p", "8080"), option("p")));
     }
 
 }
