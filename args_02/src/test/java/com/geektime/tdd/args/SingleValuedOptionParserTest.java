@@ -30,4 +30,9 @@ public class SingleValuedOptionParserTest {
         assertEquals("p",e.getOption());
     }
 
+    @Test
+    public void should_set_default_value_to_0_for_int_option() throws Exception {
+        assertEquals(0, new SingleValueOptionParser<>(Integer::parseInt).parse(asList(), option("-p")));
+    }
+
 }
