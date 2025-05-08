@@ -23,7 +23,7 @@ public class Args {
     interface OptionParser {
         Object parse(List<String> arguments,Option option);
     }
-    class BooleanOptionParser implements OptionParser{
+    static class BooleanOptionParser implements OptionParser{
 
         @Override
         public Object parse(List<String> arguments, Option option) {
@@ -59,7 +59,7 @@ public class Args {
         return value;
     }
 
-    private static boolean parseBoolean(List<String> arguments, Option option) {
-        return arguments.contains("-" + option.value());
+    private static Object parseBoolean(List<String> arguments, Option option) {
+        return new BooleanOptionParser().parse(arguments,option);
     }
 }
