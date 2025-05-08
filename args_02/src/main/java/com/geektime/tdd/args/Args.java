@@ -20,17 +20,20 @@ public class Args {
             throw new RuntimeException(e);
         }
     }
+
     interface OptionParser {
-        Object parse(List<String> arguments,Option option);
+        Object parse(List<String> arguments, Option option);
     }
-    static class BooleanOptionParser implements OptionParser{
+
+    static class BooleanOptionParser implements OptionParser {
 
         @Override
         public Object parse(List<String> arguments, Option option) {
             return arguments.contains("-" + option.value());
         }
     }
-    static class IntOptionParser implements OptionParser{
+
+    static class IntOptionParser implements OptionParser {
 
         @Override
         public Object parse(List<String> arguments, Option option) {
@@ -38,6 +41,7 @@ public class Args {
             return Integer.parseInt(arguments.get(index + 1));
         }
     }
+
     private static Object parseOption(List<String> arguments, Parameter parameter) {
         Option option = parameter.getAnnotation(Option.class);
         Object value = null;
@@ -59,11 +63,10 @@ public class Args {
     }
 
     private static Object parseInt(List<String> arguments, Option option) {
-        int index = arguments.indexOf("-" + option.value());
-        return Integer.parseInt(arguments.get(index + 1));
+        return new IntOptionParser().parse(arguments, option);
     }
 
     private static Object parseBoolean(List<String> arguments, Option option) {
-        return new BooleanOptionParser().parse(arguments,option);
+        return new BooleanOptionParser().parse(arguments, option);
     }
 }
