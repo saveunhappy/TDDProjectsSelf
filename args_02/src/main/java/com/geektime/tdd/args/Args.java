@@ -27,7 +27,7 @@ public class Args {
 
         @Override
         public Object parse(List<String> arguments, Option option) {
-            return parseBoolean(arguments,option);
+            return arguments.contains("-" + option.value());
         }
     }
     private static Object parseOption(List<String> arguments, Parameter parameter) {
