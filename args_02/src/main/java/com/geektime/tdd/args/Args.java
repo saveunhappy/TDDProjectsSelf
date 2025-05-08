@@ -55,7 +55,7 @@ public class Args {
         Option option = parameter.getAnnotation(Option.class);
         Object value = null;
         if (parameter.getType() == boolean.class) {
-            BooleanOptionParser parser = new BooleanOptionParser();
+            OptionParser parser = new BooleanOptionParser();
             value = parser.parse(arguments, option);
         }
         if (parameter.getType() == int.class) {
