@@ -13,15 +13,15 @@ public class Args {
             List<String> arguments = Arrays.asList(args);
             Constructor<?> constructor = optionsClass.getDeclaredConstructors()[0];
             Parameter parameter = constructor.getParameters()[0];
-            Option option = parameter.getAnnotation(Option.class);
-            Object value = parseOption(arguments, parameter, option);
+            Object value = parseOption(arguments, parameter);
             return (T) constructor.newInstance(value);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    private static Object parseOption(List<String> arguments, Parameter parameter, Option option) {
+    private static Object parseOption(List<String> arguments, Parameter parameter) {
+        Option option = parameter.getAnnotation(Option.class);
         Object value = null;
         if (parameter.getType() == boolean.class) {
             value = arguments.contains("-" + option.value());
