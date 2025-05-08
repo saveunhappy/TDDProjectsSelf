@@ -9,10 +9,6 @@ class SingleValueOptionParser<T> implements OptionParser<T> {
     Function<String, T> valueParser;
     T defaultValue;
 
-    private SingleValueOptionParser(Function<String, T> valueParser) {
-        this.valueParser = valueParser;
-    }
-
     public SingleValueOptionParser(T defaultValue, Function<String, T> valueParser) {
         this.defaultValue = defaultValue;
         this.valueParser = valueParser;
@@ -21,6 +17,7 @@ class SingleValueOptionParser<T> implements OptionParser<T> {
     @Override
     public T parse(List<String> arguments, Option option) {
         int index = arguments.indexOf("-" + option.value());
+        if (index == -1) return defaultValue;
         if (index + 1 == arguments.size() || arguments.get(index + 1).startsWith("-"))
             throw new InsufficientException(option.value());
         if ((index + 2) < arguments.size() && !arguments.get(index + 2).startsWith("-"))
