@@ -30,6 +30,13 @@ public class Args {
             return arguments.contains("-" + option.value());
         }
     }
+    static class IntOptionParser implements OptionParser{
+
+        @Override
+        public Object parse(List<String> arguments, Option option) {
+            return parseInt(arguments,option);
+        }
+    }
     private static Object parseOption(List<String> arguments, Parameter parameter) {
         Option option = parameter.getAnnotation(Option.class);
         Object value = null;
