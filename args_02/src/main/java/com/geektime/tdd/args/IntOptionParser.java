@@ -7,6 +7,7 @@ class IntOptionParser implements OptionParser {
     @Override
     public Object parse(List<String> arguments, Option option) {
         int index = arguments.indexOf("-" + option.value());
-        return Integer.parseInt(arguments.get(index + 1));
+        String value = arguments.get(index + 1);
+        return Integer.parseInt(value);
     }
 }
