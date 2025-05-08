@@ -4,10 +4,22 @@ import java.util.List;
 import java.util.function.Function;
 
 class SingleValueOptionParser<T> implements OptionParser<T> {
-    Function<String, T> valueParser;
 
-    public SingleValueOptionParser(Function<String, T> valueParser) {
+
+    Function<String, T> valueParser;
+    T defaultValue;
+
+    private SingleValueOptionParser(Function<String, T> valueParser) {
         this.valueParser = valueParser;
+    }
+
+    public SingleValueOptionParser(T defaultValue, Function<String, T> valueParser) {
+        this.defaultValue = defaultValue;
+        this.valueParser = valueParser;
+    }
+
+    public static <T> SingleValueOptionParser<T> createSingleValueOptionParser(Function<String, T> valueParser) {
+        return new SingleValueOptionParser<T>(valueParser);
     }
 
     @Override
