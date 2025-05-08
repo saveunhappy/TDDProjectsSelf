@@ -57,9 +57,8 @@ public class Args {
             String.class, new StringOptionParser()
     );
     private static Object parseOption(List<String> arguments, Parameter parameter) {
-        Option option = parameter.getAnnotation(Option.class);
         Class<?> type = parameter.getType();
-        return PARSER.get(type).parse(arguments, option);
+        return PARSER.get(type).parse(arguments, parameter.getAnnotation(Option.class));
     }
 
 
