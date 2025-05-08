@@ -64,17 +64,7 @@ public class Args {
 
 
     private static OptionParser getOptionParser(Class<?> type) {
-        OptionParser parser = null;
-        if (type == boolean.class) {
-            parser = new BooleanOptionParser();
-        }
-        if (type == int.class) {
-            parser = new IntOptionParser();
-        }
-        if (type == String.class) {
-            parser = new StringOptionParser();
-        }
-        return parser;
+        return PARSER.get(type);
     }
 
 }
