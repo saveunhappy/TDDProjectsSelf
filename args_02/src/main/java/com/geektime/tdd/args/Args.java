@@ -41,6 +41,13 @@ public class Args {
             return Integer.parseInt(arguments.get(index + 1));
         }
     }
+    static class StringOptionParser implements OptionParser{
+
+        @Override
+        public Object parse(List<String> arguments, Option option) {
+            return parseString(arguments,option);
+        }
+    }
 
     private static Object parseOption(List<String> arguments, Parameter parameter) {
         Option option = parameter.getAnnotation(Option.class);
