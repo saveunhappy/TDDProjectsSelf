@@ -7,10 +7,11 @@ class StringOptionParser implements OptionParser {
     @Override
     public Object parse(List<String> arguments, Option option) {
         int index = arguments.indexOf("-" + option.value());
-        return getString(arguments, index);
+        String value = arguments.get(index + 1);
+        return parseValue(value);
     }
 
-    private static String getString(List<String> arguments, int index) {
-        return String.valueOf(arguments.get(index + 1));
+    private static String parseValue(String value) {
+        return String.valueOf(value);
     }
 }
