@@ -1,7 +1,6 @@
 package com.geektime.tdd.args;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Parameter;
 import java.util.Arrays;
 import java.util.List;
@@ -21,8 +20,15 @@ public class Args {
             throw new RuntimeException(e);
         }
     }
-    interface optionParser{
+    interface OptionParser {
         Object parse(List<String> arguments,Option option);
+    }
+    class BooleanOptionParser implements OptionParser{
+
+        @Override
+        public Object parse(List<String> arguments, Option option) {
+            return parseBoolean(arguments,option);
+        }
     }
     private static Object parseOption(List<String> arguments, Parameter parameter) {
         Option option = parameter.getAnnotation(Option.class);
