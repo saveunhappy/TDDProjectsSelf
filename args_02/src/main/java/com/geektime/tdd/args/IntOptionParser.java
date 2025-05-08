@@ -1,6 +1,7 @@
 package com.geektime.tdd.args;
 
 import java.util.List;
+import java.util.function.Function;
 
 class IntOptionParser implements OptionParser {
 
@@ -12,6 +13,8 @@ class IntOptionParser implements OptionParser {
     }
 
     protected Object parseValue(String value) {
-        return Integer.parseInt(value);
+
+        Function<String, Integer> valueParser = value1 -> Integer.parseInt(value1);
+        return valueParser.apply(value);
     }
 }
