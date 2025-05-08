@@ -51,12 +51,17 @@ public class Args {
             return arguments.get(index + 1);
         }
     }
-
+    private static Map<Class<?>, OptionParser> PARSER = Map.of(
+            boolean.class, new BooleanOptionParser(),
+            int.class, new IntOptionParser(),
+            String.class, new StringOptionParser()
+    );
     private static Object parseOption(List<String> arguments, Parameter parameter) {
         Option option = parameter.getAnnotation(Option.class);
         Class<?> type = parameter.getType();
         return getOptionParser(type).parse(arguments, option);
     }
+
 
     private static OptionParser getOptionParser(Class<?> type) {
         OptionParser parser = null;
