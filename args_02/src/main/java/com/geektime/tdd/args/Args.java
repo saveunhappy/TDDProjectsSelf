@@ -54,19 +54,18 @@ public class Args {
     private static Object parseOption(List<String> arguments, Parameter parameter) {
         Option option = parameter.getAnnotation(Option.class);
         Object value = null;
-        OptionParser parser;
+        OptionParser parser = null;
         if (parameter.getType() == boolean.class) {
             parser = new BooleanOptionParser();
-            value = parser.parse(arguments, option);
         }
         if (parameter.getType() == int.class) {
             parser = new IntOptionParser();
-            value = parser.parse(arguments, option);
         }
         if (parameter.getType() == String.class) {
             parser = new StringOptionParser();
-            value = parser.parse(arguments, option);
         }
+        value = parser.parse(arguments, option);
+
         return value;
     }
 
