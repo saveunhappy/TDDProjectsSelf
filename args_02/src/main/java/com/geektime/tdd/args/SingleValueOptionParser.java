@@ -19,7 +19,7 @@ class SingleValueOptionParser<T> implements OptionParser<T> {
     }
 
     public static <T> SingleValueOptionParser<T> createSingleValueOptionParser(Function<String, T> valueParser, T defaultValue) {
-        return new SingleValueOptionParser<T>(valueParser);
+        return new SingleValueOptionParser<T>(defaultValue,valueParser);
     }
 
     @Override
