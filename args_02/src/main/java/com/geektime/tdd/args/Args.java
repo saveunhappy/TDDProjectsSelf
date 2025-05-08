@@ -22,35 +22,6 @@ public class Args {
         }
     }
 
-    interface OptionParser {
-        Object parse(List<String> arguments, Option option);
-    }
-
-    static class BooleanOptionParser implements OptionParser {
-
-        @Override
-        public Object parse(List<String> arguments, Option option) {
-            return arguments.contains("-" + option.value());
-        }
-    }
-
-    static class IntOptionParser implements OptionParser {
-
-        @Override
-        public Object parse(List<String> arguments, Option option) {
-            int index = arguments.indexOf("-" + option.value());
-            return Integer.parseInt(arguments.get(index + 1));
-        }
-    }
-
-    static class StringOptionParser implements OptionParser {
-
-        @Override
-        public Object parse(List<String> arguments, Option option) {
-            int index = arguments.indexOf("-" + option.value());
-            return arguments.get(index + 1);
-        }
-    }
     private static Map<Class<?>, OptionParser> PARSER = Map.of(
             boolean.class, new BooleanOptionParser(),
             int.class, new IntOptionParser(),
