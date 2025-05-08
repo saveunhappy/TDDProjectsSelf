@@ -4,6 +4,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Parameter;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 public class Args {
 
@@ -53,8 +54,8 @@ public class Args {
 
     private static Object parseOption(List<String> arguments, Parameter parameter) {
         Option option = parameter.getAnnotation(Option.class);
-        OptionParser parser = null;
         Class<?> type = parameter.getType();
+        OptionParser parser = null;
         if (type == boolean.class) {
             parser = new BooleanOptionParser();
         }
