@@ -7,6 +7,6 @@ class StringOptionParser extends IntOptionParser {
     }
 
     public static IntOptionParser createStringOptionParser() {
-        return new StringOptionParser();
+        return new IntOptionParser(String::valueOf);
     }
 }
