@@ -20,16 +20,27 @@ class ArgsTest {
         BooleanOption option = Args.parse(BooleanOption.class);
         assertFalse(option.logging());
     }
-    record BooleanOption(@Option("l") boolean logging) {
 
-    }
     //TODO  -Integer: -p 8080
     @Test
     public void should_parse_int_as_option_value() {
         IntOption option = Args.parse(IntOption.class, "-p", "8080");
         assertEquals(8080, option.port());
     }
+
+
+    @Test
+    public void should_parse_string_as_option_value() {
+        StringOption option = Args.parse(StringOption.class,"-d","/usr/logs");
+        assertEquals("/usr/logs", option.directory());
+    }
+    record BooleanOption(@Option("l") boolean logging) {
+
+    }
     record IntOption(@Option("p") int port) {
+
+    }
+    record StringOption(@Option("d") String directory) {
 
     }
 
