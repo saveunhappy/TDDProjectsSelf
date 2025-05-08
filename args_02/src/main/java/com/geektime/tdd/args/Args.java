@@ -53,7 +53,6 @@ public class Args {
 
     private static Object parseOption(List<String> arguments, Parameter parameter) {
         Option option = parameter.getAnnotation(Option.class);
-        Object value = null;
         OptionParser parser = null;
         if (parameter.getType() == boolean.class) {
             parser = new BooleanOptionParser();
@@ -64,9 +63,7 @@ public class Args {
         if (parameter.getType() == String.class) {
             parser = new StringOptionParser();
         }
-        value = parser.parse(arguments, option);
-
-        return value;
+        return parser.parse(arguments, option);
     }
 
 }
