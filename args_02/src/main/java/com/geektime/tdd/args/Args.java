@@ -13,8 +13,8 @@ public class Args {
             List<String> arguments = Arrays.asList(args);
             Constructor<?> constructor = optionsClass.getDeclaredConstructors()[0];
             Parameter parameter = constructor.getParameters()[0];
-            Option option = parameter.getAnnotation(Option.class);
             Object value = null;
+            Option option = parameter.getAnnotation(Option.class);
             if (parameter.getType() == boolean.class) {
                 value = arguments.contains("-" + option.value());
             }
