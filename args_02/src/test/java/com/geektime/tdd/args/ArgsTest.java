@@ -16,6 +16,11 @@ class ArgsTest {
         BooleanOption option = Args.parse(BooleanOption.class, "-l");
         assertTrue(option.logging());
     }
+    @Test
+    public void should_set_boolean_option_to_false_if_flag_not_present() {
+        BooleanOption option = Args.parse(BooleanOption.class);
+        assertFalse(option.logging());
+    }
     record BooleanOption(@Option("l") boolean logging) {
 
     }
