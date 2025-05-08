@@ -3,10 +3,10 @@ package com.geektime.tdd.args;
 import java.util.List;
 import java.util.function.Function;
 
-class SingleValueParser<T> implements OptionParser<T> {
+class SingleValueOptionParser<T> implements OptionParser<T> {
     Function<String, T> valueParser;
 
-    public SingleValueParser(Function<String, T> valueParser) {
+    public SingleValueOptionParser(Function<String, T> valueParser) {
         this.valueParser = valueParser;
     }
 
