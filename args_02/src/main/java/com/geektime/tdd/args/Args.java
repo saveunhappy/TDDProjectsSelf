@@ -25,7 +25,7 @@ public class Args {
     private static Map<Class<?>, OptionParser> PARSER = Map.of(
             boolean.class, new BooleanOptionParser(),
             int.class, new IntOptionParser(),
-            String.class, new StringOptionParser()
+            String.class, StringOptionParser.createStringOptionParser()
     );
     private static Object parseOption(List<String> arguments, Parameter parameter) {
         Class<?> type = parameter.getType();
