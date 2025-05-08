@@ -12,9 +12,11 @@ public class Args {
         try {
             List<String> arguments = Arrays.asList(args);
             Constructor<?> constructor = optionsClass.getDeclaredConstructors()[0];
-            Parameter parameter = constructor.getParameters()[0];
-            Object value = parseOption(arguments, parameter);
-            return (T) constructor.newInstance(value);
+            Parameter[] parameters = constructor.getParameters();
+            Object[] values = Arrays.stream(parameters)
+                    .map(it -> parseOption(arguments, it)).
+                    toArray();
+            return (T) constructor.newInstance(values);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

@@ -55,7 +55,6 @@ class ArgsTest {
     // -int : 0
     // -string: ""
     @Test
-    @Disabled
     public void should_example1() throws Exception {
         Options options = Args.parse(Options.class, "-l", "-p", "8080", "-d", "/usr/logs");
         assertTrue(options.logging());
