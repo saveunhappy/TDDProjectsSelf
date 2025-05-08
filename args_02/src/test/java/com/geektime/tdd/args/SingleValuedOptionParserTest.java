@@ -2,6 +2,8 @@ package com.geektime.tdd.args;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.Arrays;
 
@@ -19,11 +21,13 @@ public class SingleValuedOptionParserTest {
         assertEquals("p",e.getOption());
     }
 
-    @Test
-    public void should_not_accept_insufficient_argument_for_single_valued_option() throws Exception{
+    @ParameterizedTest
+    @ValueSource(strings = {"-p -l","-p"})
+    public void should_not_accept_insufficient_argument_for_single_valued_option(String arguments) throws Exception{
         InsufficientException e = assertThrows(InsufficientException.class,()->
                 new SingleValueOptionParser<>(Integer::parseInt)
-                        .parse(asList("-p","-l"),option("p")));
+                        .parse(asList(arguments.split(" ")),option("p")));
         assertEquals("p",e.getOption());
     }
+
 }
