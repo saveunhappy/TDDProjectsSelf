@@ -45,7 +45,8 @@ public class Args {
 
         @Override
         public Object parse(List<String> arguments, Option option) {
-            return parseString(arguments,option);
+            int index = arguments.indexOf("-" + option.value());
+            return arguments.get(index + 1);
         }
     }
 
@@ -65,8 +66,7 @@ public class Args {
     }
 
     private static Object parseString(List<String> arguments, Option option) {
-        int index = arguments.indexOf("-" + option.value());
-        return arguments.get(index + 1);
+        return new StringOptionParser().parse(arguments,option);
     }
 
     private static Object parseInt(List<String> arguments, Option option) {
