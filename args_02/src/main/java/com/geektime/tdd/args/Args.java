@@ -21,7 +21,9 @@ public class Args {
             throw new RuntimeException(e);
         }
     }
-
+    interface optionParser{
+        Object parse(List<String> arguments,Option option);
+    }
     private static Object parseOption(List<String> arguments, Parameter parameter) {
         Option option = parameter.getAnnotation(Option.class);
         Object value = null;
