@@ -34,7 +34,10 @@ public class Args {
 
         @Override
         public Object parse(List<String> arguments, Option option) {
-            return parseInt(arguments,option);
+            Object value;
+            int index = arguments.indexOf("-" + option.value());
+            value = Integer.parseInt(arguments.get(index + 1));
+            return value;
         }
     }
     private static Object parseOption(List<String> arguments, Parameter parameter) {
