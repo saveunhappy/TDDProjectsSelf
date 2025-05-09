@@ -19,13 +19,13 @@ class SingleValueOptionParser<T> implements OptionParser<T> {
     @Override
     public T parse(List<String> arguments, Option option) {
         Optional<List<String>> argumentList;
-        argumentList = values(arguments, option);
+        int expectedSize = 1;
+        argumentList = values(arguments, option, expectedSize);
         return argumentList.map(it -> parseValue(it.get(0))).orElse(defaultValue);
 
     }
 
-    private static Optional<List<String>> values(List<String> arguments, Option option) {
-        int expectedSize = 1;
+    private static Optional<List<String>> values(List<String> arguments, Option option, int expectedSize) {
 
         Optional<List<String>> argumentList;
         int index = arguments.indexOf("-" + option.value());
