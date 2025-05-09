@@ -21,8 +21,13 @@ class SingleValueOptionParser<T> implements OptionParser<T> {
                 .map(it -> true).orElse(false);
     }
 
-    public static <T> SingleValueOptionParser<T> createSingleValueOptionParser(T defaultValue, Function<String, T> valueParser) {
-        return new SingleValueOptionParser<T>(defaultValue, valueParser);
+    public static <T> OptionParser<T> createSingleValueOptionParser(T defaultValue, Function<String, T> valueParser) {
+        return new OptionParser<T>() {
+            @Override
+            public T parse(List<String> arguments, Option option) {
+                return getT(arguments, option, valueParser, defaultValue);
+            }
+        };
     }
 
     @Override
