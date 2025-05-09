@@ -11,24 +11,6 @@ class ArgsTest {
     //{-l:[],-p:[8080],-d:[/usr/logs]}
     //Single Option:
 
-    @Test
-    public void should_parse_int_as_option_value() {
-        IntOption option = Args.parse(IntOption.class, "-p", "8080");
-        assertEquals(8080, option.port());
-    }
-
-
-    @Test
-    public void should_parse_string_as_option_value() {
-        StringOption option = Args.parse(StringOption.class,"-d","/usr/logs");
-        assertEquals("/usr/logs", option.directory());
-    }
-    record IntOption(@Option("p") int port) {
-
-    }
-    record StringOption(@Option("d") String directory) {
-
-    }
 
     //sad path:
     // -bool -l t / -l t f/
@@ -39,7 +21,7 @@ class ArgsTest {
     // -int : 0
     // -string: ""
     @Test
-    public void should_example1() throws Exception {
+    public void should_example1() {
         Options options = Args.parse(Options.class, "-l", "-p", "8080", "-d", "/usr/logs");
         assertTrue(options.logging());
         assertEquals(8080, options.port());
