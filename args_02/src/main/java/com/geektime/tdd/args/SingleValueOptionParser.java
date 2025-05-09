@@ -1,6 +1,7 @@
 package com.geektime.tdd.args;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.IntStream;
 
@@ -17,13 +18,18 @@ class SingleValueOptionParser<T> implements OptionParser<T> {
 
     @Override
     public T parse(List<String> arguments, Option option) {
+        Optional<List<String>> argumentList;
         int index = arguments.indexOf("-" + option.value());
-        if (index == -1) return defaultValue;
-        List<String> values = values(arguments, index);
+        if (index == -1) argumentList = Optional.empty();
+        else {
+            List<String> values = values(arguments, index);
 
-        if (values.size() < 1) throw new InsufficientException(option.value());
-        if (values.size() > 1) throw new TooManyArgumentsException(option.value());
-        return valueParser.apply(values.get(0));
+            if (values.size() < 1) throw new InsufficientException(option.value());
+            if (values.size() > 1) throw new TooManyArgumentsException(option.value());
+            argumentList = Optional.of(values);
+        }
+        return argumentList.map(it -> valueParser.apply(it.get(0))).orElse(defaultValue);
+
     }
 
     static List<String> values(List<String> arguments, int index) {
