@@ -23,7 +23,7 @@ public class SingleValuedOptionParserTest {
     @ValueSource(strings = {"-p -l", "-p"})
     public void should_not_accept_insufficient_argument_for_single_valued_option(String arguments) throws Exception {
         InsufficientException e = assertThrows(InsufficientException.class, () ->
-                new SingleValueOptionParser<Integer>(0, Integer::parseInt)
+                new SingleValueOptionParser<>(0, Integer::parseInt)
                         .parse(asList(arguments.split(" ")), option("p")));
         assertEquals("p", e.getOption());
     }

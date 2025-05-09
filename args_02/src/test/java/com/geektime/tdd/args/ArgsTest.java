@@ -22,10 +22,18 @@ class ArgsTest {
     // -string: ""
     @Test
     public void should_example1() {
-        Options options = Args.parse(Options.class, "-l", "-p", "8080", "-d", "/usr/logs");
+        MultiOptions options = Args.parse(MultiOptions.class, "-l", "-p", "8080", "-d", "/usr/logs");
         assertTrue(options.logging());
         assertEquals(8080, options.port());
         assertEquals("/usr/logs", options.directory());
+    }
+    @Test
+    public void should_throw_illegal_option_exception_if_annotation_not_present() throws Exception {
+        IllegalOptionException e = assertThrows(IllegalOptionException.class, () -> Args.parse(OptionWithoutAnnotation.class, "-d", "/usr/logs", "-p", "8080", "-l"));
+        assertEquals("port",e.getParameter());
+    }
+
+    record OptionWithoutAnnotation(@Option("l") boolean logging, int port, @Option("d") String directory) {
     }
 
     @Test
@@ -37,10 +45,9 @@ class ArgsTest {
 
     }
 
-    record Options(@Option("l") boolean logging, @Option("p") int port, @Option("d") String directory) {
+    record MultiOptions(@Option("l") boolean logging, @Option("p") int port, @Option("d") String directory) {
 
     }
-
     record ListOptions(@Option("g") String[] group, @Option("d") int[] decimals) {
 
     }
