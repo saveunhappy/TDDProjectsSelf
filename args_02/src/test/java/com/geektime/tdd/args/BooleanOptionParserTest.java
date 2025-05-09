@@ -12,16 +12,22 @@ public class BooleanOptionParserTest {
     @Test
     public void should_not_accept_extra_argument_for_boolean_option() {
         TooManyArgumentsException e = assertThrows(TooManyArgumentsException.class,
-                () -> BooleanOptionParser.bool().parse(Arrays.asList("-l", "t"), option("l")));
+                () -> ((OptionParser<Boolean>) (arguments, option) -> SingleValueOptionParser
+                        .values(arguments, option, 0)
+                        .map(it -> true).orElse(false)).parse(Arrays.asList("-l", "t"), option("l")));
         assertEquals("l", e.getOption());
     }
     @Test
     public void should_set_default_value_to_false_if_option_not_present() {
-        assertFalse(BooleanOptionParser.bool().parse(asList(), option("l")));
+        assertFalse(((OptionParser<Boolean>) (arguments, option) -> SingleValueOptionParser
+                .values(arguments, option, 0)
+                .map(it -> true).orElse(false)).parse(asList(), option("l")));
     }
     @Test
     public void should_set_value_to_true_if_option_present() {
-        assertTrue(BooleanOptionParser.bool().parse(asList("-l"), option("l")));
+        assertTrue(((OptionParser<Boolean>) (arguments, option) -> SingleValueOptionParser
+                .values(arguments, option, 0)
+                .map(it -> true).orElse(false)).parse(asList("-l"), option("l")));
     }
 
     static Option option(String value) {
