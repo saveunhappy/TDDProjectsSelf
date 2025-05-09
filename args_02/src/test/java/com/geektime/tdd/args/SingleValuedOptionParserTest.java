@@ -14,7 +14,7 @@ public class SingleValuedOptionParserTest {
     @Test
     public void should_not_accept_extra_argument_for_single_valued_option() {
         TooManyArgumentsException e = assertThrows(TooManyArgumentsException.class, () ->
-                SingleValueOptionParser.createSingleValueOptionParser(0, Integer::parseInt)
+                SingleValueOptionParser.unary(0, Integer::parseInt)
                         .parse(asList("-p", "8080", "8081"), option("p")));
         assertEquals("p", e.getOption());
     }
@@ -23,7 +23,7 @@ public class SingleValuedOptionParserTest {
     @ValueSource(strings = {"-p -l", "-p"})
     public void should_not_accept_insufficient_argument_for_single_valued_option(String arguments) throws Exception {
         InsufficientException e = assertThrows(InsufficientException.class, () ->
-                SingleValueOptionParser.createSingleValueOptionParser(0, Integer::parseInt)
+                SingleValueOptionParser.unary(0, Integer::parseInt)
                         .parse(asList(arguments.split(" ")), option("p")));
         assertEquals("p", e.getOption());
     }
@@ -32,13 +32,13 @@ public class SingleValuedOptionParserTest {
     public void should_set_default_value_to_0_for_int_option() {
         Function<String, Object> whatever = (it) -> null;
         Object defaultValue = new Object();
-        assertSame(defaultValue, SingleValueOptionParser.createSingleValueOptionParser(defaultValue, whatever).parse(asList(), option("p")));
+        assertSame(defaultValue, SingleValueOptionParser.unary(defaultValue, whatever).parse(asList(), option("p")));
     }
 
     @Test
     public void should_not_accept_extra_argument_for_String_single_valued_option() throws Exception {
         TooManyArgumentsException e = assertThrows(TooManyArgumentsException.class, () ->
-                SingleValueOptionParser.createSingleValueOptionParser("", String::valueOf)
+                SingleValueOptionParser.unary("", String::valueOf)
                         .parse(asList("-d", "/usr/logs", "/usr/vars"), option("d")));
         assertEquals("d", e.getOption());
     }
@@ -48,7 +48,7 @@ public class SingleValuedOptionParserTest {
         Object parsed = new Object();
         Function<String, Object> parse = (it) -> parsed;
         Object whatever = new Object();
-        assertSame(parsed, SingleValueOptionParser.createSingleValueOptionParser(whatever,parse).parse(asList("-p","8080"),option("p")));
+        assertSame(parsed, SingleValueOptionParser.unary(whatever,parse).parse(asList("-p","8080"),option("p")));
     }
 
 
