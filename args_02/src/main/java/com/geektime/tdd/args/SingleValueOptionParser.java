@@ -34,7 +34,7 @@ class SingleValueOptionParser<T> implements OptionParser<T> {
 
     private static <T> T getT(List<String> arguments, Option option) {
         return values(arguments, option, 1)
-                .map(it -> parseValue(it.get(0)))
+                .map(it -> parseValue(it.get(0), valueParser))
                 .orElse(defaultValue);
     }
 
@@ -49,8 +49,8 @@ class SingleValueOptionParser<T> implements OptionParser<T> {
         return Optional.of(values);
     }
 
-    private T parseValue(String value) {
-        return valueParser.apply(value);
+    private static  <T> T parseValue(String value, Function<String, T> valueParser1) {
+        return valueParser1.apply(value);
     }
 
     static List<String> values(List<String> arguments, int index) {
