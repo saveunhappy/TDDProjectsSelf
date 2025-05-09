@@ -4,10 +4,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import java.util.function.Function;
+
 import static com.geektime.tdd.args.BooleanOptionParserTest.option;
 import static java.util.Arrays.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class SingleValuedOptionParserTest {
     @Test
@@ -28,8 +29,10 @@ public class SingleValuedOptionParserTest {
     }
 
     @Test
-    public void should_set_default_value_to_0_for_int_option() throws Exception {
-        assertEquals(0, new SingleValueOptionParser<>(0, Integer::parseInt).parse(asList(), option("p")));
+    public void should_set_default_value_to_0_for_int_option() {
+        Function<String, Object> whatever = (it) -> null;
+        Object defaultValue = new Object();
+        assertSame(defaultValue,new SingleValueOptionParser<>(defaultValue,whatever).parse(asList(),option("p")));
     }
 
     @Test
@@ -45,5 +48,6 @@ public class SingleValuedOptionParserTest {
         assertEquals(8080, new SingleValueOptionParser<>(0, Integer::parseInt)
                 .parse(asList("-p", "8080"), option("p")));
     }
+
 
 }
