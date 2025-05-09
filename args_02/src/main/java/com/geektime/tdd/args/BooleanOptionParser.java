@@ -6,7 +6,7 @@ class BooleanOptionParser implements OptionParser<Boolean> {
     private BooleanOptionParser() {
     }
 
-    public static BooleanOptionParser createBooleanOptionParser() {
+    public static OptionParser<Boolean> createBooleanOptionParser() {
         return new BooleanOptionParser();
     }
 
