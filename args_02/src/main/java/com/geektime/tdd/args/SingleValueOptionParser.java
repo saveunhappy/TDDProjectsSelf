@@ -22,7 +22,7 @@ class SingleValueOptionParser<T> implements OptionParser<T> {
     }
 
     public static <T> SingleValueOptionParser<T> createSingleValueOptionParser(T defaultValue, Function<String, T> valueParser) {
-        return getT(arguments, option);
+        return new SingleValueOptionParser<T>(defaultValue, valueParser);
     }
 
     @Override
@@ -32,7 +32,7 @@ class SingleValueOptionParser<T> implements OptionParser<T> {
 
     }
 
-    private T getT(List<String> arguments, Option option) {
+    private static <T> T getT(List<String> arguments, Option option) {
         return values(arguments, option, 1)
                 .map(it -> parseValue(it.get(0)))
                 .orElse(defaultValue);
