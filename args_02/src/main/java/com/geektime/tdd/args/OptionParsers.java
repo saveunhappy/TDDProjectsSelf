@@ -5,13 +5,13 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.IntStream;
 
-class SingleValueOptionParser<T> implements OptionParser<T> {
+class OptionParsers<T> implements OptionParser<T> {
 
 
     Function<String, T> valueParser;
     T defaultValue;
 
-    private SingleValueOptionParser(T defaultValue, Function<String, T> valueParser) {
+    private OptionParsers(T defaultValue, Function<String, T> valueParser) {
         this.defaultValue = defaultValue;
         this.valueParser = valueParser;
     }

@@ -25,9 +25,9 @@ public class Args {
     }
 
     private static Map<Class<?>, OptionParser> PARSER = Map.of(
-            boolean.class, SingleValueOptionParser.bool(),
-            int.class, SingleValueOptionParser.unary(0, Integer::parseInt),
-            String.class, SingleValueOptionParser.unary("", String::valueOf)
+            boolean.class, OptionParsers.bool(),
+            int.class, OptionParsers.unary(0, Integer::parseInt),
+            String.class, OptionParsers.unary("", String::valueOf)
     );
 
     private static Object parseOption(List<String> arguments, Parameter parameter) {
