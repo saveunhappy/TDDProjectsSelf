@@ -18,10 +18,10 @@ class SingleValueOptionParser<T> implements OptionParser<T> {
 
     @Override
     public T parse(List<String> arguments, Option option) {
-        Optional<List<String>> argumentList;
-        int expectedSize = 1;
-        argumentList = values(arguments, option, expectedSize);
-        return argumentList.map(it -> parseValue(it.get(0))).orElse(defaultValue);
+
+        return values(arguments, option, 1)
+                .map(it -> parseValue(it.get(0)))
+                .orElse(defaultValue);
 
     }
 
