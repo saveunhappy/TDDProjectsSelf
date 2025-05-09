@@ -32,7 +32,7 @@ public class SingleValuedOptionParserTest {
     public void should_set_default_value_to_0_for_int_option() {
         Function<String, Object> whatever = (it) -> null;
         Object defaultValue = new Object();
-        assertSame(defaultValue,new SingleValueOptionParser<>(defaultValue,whatever).parse(asList(),option("p")));
+        assertSame(defaultValue, new SingleValueOptionParser<>(defaultValue, whatever).parse(asList(), option("p")));
     }
 
     @Test
@@ -44,9 +44,11 @@ public class SingleValuedOptionParserTest {
     }
 
     @Test//Happy path
-    public void should_parse_value_if_flag_present() throws Exception {
-        assertEquals(8080, new SingleValueOptionParser<>(0, Integer::parseInt)
-                .parse(asList("-p", "8080"), option("p")));
+    public void should_parse_value_if_flag_present() {
+        Object parsed = new Object();
+        Function<String, Object> parse = (it) -> parsed;
+        Object whatever = new Object();
+        assertSame(parsed,new SingleValueOptionParser<>(whatever,parse).parse(asList("-p","8080"),option("p")));
     }
 
 
