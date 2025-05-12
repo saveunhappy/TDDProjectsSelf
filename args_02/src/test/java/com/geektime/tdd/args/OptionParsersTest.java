@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.InOrder;
 
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
@@ -14,8 +15,7 @@ import static com.geektime.tdd.args.OptionParsersTest.BooleanOptionParserTest.op
 import static java.util.Arrays.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 public class OptionParsersTest {
     @Nested
@@ -109,8 +109,10 @@ public class OptionParsersTest {
                 OptionParsers.list(String[]::new, parser)
                         .parse(asList("-g", "this", "is"),
                                 option("g"));
-                verify(parser).apply("this");
-                verify(parser).apply("is");
+                //使用InOrder排序
+                InOrder inOrder = inOrder(parser);
+                inOrder.verify(parser).apply("this");
+                inOrder.verify(parser).apply("is");
             }
             @Test
             public void should_not_treat_negative_int_as_flag() throws Exception {
