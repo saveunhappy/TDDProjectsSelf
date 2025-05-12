@@ -6,16 +6,8 @@ import java.util.function.Function;
 import java.util.function.IntFunction;
 import java.util.stream.IntStream;
 
-class OptionParsers<T> implements OptionParser<T> {
+class OptionParsers {
 
-
-    Function<String, T> valueParser;
-    T defaultValue;
-
-    private OptionParsers(T defaultValue, Function<String, T> valueParser) {
-        this.defaultValue = defaultValue;
-        this.valueParser = valueParser;
-    }
 
     public static OptionParser<Boolean> bool() {
         return (arguments, option) -> values(arguments, option, 0)
@@ -27,18 +19,11 @@ class OptionParsers<T> implements OptionParser<T> {
                 .map(it -> parseValue(it.get(0), valueParser))
                 .orElse(defaultValue);
     }
+
     public static <T> OptionParser<T[]> list(IntFunction<T[]> generator, Function<String, T> valueParser) {
         return null;
     }
 
-    @Override
-    public T parse(List<String> arguments, Option option) {
-
-        return values(arguments, option, 1)
-                .map(it -> parseValue(it.get(0), valueParser))
-                .orElse(defaultValue);
-
-    }
 
     static Optional<List<String>> values(List<String> arguments, Option option, int expectedSize) {
 
