@@ -33,9 +33,7 @@ class OptionParsers {
     }
 
     static Optional<List<String>> values(List<String> arguments, Option option, int expectedSize) {
-        return values(arguments, option).map(it -> {
-            return checkSize(option, expectedSize, it);
-        });
+        return values(arguments, option).map(it -> checkSize(option, expectedSize, it));
     }
 
     private static List<String> checkSize(Option option, int expectedSize, List<String> values) {
