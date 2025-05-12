@@ -82,6 +82,18 @@ public class OptionParsersTest {
             assertTrue(OptionParsers.bool().parse(asList("-l"), option("l")));
         }
 
+        @Nested
+        class ListOptionParser {
+            //TODO -g "this" "is" {"this","is"}
+            @Test
+            public void should_parse_list_value() {
+                String[] value = OptionParsers.list(String[]::new, String::valueOf)
+                        .parse(asList("-g", "this", "is"), option("g"));
+                assertArrayEquals(new String[]{"this","is"},value);
+            }
+            //TODO -default value []
+            //TODO -d a throw exception  a不是数字，应该是数字的
+        }
         static Option option(String value) {
             return new Option() {
 

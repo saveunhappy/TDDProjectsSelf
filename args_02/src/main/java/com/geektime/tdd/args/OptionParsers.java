@@ -21,9 +21,14 @@ class OptionParsers {
     }
 
     public static <T> OptionParser<T[]> list(IntFunction<T[]> generator, Function<String, T> valueParser) {
-        return null;
+       return null;
     }
 
+    private static Optional<List<String>> values(List<String> arguments, Option option) {
+        int index = arguments.indexOf("-" + option.value());
+        //list不需要限制参数的个数，多个是允许的
+        return Optional.ofNullable(index == -1 ? null : values(arguments, index));
+    }
 
     static Optional<List<String>> values(List<String> arguments, Option option, int expectedSize) {
 
@@ -43,6 +48,7 @@ class OptionParsers {
             throw new IllegalValueException(option.value(), value);
         }
     }
+
     static List<String> values(List<String> arguments, int index) {
         int followingFlag = IntStream.range(index + 1, arguments.size())
                 .filter(it -> arguments.get(it).startsWith("-"))
