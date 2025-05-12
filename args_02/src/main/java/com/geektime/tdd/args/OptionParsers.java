@@ -33,12 +33,7 @@ class OptionParsers {
     }
 
     static Optional<List<String>> values(List<String> arguments, Option option, int expectedSize) {
-
-        int index = arguments.indexOf("-" + option.value());
-        if (index == -1) return Optional.empty();
-        List<String> values = values(arguments, index);
-
-        return Optional.of(values).map(it->{
+        return values(arguments, option).map(it -> {
             checkSize(option, expectedSize, it);
             return it;
         });
