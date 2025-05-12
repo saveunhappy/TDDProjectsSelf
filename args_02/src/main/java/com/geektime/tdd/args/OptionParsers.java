@@ -39,9 +39,10 @@ class OptionParsers {
         });
     }
 
-    private static void checkSize(Option option, int expectedSize, List<String> values) {
+    private static List<String> checkSize(Option option, int expectedSize, List<String> values) {
         if (values.size() < expectedSize) throw new InsufficientException(option.value());
         if (values.size() > expectedSize) throw new TooManyArgumentsException(option.value());
+        return values;
     }
 
     private static <T> T parseValue(Option option, String value, Function<String, T> valueParser) {
