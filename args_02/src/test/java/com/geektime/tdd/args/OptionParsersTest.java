@@ -91,7 +91,6 @@ public class OptionParsersTest {
                         .parse(asList("-g", "this", "is"), option("g"));
                 assertArrayEquals(new String[]{"this","is"},value);
             }
-            //TODO -default value []
             @Test
             public void should_use_empty_array_as_default_value() throws Exception {
                 //没有-g，那么index就是-1，那么就返回null，那么就进入orElse,就是数组的长度是0
