@@ -51,10 +51,10 @@ class ArgsTest {
 
     @Test
     @Disabled
-    public void should_example2() throws Exception {
+    public void should_example2() {
         ListOptions options = Args.parse(ListOptions.class, "-g", "this", "is", "a", "list", "-d", "1", "2", "-3", "5");
         assertArrayEquals(new String[]{"this", "is", "a", "list"}, options.group());
-        assertArrayEquals(new int[]{1, 2, -3, 5}, options.decimals());
+        assertArrayEquals(new Integer[]{1, 2, -3, 5}, options.decimals());
 
     }
 
@@ -62,7 +62,7 @@ class ArgsTest {
 
     }
 
-    record ListOptions(@Option("g") String[] group, @Option("d") int[] decimals) {
+    record ListOptions(@Option("g") String[] group, @Option("d") Integer[] decimals) {
 
     }
 }
