@@ -24,6 +24,13 @@ public class OptionParsersTest {
                             .parse(asList("-p", "8080", "8081"), option("p")));
             assertEquals("p", e.getOption());
         }
+        @Test
+        public void should_throw_exception_when_value_parser_error() {
+            IllegalValueException e = assertThrows(IllegalValueException.class, () ->
+                    OptionParsers.unary(0, Integer::parseInt)
+                            .parse(asList("-p", "Not Integer"), option("p")));
+            assertEquals("p", e.getOption());
+        }
 
         @ParameterizedTest
         @ValueSource(strings = {"-p -l", "-p"})

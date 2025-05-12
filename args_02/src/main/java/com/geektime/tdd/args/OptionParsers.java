@@ -16,7 +16,7 @@ class OptionParsers {
 
     public static <T> OptionParser<T> unary(T defaultValue, Function<String, T> valueParser) {
         return (arguments, option) -> values(arguments, option, 1)
-                .map(it -> parseValue(it.get(0), valueParser))
+                .map(it -> parseValue(option, it.get(0), valueParser))
                 .orElse(defaultValue);
     }
 
@@ -36,10 +36,13 @@ class OptionParsers {
         return Optional.of(values);
     }
 
-    private static <T> T parseValue(String value, Function<String, T> valueParser1) {
-        return valueParser1.apply(value);
+    private static <T> T parseValue(Option option, String value, Function<String, T> valueParser) {
+        try {
+            return valueParser.apply(value);
+        } catch (Exception e) {
+            throw new IllegalValueException(option.value(), value);
+        }
     }
-
     static List<String> values(List<String> arguments, int index) {
         int followingFlag = IntStream.range(index + 1, arguments.size())
                 .filter(it -> arguments.get(it).startsWith("-"))
