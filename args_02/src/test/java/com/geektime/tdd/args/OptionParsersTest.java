@@ -85,7 +85,6 @@ public class OptionParsersTest {
 
         @Nested
         class ListOptionParser {
-            //TODO -g "this" "is" {"this","is"}
             @Test
             public void should_parse_list_value() {
                 String[] value = OptionParsers.list(String[]::new, String::valueOf)
