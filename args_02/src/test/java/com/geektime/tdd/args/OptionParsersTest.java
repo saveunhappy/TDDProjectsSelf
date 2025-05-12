@@ -27,6 +27,7 @@ public class OptionParsersTest {
         }
         @Test
         public void should_throw_exception_when_value_parser_error() {
+        //自己写的，不够通用，但是举了具体的例子
             IllegalValueException e = assertThrows(IllegalValueException.class, () ->
                     OptionParsers.unary(0, Integer::parseInt)
                             .parse(asList("-p", "Not Integer"), option("p")));
@@ -74,10 +75,12 @@ public class OptionParsersTest {
                     () -> OptionParsers.bool().parse(Arrays.asList("-l", "t"), option("l")));
             assertEquals("l", e.getOption());
         }
+
         @Test
         public void should_set_default_value_to_false_if_option_not_present() {
             assertFalse(OptionParsers.bool().parse(asList(), option("l")));
         }
+
         @Test
         public void should_set_value_to_true_if_option_present() {
             assertTrue(OptionParsers.bool().parse(asList("-l"), option("l")));
@@ -89,19 +92,33 @@ public class OptionParsersTest {
             public void should_parse_list_value() {
                 String[] value = OptionParsers.list(String[]::new, String::valueOf)
                         .parse(asList("-g", "this", "is"), option("g"));
-                assertArrayEquals(new String[]{"this","is"},value);
+                assertArrayEquals(new String[]{"this", "is"}, value);
             }
+
             @Test
             public void should_use_empty_array_as_default_value() throws Exception {
                 //没有-g，那么index就是-1，那么就返回null，那么就进入orElse,就是数组的长度是0
                 //return Optional.ofNullable(index == -1 ? null : values(arguments, index));
                 String[] value = OptionParsers.list(String[]::new, String::valueOf)
                         .parse(asList(), option("g"));
-                assertEquals(0,value.length);
+                assertEquals(0, value.length);
 
             }
-            //TODO -d a throw exception  a不是数字，应该是数字的
+
+            @Test
+            public void should_throw_exception_if_value_parser_cant_parse_value() {
+                Function<String, String> parser = (it) -> {
+                    throw new RuntimeException();
+                };
+                //这个是直接把parser抛出异常，就没有去解析，就是看是否能抛出异常
+                IllegalValueException e = assertThrows(IllegalValueException.class,
+                        () -> OptionParsers.list(String[]::new, parser)
+                        .parse(asList("-g", "this", "is"), option("g")));
+                assertEquals("g", e.getOption());
+                assertEquals("this", e.getValue());
+            }
         }
+
         static Option option(String value) {
             return new Option() {
 
