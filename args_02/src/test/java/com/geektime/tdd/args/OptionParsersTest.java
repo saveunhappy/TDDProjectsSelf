@@ -8,6 +8,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.function.Function;
+import java.util.function.IntFunction;
 
 import static com.geektime.tdd.args.OptionParsersTest.BooleanOptionParserTest.option;
 import static java.util.Arrays.*;
@@ -87,7 +88,12 @@ public class OptionParsersTest {
             //TODO -g "this" "is" {"this","is"}
             @Test
             public void should_parse_list_value() {
-                String[] value = OptionParsers.list(String[]::new, String::valueOf)
+                String[] value = OptionParsers.list(new IntFunction<String[]>() {
+                            @Override
+                            public String[] apply(int value1) {
+                                return new String[value1];
+                            }
+                        }, String::valueOf)
                         .parse(asList("-g", "this", "is"), option("g"));
                 assertArrayEquals(new String[]{"this","is"},value);
             }

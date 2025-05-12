@@ -21,7 +21,9 @@ class OptionParsers {
     }
 
     public static <T> OptionParser<T[]> list(IntFunction<T[]> generator, Function<String, T> valueParser) {
-       return null;
+        return (arguments, option) -> values(arguments, option)
+                .map(it -> it.stream().map(value -> parseValue(option, value, valueParser)).toArray(generator))
+                .orElse(generator.apply(0));
     }
 
     private static Optional<List<String>> values(List<String> arguments, Option option) {
