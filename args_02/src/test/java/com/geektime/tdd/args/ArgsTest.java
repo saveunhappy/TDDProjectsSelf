@@ -3,7 +3,12 @@ package com.geektime.tdd.args;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import java.util.Map;
+
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class ArgsTest {
     // -l -p 8080 -d /usr/logs
@@ -63,6 +68,24 @@ class ArgsTest {
     }
 
     record ListOptions(@Option("g") String[] group, @Option("d") Integer[] decimals) {
+
+    }
+    @Test
+    public void should_parse_option_if_option_parser_provided() throws Exception {
+        OptionParser boolParser = mock(OptionParser.class);
+        OptionParser intParser = mock(OptionParser.class);
+        OptionParser stringParser = mock(OptionParser.class);
+
+        when(boolParser.parse(any(), any())).thenReturn(true);
+        when(intParser.parse(any(), any())).thenReturn(1000);
+        when(stringParser.parse(any(), any())).thenReturn("parsed");
+
+        Args<MultiOptions> args = new Args<>(MultiOptions.class, Map.of(boolean.class, boolParser,
+                int.class, intParser, String.class, stringParser));
+        MultiOptions options = args.parse("-l", "-p", "8080", "-d", "/usr/logs");
+        assertTrue(options.logging());
+        assertEquals(1000,options.port());
+        assertEquals("parsed",options.directory());
 
     }
 }
