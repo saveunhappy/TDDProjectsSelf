@@ -5,35 +5,35 @@ import org.junit.jupiter.api.Nested;
 class ContainerTest {
 
     @Nested
-    public class ComponentConstruction{
+    public class ComponentConstruction {
 
         //TODO: instance
         //TODO: abstract class
         //TODO: interface
         @Nested
-        public class ConstructorInjection{
+        public class ConstructorInjection {
 
         }
 
         @Nested
-        public class FieldInjection{
+        public class FieldInjection {
 
         }
 
         @Nested
-        public class MethodInjection{
+        public class MethodInjection {
 
         }
 
     }
 
     @Nested
-    public class DependenciesSelection{
+    public class DependenciesSelection {
 
     }
 
     @Nested
-    public class LifecycleManagement{
+    public class LifecycleManagement {
 
     }
 }
