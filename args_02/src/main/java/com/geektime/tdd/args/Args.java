@@ -10,7 +10,7 @@ public class Args<T> {
 
     public static <T> T parse(Class<T> optionsClass, String... args) {
 
-        return parse(optionsClass, PARSER, args);
+        return new Args<>(optionsClass, PARSER).parse(args);
     }
 
     private Class<T> optionsClass;
