@@ -11,6 +11,10 @@ public class Args {
     public static <T> T parse(Class<T> optionsClass, String... args) {
         Map<Class<?>, OptionParser> parser = PARSER;
 
+        return parse(optionsClass, parser, args);
+    }
+
+    private static <T> T parse(Class<T> optionsClass, Map<Class<?>, OptionParser> parser, String[] args) {
         try {
             List<String> arguments = Arrays.asList(args);
             Constructor<?> constructor = optionsClass.getDeclaredConstructors()[0];
