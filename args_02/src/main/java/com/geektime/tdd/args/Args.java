@@ -10,14 +10,13 @@ public class Args {
 
     public static <T> T parse(Class<T> optionsClass, String... args) {
         try {
+            Map<Class<?>, OptionParser> parser = PARSER;
+
             List<String> arguments = Arrays.asList(args);
             Constructor<?> constructor = optionsClass.getDeclaredConstructors()[0];
             Parameter[] parameters = constructor.getParameters();
             Object[] values = Arrays.stream(parameters)
-                    .map(it -> {
-                        Map<Class<?>, OptionParser> parser = PARSER;
-                        return parseOption(arguments, it, parser);
-                    }).
+                    .map(it -> parseOption(arguments, it, parser)).
                     toArray();
             return (T) constructor.newInstance(values);
         } catch (IllegalOptionException | UnsupportedOptionTypeException e) {
