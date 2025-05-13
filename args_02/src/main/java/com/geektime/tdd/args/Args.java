@@ -14,7 +14,10 @@ public class Args {
             Constructor<?> constructor = optionsClass.getDeclaredConstructors()[0];
             Parameter[] parameters = constructor.getParameters();
             Object[] values = Arrays.stream(parameters)
-                    .map(it -> parseOption(arguments, it, PARSER)).
+                    .map(it -> {
+                        Map<Class<?>, OptionParser> parser = PARSER;
+                        return parseOption(arguments, it, parser);
+                    }).
                     toArray();
             return (T) constructor.newInstance(values);
         } catch (IllegalOptionException | UnsupportedOptionTypeException e) {
