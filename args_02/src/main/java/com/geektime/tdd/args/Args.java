@@ -6,12 +6,21 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class Args {
+public class Args<T> {
 
     public static <T> T parse(Class<T> optionsClass, String... args) {
 
         return parse(optionsClass, PARSER, args);
     }
+
+    private Class<T> optionsClass;
+    private Map<Class<?>, OptionParser> parser;
+
+    public Args(Class<T> optionsClass, Map<Class<?>, OptionParser> parser) {
+        this.optionsClass = optionsClass;
+        this.parser = parser;
+    }
+
 
     private static <T> T parse(Class<T> optionsClass, Map<Class<?>, OptionParser> parser, String[] args) {
         try {
