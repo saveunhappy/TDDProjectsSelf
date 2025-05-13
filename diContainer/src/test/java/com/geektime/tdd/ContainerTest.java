@@ -12,7 +12,9 @@ class ContainerTest {
         //TODO: interface
         @Nested
         public class ConstructorInjection {
-
+            //TODO: no args constructor
+            //TODO: with dependencies
+            //TODO: A->B->C
         }
 
         @Nested
