@@ -44,7 +44,7 @@ public class Args<T> {
             Integer[].class, OptionParsers.list(Integer[]::new, Integer::parseInt)
     );
 
-    private static Object parseOption(List<String> arguments, Parameter parameter, Map<Class<?>, OptionParser> parsers) {
+    private Object parseOption(List<String> arguments, Parameter parameter, Map<Class<?>, OptionParser> parsers) {
         if (!parameter.isAnnotationPresent(Option.class)) throw new IllegalOptionException(parameter.getName());
         Option option = parameter.getAnnotation(Option.class);
         //这个就是l,p,d,传的参数是-l,-p,-d,
