@@ -9,9 +9,9 @@ import java.util.Map;
 public class Args {
 
     public static <T> T parse(Class<T> optionsClass, String... args) {
-        try {
-            Map<Class<?>, OptionParser> parser = PARSER;
+        Map<Class<?>, OptionParser> parser = PARSER;
 
+        try {
             List<String> arguments = Arrays.asList(args);
             Constructor<?> constructor = optionsClass.getDeclaredConstructors()[0];
             Parameter[] parameters = constructor.getParameters();
