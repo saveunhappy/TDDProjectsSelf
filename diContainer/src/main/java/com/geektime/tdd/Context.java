@@ -24,7 +24,7 @@ public class Context {
         providers.put(componentClass, getProvider(injectConstructor));
     }
 
-    private <Type, Implementation extends Type> Provider<Object> getProvider(Constructor<Implementation> injectConstructor) {
+    private <Type> Provider<Object> getProvider(Constructor<Type> injectConstructor) {
         return () -> {
             try {
                 Object[] array = Arrays.stream(injectConstructor.getParameters())
