@@ -26,7 +26,7 @@ class ContainerTest {
             Component component = new Component() {
             };
             context.bind(Component.class, component);
-            assertSame(component, context.get(Component.class).orElseThrow(DependencyNotFoundException::new));
+            assertSame(component, context.get(Component.class).get());
 
         }
 
@@ -37,7 +37,7 @@ class ContainerTest {
             @Test
             public void should_bind_type_to_a_class_with_default_constructor() {
                 context.bind(Component.class, ComponentWithDefaultConstructor.class);
-                Component component = context.get(Component.class).orElseThrow(DependencyNotFoundException::new);
+                Component component = context.get(Component.class).get();
                 assertNotNull(component);
                 assertTrue(component instanceof ComponentWithDefaultConstructor);
             }
@@ -48,7 +48,7 @@ class ContainerTest {
                 };
                 context.bind(Component.class, ComponentWithInjectionConstructor.class);
                 context.bind(Dependency.class, dependency);
-                Component component = context.get(Component.class).orElseThrow(DependencyNotFoundException::new);
+                Component component = context.get(Component.class).get();
                 assertNotNull(component);
                 assertTrue(component instanceof ComponentWithInjectionConstructor);
                 assertEquals(dependency, ((ComponentWithInjectionConstructor) component).getDependency());
@@ -60,7 +60,7 @@ class ContainerTest {
                 context.bind(Component.class, ComponentWithInjectionConstructor.class);
                 context.bind(Dependency.class, DependencyWithInjectionConstructor.class);
                 context.bind(String.class, "dependency String");
-                Component instance = context.get(Component.class).orElseThrow(DependencyNotFoundException::new);
+                Component instance = context.get(Component.class).get();
                 assertNotNull(instance);
                 Dependency dependency = ((ComponentWithInjectionConstructor) instance).getDependency();
                 assertNotNull(dependency);
@@ -85,7 +85,7 @@ class ContainerTest {
             public void should_throw_exception_if_dependency_not_found() {
                 context.bind(Component.class, ComponentWithInjectionConstructor.class);
                 assertThrows(DependencyNotFoundException.class, () ->
-                        context.get(Component.class).orElseThrow(DependencyNotFoundException::new));
+                        context.get(Component.class).get());
 
             }
         }
