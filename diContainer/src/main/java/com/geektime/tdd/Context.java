@@ -6,9 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Context {
-    private final Map<Class<?>, Class<?>> componentImplementations = new HashMap<>();
-
-    private final Map<Class<?>, Provider<?>> providers = new HashMap<>();
+    private Map<Class<?>, Provider<?>> providers = new HashMap<>();
 
     public <ComponentType> void bind(Class<ComponentType> componentClass, ComponentType component) {
         providers.put(componentClass, () -> component);
