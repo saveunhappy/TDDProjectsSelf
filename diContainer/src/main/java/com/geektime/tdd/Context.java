@@ -16,7 +16,6 @@ public class Context {
 
     public <ComponentType, ComponentImplementation extends ComponentType>
     void bind(Class<ComponentType> componentClass, Class<ComponentImplementation> implementation) {
-        componentImplementations.put(componentClass, implementation);
         providers.put(componentClass, () -> {
             try {
                 return implementation.getDeclaredConstructor().newInstance();
