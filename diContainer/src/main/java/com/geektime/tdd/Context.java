@@ -25,16 +25,13 @@ public class Context {
     }
 
     private <Type, Implementation extends Type> Provider<Object> getProvider(Constructor<Implementation> injectConstructor) {
-        return new Provider<Object>() {
-            @Override
-            public Object get() {
-                try {
-                    Object[] array = Arrays.stream(injectConstructor.getParameters())
-                            .map(it -> Context.this.get(it.getType()).orElseThrow(DependencyNotFoundException::new)).toArray();
-                    return injectConstructor.newInstance(array);
-                } catch (InvocationTargetException | InstantiationException | IllegalAccessException e) {
-                    throw new RuntimeException(e);
-                }
+        return () -> {
+            try {
+                Object[] array = Arrays.stream(injectConstructor.getParameters())
+                        .map(it -> Context.this.get(it.getType()).orElseThrow(DependencyNotFoundException::new)).toArray();
+                return injectConstructor.newInstance(array);
+            } catch (InvocationTargetException | InstantiationException | IllegalAccessException e) {
+                throw new RuntimeException(e);
             }
         };
     }
