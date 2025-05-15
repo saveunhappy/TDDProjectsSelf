@@ -30,12 +30,7 @@ public class Context {
         if (providers.containsKey(componentClass)) {
             return (ComponentType) providers.get(componentClass).get();
         }
-        Class<?> implementation = componentImplementations.get(componentClass);
-        try {
-            return (ComponentType) implementation.getDeclaredConstructor().newInstance();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return (ComponentType) providers.get(componentClass).get();
     }
 
 }
