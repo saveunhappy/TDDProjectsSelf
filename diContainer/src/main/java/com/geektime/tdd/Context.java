@@ -13,6 +13,7 @@ public class Context {
 
     public <ComponentType> void bind(Class<ComponentType> componentClass, ComponentType component) {
         components.put(componentClass, component);
+        providers.put(componentClass, () -> component);
     }
 
     public <ComponentType, ComponentImplementation extends ComponentType>
@@ -21,8 +22,8 @@ public class Context {
     }
 
     public <ComponentType> ComponentType get(Class<ComponentType> componentClass) {
-        if (components.containsKey(componentClass)) {
-            return (ComponentType) components.get(componentClass);
+        if (providers.containsKey(componentClass)) {
+            return (ComponentType) providers.get(componentClass).get();
         }
         Class<?> implementation = componentImplementations.get(componentClass);
         try {
