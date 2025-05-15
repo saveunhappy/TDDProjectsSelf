@@ -12,7 +12,6 @@ public class Context {
     private Map<Class<?>, Provider<?>> providers = new HashMap<>();
 
     public <ComponentType> void bind(Class<ComponentType> componentClass, ComponentType component) {
-        components.put(componentClass, component);
         providers.put(componentClass, () -> component);
     }
 
