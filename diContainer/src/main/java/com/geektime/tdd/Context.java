@@ -24,7 +24,7 @@ public class Context {
         providers.put(componentClass, () -> {
             try {
                 Object[] array = Arrays.stream(injectConstructor.getParameters())
-                        .map(it -> get_(it.getType()).orElseThrow(DependencyNotFoundException::new)).toArray();
+                        .map(it -> get(it.getType()).orElseThrow(DependencyNotFoundException::new)).toArray();
                 return injectConstructor.newInstance(array);
             } catch (InvocationTargetException | InstantiationException | IllegalAccessException e) {
                 throw new RuntimeException(e);
@@ -46,7 +46,7 @@ public class Context {
         });
     }
 
-    public <Type> Optional<Type> get_(Class<Type> type) {
+    public <Type> Optional<Type> get(Class<Type> type) {
         return Optional.ofNullable(providers.get(type)).map(provider -> (Type) provider.get());
     }
 }
