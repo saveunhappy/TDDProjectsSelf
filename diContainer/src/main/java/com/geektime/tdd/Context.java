@@ -7,7 +7,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static java.util.Arrays.stream;
 
@@ -25,7 +24,7 @@ public class Context {
         providers.put(componentClass, () -> {
             try {
                 Object[] array = Arrays.stream(injectConstructor.getParameters())
-                        .map(it -> get(it.getType())).toArray();
+                        .map(it -> get_(it.getType()).orElseThrow(DependencyNotFoundException::new)).toArray();
                 return injectConstructor.newInstance(array);
             } catch (InvocationTargetException | InstantiationException | IllegalAccessException e) {
                 throw new RuntimeException(e);
@@ -45,10 +44,6 @@ public class Context {
                 throw new IllegalComponentException();
             }
         });
-    }
-
-    public <Type> Type get(Class<Type> type) {
-        return get_(type).orElseThrow(DependencyNotFoundException::new);
     }
 
     public <Type> Optional<Type> get_(Class<Type> type) {
