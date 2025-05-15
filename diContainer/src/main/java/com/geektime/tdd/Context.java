@@ -40,15 +40,12 @@ public class Context {
         if (injectConstructors.length > 1) {
             throw new IllegalComponentException();
         }
-        if(injectConstructors.length == 0 && stream(implementation.getDeclaredConstructors())
-                .noneMatch(c -> c.getParameters().length == 0))
-            throw new IllegalComponentException();
 
         return (Constructor<Type>) stream(injectConstructors).findFirst().orElseGet(() -> {
             try {
                 return implementation.getDeclaredConstructor();
             } catch (NoSuchMethodException e) {
-                throw new RuntimeException(e);
+                throw new IllegalComponentException();
             }
         });
     }
