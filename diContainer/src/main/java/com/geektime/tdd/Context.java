@@ -7,6 +7,7 @@ import java.lang.reflect.Constructor;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Stream;
 
 public class Context {
     private Map<Class<?>, Provider<?>> providers = new HashMap<>();
@@ -29,8 +30,17 @@ public class Context {
         });
     }
 
-    private static <Type> Constructor<Type> getInjectConstructor(Class<Type> implementation) throws NoSuchMethodException {
-        return implementation.getDeclaredConstructor();
+    private static <Type> Constructor<Type> getInjectConstructor(Class<Type> implementation)  {
+        Stream<Constructor<?>> injectConstructor = Arrays.stream(implementation.getDeclaredConstructors())
+                .filter(it -> it.isAnnotationPresent(Inject.class));
+
+        return (Constructor<Type>) injectConstructor.findFirst().orElseGet(()->{
+            try {
+                return implementation.getDeclaredConstructor();
+            } catch (NoSuchMethodException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
     public <Type> Type get(Class<Type> componentClass) {
