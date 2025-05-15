@@ -22,16 +22,14 @@ public class Context {
 
     public <Type, Implementation extends Type>
     void bind(Class<Type> componentClass, Class<Implementation> implementation) {
+        Constructor<Implementation> injectConstructor = getInjectConstructor(implementation);
 
         providers.put(componentClass, () -> {
             try {
-                Constructor<Implementation> injectConstructor = getInjectConstructor(implementation);
                 Object[] array = Arrays.stream(injectConstructor.getParameters())
                         .map(it -> get(it.getType())).toArray();
                 return injectConstructor.newInstance(array);
-            } catch (IllegalComponentException e) {
-                throw e;
-            } catch (Exception e) {
+            }  catch (Exception e) {
                 throw new RuntimeException(e);
             }
         });
