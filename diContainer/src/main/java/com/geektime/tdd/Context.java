@@ -21,11 +21,7 @@ public class Context {
     void bind(Class<Type> componentClass, Class<Implementation> implementation) {
         Constructor<Implementation> injectConstructor = getInjectConstructor(implementation);
 
-        providers.put(componentClass, getProvider(injectConstructor));
-    }
-
-    private <Type> Provider<Type> getProvider(Constructor<Type> injectConstructor) {
-        return new ConstructorInjectionProvider<>(injectConstructor);
+        providers.put(componentClass, new ConstructorInjectionProvider<Implementation>(injectConstructor));
     }
 
     private <Type> Type getType(Constructor<Type> injectConstructor) {
