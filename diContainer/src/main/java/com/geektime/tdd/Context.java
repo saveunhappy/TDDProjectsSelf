@@ -5,10 +5,7 @@ import jakarta.inject.Provider;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -30,7 +27,7 @@ public class Context {
                 Object[] array = Arrays.stream(injectConstructor.getParameters())
                         .map(it -> get(it.getType())).toArray();
                 return injectConstructor.newInstance(array);
-            }catch (InvocationTargetException | InstantiationException | IllegalAccessException e) {
+            } catch (InvocationTargetException | InstantiationException | IllegalAccessException e) {
                 throw new RuntimeException(e);
             }
         });
@@ -50,9 +47,11 @@ public class Context {
         });
     }
 
-    public <Type> Type get(Class<Type> componentClass) {
-        if (!providers.containsKey(componentClass)) throw new DependencyNotFoundException();
-        return (Type) providers.get(componentClass).get();
+    public <Type> Type get(Class<Type> type) {
+        return get_(type).orElseThrow(DependencyNotFoundException::new);
     }
 
+    public <Type> Optional<Type> get_(Class<Type> type) {
+        return Optional.ofNullable(providers.get(type)).map(provider -> (Type) provider.get());
+    }
 }
