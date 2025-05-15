@@ -34,7 +34,6 @@ class ContainerTest {
         //TODO: interface
         @Nested
         public class ConstructorInjection {
-            //TODO: no args constructor
             @Test
             public void should_bind_type_to_a_class_with_default_constructor() {
                 context.bind(Component.class, ComponentWithDefaultConstructor.class);
@@ -43,7 +42,6 @@ class ContainerTest {
                 assertTrue(component instanceof ComponentWithDefaultConstructor);
             }
 
-            //TODO: with dependencies
             @Test
             public void should_bind_type_to_a_class_with_injection_constructor() {
                 Dependency dependency = new Dependency() {
@@ -57,7 +55,6 @@ class ContainerTest {
 
             }
 
-            //TODO: A->B->C
             @Test
             public void should_bind_type_to_a_class_with_transitive_dependency() {
                 context.bind(Component.class, ComponentWithInjectionDependency.class);
@@ -69,6 +66,14 @@ class ContainerTest {
                 assertNotNull(dependency);
                 assertEquals("dependency String",
                         ((DependencyWithInjectionDependency)dependency).getDependency());
+            }
+
+            //TODO multi inject constructors
+
+            @Test
+            public void should_throw_exception_if_multi_inject_constructor_provided() {
+                assertThrows(IllegalComponentException.class,
+                        ()-> context.bind(Component.class,ComponentWithMultiInjectionConstructor.class));
             }
 
         }
@@ -133,6 +138,16 @@ class ContainerTest {
         public String getDependency() {
             return dependency;
         }
+    }
+    static class ComponentWithMultiInjectionConstructor implements Component {
+        @Inject
+        public ComponentWithMultiInjectionConstructor(String name) {
+        }
+        @Inject
+        public ComponentWithMultiInjectionConstructor(String name,Double value) {
+        }
+
+
     }
 
 }
