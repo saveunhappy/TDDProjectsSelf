@@ -18,10 +18,11 @@ public class Context {
     public <Type, Implementation extends Type>
     void bind(Class<Type> componentClass, Class<Implementation> implementation) {
         providers.put(componentClass, () -> {
-
             try {
                 Constructor<Implementation> injectConstructor = implementation.getDeclaredConstructor();
-                return injectConstructor.newInstance();
+                Object[] array = Arrays.stream(injectConstructor.getParameters())
+                        .map(it -> get(it.getType())).toArray();
+                return injectConstructor.newInstance(array);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
