@@ -9,6 +9,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import static java.util.Arrays.stream;
+
 public class Context {
     private Map<Class<?>, Provider<?>> providers = new HashMap<>();
 
@@ -32,12 +34,16 @@ public class Context {
     }
 
     private static <Type> Constructor<Type> getInjectConstructor(Class<Type> implementation) {
-        Stream<Constructor<?>> injectConstructor = Arrays.stream(implementation.getDeclaredConstructors())
+        Stream<Constructor<?>> injectConstructors = Arrays.stream(implementation.getDeclaredConstructors())
                 .filter(it -> it.isAnnotationPresent(Inject.class));
-        if (injectConstructor.count() > 1) {
+        if (injectConstructors.count() > 1) {
             throw new IllegalComponentException();
         }
-        return (Constructor<Type>) injectConstructor.findFirst().orElseGet(() -> {
+        if(injectConstructors.count() == 0 && stream(implementation.getDeclaredConstructors())
+                .filter(c->c.getParameters().length == 0).findFirst().map(c->false).orElse(true))
+            throw new IllegalComponentException();
+
+        return (Constructor<Type>) injectConstructors.findFirst().orElseGet(() -> {
             try {
                 return implementation.getDeclaredConstructor();
             } catch (NoSuchMethodException e) {
