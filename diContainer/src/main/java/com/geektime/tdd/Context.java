@@ -18,9 +18,10 @@ public class Context {
 
     public <Type, Implementation extends Type>
     void bind(Class<Type> componentClass, Class<Implementation> implementation) {
+        Constructor<Implementation> injectConstructor = getInjectConstructor(implementation);
+
         providers.put(componentClass, () -> {
             try {
-                Constructor<Implementation> injectConstructor = getInjectConstructor(implementation);
                 Object[] array = Arrays.stream(injectConstructor.getParameters())
                         .map(it -> get(it.getType())).toArray();
                 return injectConstructor.newInstance(array);
@@ -30,11 +31,13 @@ public class Context {
         });
     }
 
-    private static <Type> Constructor<Type> getInjectConstructor(Class<Type> implementation)  {
+    private static <Type> Constructor<Type> getInjectConstructor(Class<Type> implementation) {
         Stream<Constructor<?>> injectConstructor = Arrays.stream(implementation.getDeclaredConstructors())
                 .filter(it -> it.isAnnotationPresent(Inject.class));
-
-        return (Constructor<Type>) injectConstructor.findFirst().orElseGet(()->{
+        if (injectConstructor.count() > 1) {
+            throw new IllegalComponentException();
+        }
+        return (Constructor<Type>) injectConstructor.findFirst().orElseGet(() -> {
             try {
                 return implementation.getDeclaredConstructor();
             } catch (NoSuchMethodException e) {
