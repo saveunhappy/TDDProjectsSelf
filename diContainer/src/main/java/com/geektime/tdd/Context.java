@@ -34,13 +34,13 @@ public class Context {
         Stream<Constructor<?>> injectConstructor = Arrays.stream(implementation.getDeclaredConstructors())
                 .filter(it -> it.isAnnotationPresent(Inject.class));
 
-        try {
-            return (Constructor<Type>) injectConstructor.findFirst().orElse(
-                    implementation.getDeclaredConstructor()
-            );
-        } catch (NoSuchMethodException e) {
-            throw new RuntimeException(e);
-        }
+        return (Constructor<Type>) injectConstructor.findFirst().orElseGet(()->{
+            try {
+                return implementation.getDeclaredConstructor();
+            } catch (NoSuchMethodException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
     public <Type> Type get(Class<Type> componentClass) {
