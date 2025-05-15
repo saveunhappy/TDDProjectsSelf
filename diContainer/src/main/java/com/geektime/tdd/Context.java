@@ -8,12 +8,12 @@ import java.util.Map;
 public class Context {
     private Map<Class<?>, Provider<?>> providers = new HashMap<>();
 
-    public <ComponentType> void bind(Class<ComponentType> componentClass, ComponentType component) {
+    public <Type> void bind(Class<Type> componentClass, Type component) {
         providers.put(componentClass, () -> component);
     }
 
-    public <ComponentType, ComponentImplementation extends ComponentType>
-    void bind(Class<ComponentType> componentClass, Class<ComponentImplementation> implementation) {
+    public <Type, Implementation extends Type>
+    void bind(Class<Type> componentClass, Class<Implementation> implementation) {
         providers.put(componentClass, () -> {
             try {
                 return implementation.getDeclaredConstructor().newInstance();
@@ -23,8 +23,8 @@ public class Context {
         });
     }
 
-    public <ComponentType> ComponentType get(Class<ComponentType> componentClass) {
-        return (ComponentType) providers.get(componentClass).get();
+    public <Type> Type get(Class<Type> componentClass) {
+        return (Type) providers.get(componentClass).get();
     }
 
 }
