@@ -46,26 +46,26 @@ class ContainerTest {
             public void should_bind_type_to_a_class_with_injection_constructor() {
                 Dependency dependency = new Dependency() {
                 };
-                context.bind(Component.class, ComponentWithInjectionDependency.class);
+                context.bind(Component.class, ComponentWithInjectionConstructor.class);
                 context.bind(Dependency.class, dependency);
                 Component component = context.get(Component.class);
                 assertNotNull(component);
-                assertTrue(component instanceof ComponentWithInjectionDependency);
-                assertEquals(dependency, ((ComponentWithInjectionDependency) component).getDependency());
+                assertTrue(component instanceof ComponentWithInjectionConstructor);
+                assertEquals(dependency, ((ComponentWithInjectionConstructor) component).getDependency());
 
             }
 
             @Test
             public void should_bind_type_to_a_class_with_transitive_dependency() {
-                context.bind(Component.class, ComponentWithInjectionDependency.class);
-                context.bind(Dependency.class, DependencyWithInjectionDependency.class);
+                context.bind(Component.class, ComponentWithInjectionConstructor.class);
+                context.bind(Dependency.class, DependencyWithInjectionConstructor.class);
                 context.bind(String.class, "dependency String");
                 Component instance = context.get(Component.class);
                 assertNotNull(instance);
-                Dependency dependency = ((ComponentWithInjectionDependency) instance).getDependency();
+                Dependency dependency = ((ComponentWithInjectionConstructor) instance).getDependency();
                 assertNotNull(dependency);
                 assertEquals("dependency String",
-                        ((DependencyWithInjectionDependency)dependency).getDependency());
+                        ((DependencyWithInjectionConstructor)dependency).getDependency());
             }
 
 
@@ -74,15 +74,13 @@ class ContainerTest {
                 assertThrows(IllegalComponentException.class,
                         ()-> context.bind(Component.class,ComponentWithMultiInjectionConstructor.class));
             }
-            //TODO no default constructor and inject constructor
             @Test
             public void should_throw_exception_if_no_inject_nor_default_constructor_provided() {
                 assertThrows(IllegalComponentException.class,()->{
                     context.bind(Component.class,ComponentWithoutInjectionConstructorNorDefaultConstructor.class);
                 });
-
-
             }
+
         }
 
         @Nested
@@ -121,11 +119,11 @@ class ContainerTest {
     }
 
 
-    static class ComponentWithInjectionDependency implements Component {
+    static class ComponentWithInjectionConstructor implements Component {
         Dependency dependency;
 
         @Inject
-        public ComponentWithInjectionDependency(Dependency dependency) {
+        public ComponentWithInjectionConstructor(Dependency dependency) {
             this.dependency = dependency;
         }
 
@@ -134,11 +132,11 @@ class ContainerTest {
         }
     }
 
-    static class DependencyWithInjectionDependency implements Dependency {
+    static class DependencyWithInjectionConstructor implements Dependency {
         String dependency;
 
         @Inject
-        public DependencyWithInjectionDependency(String dependency) {
+        public DependencyWithInjectionConstructor(String dependency) {
             this.dependency = dependency;
         }
 
