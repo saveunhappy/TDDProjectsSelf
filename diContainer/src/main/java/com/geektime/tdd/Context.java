@@ -41,7 +41,7 @@ public class Context {
             throw new IllegalComponentException();
         }
         if(injectConstructors.length == 0 && stream(implementation.getDeclaredConstructors())
-                .filter(c->c.getParameters().length == 0).findFirst().map(c->false).orElse(true))
+                .noneMatch(c -> c.getParameters().length == 0))
             throw new IllegalComponentException();
 
         return (Constructor<Type>) stream(injectConstructors).findFirst().orElseGet(() -> {
