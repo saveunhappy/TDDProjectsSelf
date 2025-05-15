@@ -5,6 +5,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.*;
 
 class ContainerTest {
@@ -40,6 +42,7 @@ class ContainerTest {
                 assertNotNull(component);
                 assertTrue(component instanceof ComponentWithDefaultConstructor);
             }
+
             //TODO: with dependencies
             @Test
             public void should_bind_type_to_a_class_with_injection_constructor() {
@@ -50,10 +53,24 @@ class ContainerTest {
                 Component component = context.get(Component.class);
                 assertNotNull(component);
                 assertTrue(component instanceof ComponentWithInjectionDependency);
-                assertEquals(dependency, ((ComponentWithInjectionDependency) component).dependency);
+                assertEquals(dependency, ((ComponentWithInjectionDependency) component).getDependency());
 
             }
+
             //TODO: A->B->C
+            @Test
+            public void should_bind_type_to_a_class_with_transitive_dependency() {
+                context.bind(Component.class, ComponentWithInjectionDependency.class);
+                context.bind(Dependency.class, DependencyWithInjectionDependency.class);
+                context.bind(String.class, "dependency String");
+                Component instance = context.get(Component.class);
+                assertNotNull(instance);
+                Dependency dependency = ((ComponentWithInjectionDependency) instance).getDependency();
+                assertNotNull(dependency);
+                assertEquals("dependency String",
+                        ((DependencyWithInjectionDependency)dependency).getDependency());
+            }
+
         }
 
         @Nested
@@ -81,6 +98,7 @@ class ContainerTest {
     interface Component {
 
     }
+
     interface Dependency {
 
     }
@@ -91,13 +109,29 @@ class ContainerTest {
     }
 
 
-
     static class ComponentWithInjectionDependency implements Component {
         Dependency dependency;
 
         @Inject
         public ComponentWithInjectionDependency(Dependency dependency) {
             this.dependency = dependency;
+        }
+
+        public Dependency getDependency() {
+            return dependency;
+        }
+    }
+
+    static class DependencyWithInjectionDependency implements Dependency {
+        String dependency;
+
+        @Inject
+        public DependencyWithInjectionDependency(String dependency) {
+            this.dependency = dependency;
+        }
+
+        public String getDependency() {
+            return dependency;
         }
     }
 
