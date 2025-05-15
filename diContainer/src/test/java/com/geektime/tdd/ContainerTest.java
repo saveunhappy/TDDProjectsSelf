@@ -90,7 +90,7 @@ class ContainerTest {
             }
 
             @Test
-            public void should_throw_exception_if_cyclic_dependencies_found() throws Exception {
+            public void should_throw_exception_if_cyclic_dependencies_found() {
                 context.bind(Component.class, ComponentWithInjectionConstructor.class);
                 context.bind(Dependency.class, DependencyDependedOnComponent.class);
 

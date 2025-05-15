@@ -21,7 +21,11 @@ public class Context {
     void bind(Class<Type> componentClass, Class<Implementation> implementation) {
         Constructor<Implementation> injectConstructor = getInjectConstructor(implementation);
 
-        providers.put(componentClass, () -> {
+        providers.put(componentClass, getProvider(injectConstructor));
+    }
+
+    private <Type, Implementation extends Type> Provider<Object> getProvider(Constructor<Implementation> injectConstructor) {
+        return () -> {
             try {
                 Object[] array = Arrays.stream(injectConstructor.getParameters())
                         .map(it -> get(it.getType()).orElseThrow(DependencyNotFoundException::new)).toArray();
@@ -29,7 +33,7 @@ public class Context {
             } catch (InvocationTargetException | InstantiationException | IllegalAccessException e) {
                 throw new RuntimeException(e);
             }
-        });
+        };
     }
 
     private static <Type> Constructor<Type> getInjectConstructor(Class<Type> implementation) {
