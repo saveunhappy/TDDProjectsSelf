@@ -34,16 +34,17 @@ public class Context {
     }
 
     private static <Type> Constructor<Type> getInjectConstructor(Class<Type> implementation) {
-        Stream<Constructor<?>> injectConstructors = Arrays.stream(implementation.getDeclaredConstructors())
-                .filter(it -> it.isAnnotationPresent(Inject.class));
-        if (injectConstructors.count() > 1) {
+        Constructor<?>[] injectConstructors = stream(implementation.getDeclaredConstructors())
+                .filter(it -> it.isAnnotationPresent(Inject.class))
+                .toArray(Constructor[]::new);
+        if (injectConstructors.length > 1) {
             throw new IllegalComponentException();
         }
-        if(injectConstructors.count() == 0 && stream(implementation.getDeclaredConstructors())
+        if(injectConstructors.length == 0 && stream(implementation.getDeclaredConstructors())
                 .filter(c->c.getParameters().length == 0).findFirst().map(c->false).orElse(true))
             throw new IllegalComponentException();
 
-        return (Constructor<Type>) injectConstructors.findFirst().orElseGet(() -> {
+        return (Constructor<Type>) stream(injectConstructors).findFirst().orElseGet(() -> {
             try {
                 return implementation.getDeclaredConstructor();
             } catch (NoSuchMethodException e) {
