@@ -68,14 +68,19 @@ class ContainerTest {
                         ((DependencyWithInjectionDependency)dependency).getDependency());
             }
 
-            //TODO multi inject constructors
 
             @Test
             public void should_throw_exception_if_multi_inject_constructor_provided() {
                 assertThrows(IllegalComponentException.class,
                         ()-> context.bind(Component.class,ComponentWithMultiInjectionConstructor.class));
             }
-
+            //TODO no default constructor and inject constructor
+            @Test
+            public void should_throw_exception_if_no_inject_nor_default_constructor_provided() {
+                assertThrows(IllegalComponentException.class,()->{
+                    context.bind(Component.class,ComponentWithoutInjectionConstructorNorDefaultConstructor.class);
+                });
+            }
         }
 
         @Nested
@@ -146,9 +151,11 @@ class ContainerTest {
         @Inject
         public ComponentWithMultiInjectionConstructor(String name,Double value) {
         }
-
-
     }
+    static class ComponentWithoutInjectionConstructorNorDefaultConstructor implements Component{
+        public ComponentWithoutInjectionConstructorNorDefaultConstructor(String name) {
 
+        }
+    }
 }
 
