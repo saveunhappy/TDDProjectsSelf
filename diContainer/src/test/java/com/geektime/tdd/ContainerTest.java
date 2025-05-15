@@ -77,9 +77,14 @@ class ContainerTest {
             //TODO no default constructor and inject constructor
             @Test
             public void should_throw_exception_if_no_inject_nor_default_constructor_provided() {
+//                assertThrows(IllegalComponentException.class,()->{
+//                    context.bind(Component.class,ComponentWithoutInjectionConstructorNorDefaultConstructor.class);
+//                });
+                context.bind(Component.class,ComponentWithoutInjectionConstructorNorDefaultConstructor.class);
                 assertThrows(IllegalComponentException.class,()->{
-                    context.bind(Component.class,ComponentWithoutInjectionConstructorNorDefaultConstructor.class);
+                    context.get(Component.class);
                 });
+
             }
         }
 
