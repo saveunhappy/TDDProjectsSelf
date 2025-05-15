@@ -24,8 +24,8 @@ public class Context {
         providers.put(componentClass, getProvider(injectConstructor));
     }
 
-    private <Type> Provider<Object> getProvider(Constructor<Type> injectConstructor) {
-        return () -> getType(injectConstructor);
+    private <Type> Provider<Type> getProvider(Constructor<Type> injectConstructor) {
+        return new ConstructorInjectionProvider<>(injectConstructor);
     }
 
     private <Type> Type getType(Constructor<Type> injectConstructor) {
@@ -35,6 +35,19 @@ public class Context {
             return injectConstructor.newInstance(array);
         } catch (InvocationTargetException | InstantiationException | IllegalAccessException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    class ConstructorInjectionProvider<T> implements Provider<T> {
+        private Constructor<T> injectConstructor;
+
+        public ConstructorInjectionProvider(Constructor<T> injectConstructor) {
+            this.injectConstructor = injectConstructor;
+        }
+
+        @Override
+        public T get() {
+            return getType(injectConstructor);
         }
     }
 
