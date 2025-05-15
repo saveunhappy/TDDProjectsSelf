@@ -65,29 +65,30 @@ class ContainerTest {
                 Dependency dependency = ((ComponentWithInjectionConstructor) instance).getDependency();
                 assertNotNull(dependency);
                 assertEquals("dependency String",
-                        ((DependencyWithInjectionConstructor)dependency).getDependency());
+                        ((DependencyWithInjectionConstructor) dependency).getDependency());
             }
 
 
             @Test
             public void should_throw_exception_if_multi_inject_constructor_provided() {
                 assertThrows(IllegalComponentException.class,
-                        ()-> context.bind(Component.class,ComponentWithMultiInjectionConstructor.class));
+                        () -> context.bind(Component.class, ComponentWithMultiInjectionConstructor.class));
             }
+
             @Test
             public void should_throw_exception_if_no_inject_nor_default_constructor_provided() {
-                assertThrows(IllegalComponentException.class,()->{
-                    context.bind(Component.class,ComponentWithoutInjectionConstructorNorDefaultConstructor.class);
+                assertThrows(IllegalComponentException.class, () -> {
+                    context.bind(Component.class, ComponentWithoutInjectionConstructorNorDefaultConstructor.class);
                 });
             }
-            //TODO dependency not exist
+
             @Test
             public void should_throw_exception_if_dependency_not_found() {
                 context.bind(Component.class, ComponentWithInjectionConstructor.class);
                 assertThrows(DependencyNotFoundException.class, () ->
                         context.get(Component.class).get());
-
             }
+
         }
 
         @Nested
@@ -151,15 +152,18 @@ class ContainerTest {
             return dependency;
         }
     }
+
     static class ComponentWithMultiInjectionConstructor implements Component {
         @Inject
         public ComponentWithMultiInjectionConstructor(String name) {
         }
+
         @Inject
-        public ComponentWithMultiInjectionConstructor(String name,Double value) {
+        public ComponentWithMultiInjectionConstructor(String name, Double value) {
         }
     }
-    static class ComponentWithoutInjectionConstructorNorDefaultConstructor implements Component{
+
+    static class ComponentWithoutInjectionConstructorNorDefaultConstructor implements Component {
         public ComponentWithoutInjectionConstructorNorDefaultConstructor(String name) {
 
         }
