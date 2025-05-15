@@ -1,7 +1,10 @@
 package com.geektime.tdd;
 
+import jakarta.inject.Inject;
 import jakarta.inject.Provider;
 
+import java.lang.reflect.Constructor;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -15,8 +18,10 @@ public class Context {
     public <Type, Implementation extends Type>
     void bind(Class<Type> componentClass, Class<Implementation> implementation) {
         providers.put(componentClass, () -> {
+
             try {
-                return implementation.getDeclaredConstructor().newInstance();
+                Constructor<Implementation> injectConstructor = implementation.getDeclaredConstructor();
+                return injectConstructor.newInstance();
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -24,6 +29,7 @@ public class Context {
     }
 
     public <Type> Type get(Class<Type> componentClass) {
+
         return (Type) providers.get(componentClass).get();
     }
 
