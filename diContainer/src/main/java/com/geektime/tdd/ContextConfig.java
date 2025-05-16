@@ -23,6 +23,7 @@ public class ContextConfig {
     void bind(Class<Type> type, Class<Implementation> implementation) {
         Constructor<Implementation> injectConstructor = getInjectConstructor(implementation);
         providers.put(type, new ConstructorInjectionProvider<>(type, injectConstructor));
+
     }
 
     public Context getContext() {
@@ -76,7 +77,7 @@ public class ContextConfig {
 
         @Override
         public T get(Context context) {
-            return null;
+            return getT(context);
         }
     }
 
