@@ -15,14 +15,12 @@ public class ContextConfig {
     private Map<Class<?>, ComponentProvider<?>> componentProviders = new HashMap<>();
 
     public <Type> void bind(Class<Type> type, Type instance) {
-        providers.put(type, () -> instance);
         componentProviders.put(type, context -> instance);
     }
 
     public <Type, Implementation extends Type>
     void bind(Class<Type> type, Class<Implementation> implementation) {
         Constructor<Implementation> injectConstructor = getInjectConstructor(implementation);
-        providers.put(type, new ConstructorInjectionProvider<>(type, injectConstructor));
         componentProviders.put(type, new ConstructorInjectionProvider<>(type, injectConstructor));
     }
 
@@ -30,7 +28,7 @@ public class ContextConfig {
         return new Context() {
             @Override
             public <Type> Optional<Type> get(Class<Type> type) {
-                return Optional.ofNullable(providers.get(type)).map(provider -> (Type) provider.get());
+                return Optional.ofNullable(componentProviders.get(type)).map(provider -> (Type) provider.get(this));
             }
         };
     }
