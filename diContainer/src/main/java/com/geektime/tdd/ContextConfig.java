@@ -1,7 +1,6 @@
 package com.geektime.tdd;
 
 import jakarta.inject.Inject;
-import jakarta.inject.Provider;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -47,7 +46,8 @@ public class ContextConfig {
         }
 
 
-        private T getT(Context context) {
+        @Override
+        public T get(Context context) {
             if (constructing) throw new CyclicDependenciesFoundException(componentType);
             try {
                 constructing = true;
@@ -66,11 +66,6 @@ public class ContextConfig {
             } finally {
                 constructing = false;
             }
-        }
-
-        @Override
-        public T get(Context context) {
-            return getT(context);
         }
     }
 
