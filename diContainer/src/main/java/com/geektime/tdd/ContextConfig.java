@@ -20,7 +20,6 @@ public class ContextConfig {
     public <Type, Implementation extends Type>
     void bind(Class<Type> type, Class<Implementation> implementation) {
         Constructor<Implementation> injectConstructor = getInjectConstructor(implementation);
-
         providers.put(type, new ConstructorInjectionProvider<>(type, injectConstructor));
     }
 
@@ -31,6 +30,10 @@ public class ContextConfig {
                 return Optional.ofNullable(providers.get(type)).map(provider -> (Type) provider.get());
             }
         };
+    }
+
+    interface ComponentProvider<T> {
+        T get(Context context);
     }
 
     class ConstructorInjectionProvider<T> implements Provider<T> {
