@@ -35,10 +35,6 @@ public class Context {
         private Constructor<T> injectConstructor;
         private boolean constructing = false;
 
-        public ConstructorInjectionProvider(Constructor<T> injectConstructor) {
-            this.injectConstructor = injectConstructor;
-        }
-
         public ConstructorInjectionProvider(Class<?> componentType, Constructor<T> injectConstructor) {
             this.componentType = componentType;
             this.injectConstructor = injectConstructor;
