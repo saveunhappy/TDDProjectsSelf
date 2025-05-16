@@ -6,12 +6,15 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.internal.util.collections.Sets;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class ContainerTest {
     Context context;
@@ -106,11 +109,16 @@ class ContainerTest {
             }
 
             @Test
-            public void should_throw_exception_if_transitive_cyclic_dependencies_found() throws Exception {
+            public void should_throw_exception_if_transitive_cyclic_dependencies_found() {
                 context.bind(Component.class, ComponentWithInjectionConstructor.class);
                 context.bind(Dependency.class, DependencyDependedOnAnotherDependency.class);
                 context.bind(AnotherDependency.class, AnotherDependencyDependedOnComponent.class);
-                assertThrows(CyclicDependenciesFoundException.class, () -> context.get(Component.class));
+                CyclicDependenciesFoundException exception = assertThrows(CyclicDependenciesFoundException.class, () -> context.get(Component.class));
+                List<Class<?>> list = Arrays.asList(exception.getComponents());
+                assertEquals(3,list.size());
+                assertTrue(list.contains(Component.class));
+                assertTrue(list.contains(Dependency.class));
+                assertTrue(list.contains(AnotherDependency.class));
             }
 
             @Test
