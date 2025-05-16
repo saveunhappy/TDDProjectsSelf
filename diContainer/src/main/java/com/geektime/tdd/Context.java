@@ -26,6 +26,7 @@ public class Context {
 
     class ConstructorInjectionProvider<T> implements Provider<T> {
         private Constructor<T> injectConstructor;
+        private boolean constructing = false;
 
         public ConstructorInjectionProvider(Constructor<T> injectConstructor) {
             this.injectConstructor = injectConstructor;
@@ -33,12 +34,16 @@ public class Context {
 
         @Override
         public T get() {
+            if (constructing) throw new CyclicDependenciesFoundException();
             try {
+                constructing = true;
                 Object[] array = Arrays.stream(injectConstructor.getParameters())
                         .map(it -> Context.this.get(it.getType()).orElseThrow(DependencyNotFoundException::new)).toArray();
                 return injectConstructor.newInstance(array);
             } catch (InvocationTargetException | InstantiationException | IllegalAccessException e) {
                 throw new RuntimeException(e);
+            } finally {
+                constructing = false;
             }
         }
     }
