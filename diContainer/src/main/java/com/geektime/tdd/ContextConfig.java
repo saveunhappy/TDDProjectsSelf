@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 
 import static java.util.Arrays.stream;
 
-public class Context {
+public class ContextConfig {
     private Map<Class<?>, Provider<?>> providers = new HashMap<>();
 
     public <Type> void bind(Class<Type> componentClass, Type component) {
@@ -46,7 +46,7 @@ public class Context {
             try {
                 constructing = true;
                 Object[] array = Arrays.stream(injectConstructor.getParameters())
-                        .map(p -> Context.this.get(p.getType()).orElseThrow(() -> {
+                        .map(p -> ContextConfig.this.get(p.getType()).orElseThrow(() -> {
                             throw new DependencyNotFoundException(componentType, p.getType());
                         })).toArray();
                 return injectConstructor.newInstance(array);
