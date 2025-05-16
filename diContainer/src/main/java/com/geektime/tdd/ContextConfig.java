@@ -12,9 +12,16 @@ import static java.util.Arrays.stream;
 
 public class ContextConfig {
     private Map<Class<?>, Provider<?>> providers = new HashMap<>();
+    private Map<Class<?>, ComponentProvider<?>> componentProviders = new HashMap<>();
 
-    public <Type> void bind(Class<Type> componentClass, Type component) {
-        providers.put(componentClass, () -> component);
+    public <Type> void bind(Class<Type> type, Type instance) {
+        providers.put(type, () -> instance);
+        componentProviders.put(type, new ComponentProvider<Object>() {
+            @Override
+            public Object get(Context context) {
+                return instance;
+            }
+        });
     }
 
     public <Type, Implementation extends Type>
