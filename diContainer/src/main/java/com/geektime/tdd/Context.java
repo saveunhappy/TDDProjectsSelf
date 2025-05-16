@@ -21,7 +21,7 @@ public class Context {
     void bind(Class<Type> type, Class<Implementation> implementation) {
         Constructor<Implementation> injectConstructor = getInjectConstructor(implementation);
 
-        providers.put(type, new ConstructorInjectionProvider<>(injectConstructor));
+        providers.put(type, new ConstructorInjectionProvider<>(type, injectConstructor));
     }
 
     public <Type> Optional<Type> get(Class<Type> type) {
@@ -51,7 +51,7 @@ public class Context {
                 constructing = true;
                 Object[] array = Arrays.stream(injectConstructor.getParameters())
                         .map(p -> Context.this.get(p.getType()).orElseThrow(() -> {
-                            throw new DependencyNotFoundException(p.getType());
+                            throw new DependencyNotFoundException(componentType, p.getType());
                         })).toArray();
                 return injectConstructor.newInstance(array);
             } catch (InvocationTargetException | InstantiationException | IllegalAccessException e) {
