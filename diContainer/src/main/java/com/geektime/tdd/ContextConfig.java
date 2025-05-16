@@ -50,6 +50,10 @@ public class ContextConfig {
 
         @Override
         public T get() {
+            return getT();
+        }
+
+        private T getT() {
             if (constructing) throw new CyclicDependenciesFoundException(componentType);
             try {
                 constructing = true;
