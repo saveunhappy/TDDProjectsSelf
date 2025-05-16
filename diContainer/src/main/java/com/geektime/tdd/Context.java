@@ -23,7 +23,11 @@ public class Context {
 
         providers.put(componentClass, new ConstructorInjectionProvider<>(injectConstructor));
     }
-
+    public <Type> Optional<Type> get(Class<Type> type) {
+        //最后的provider -> (Type) provider.get()其实是从provider中取出来了，然后又放到
+        //这个Optional中了，所以其他的地方调用这个get方法还是要调用get方法来取出来Optional中的值
+        return Optional.ofNullable(providers.get(type)).map(provider -> (Type) provider.get());
+    }
     class ConstructorInjectionProvider<T> implements Provider<T> {
         private Constructor<T> injectConstructor;
         private boolean constructing = false;
@@ -62,9 +66,5 @@ public class Context {
         });
     }
 
-    public <Type> Optional<Type> get(Class<Type> type) {
-        //最后的provider -> (Type) provider.get()其实是从provider中取出来了，然后又放到
-        //这个Optional中了，所以其他的地方调用这个get方法还是要调用get方法来取出来Optional中的值
-        return Optional.ofNullable(providers.get(type)).map(provider -> (Type) provider.get());
-    }
+
 }
