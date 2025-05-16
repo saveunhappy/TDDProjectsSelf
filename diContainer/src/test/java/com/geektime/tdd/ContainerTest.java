@@ -4,9 +4,13 @@ import jakarta.inject.Inject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.mockito.internal.util.collections.Sets;
+
+import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.*;
 
 class ContainerTest {
@@ -109,6 +113,17 @@ class ContainerTest {
                 assertThrows(CyclicDependenciesFoundException.class, () -> context.get(Component.class));
             }
 
+            @Test
+            public void should_throw_exception_if_cyclic_dependencies_found() {
+                context.bind(Component.class, ComponentWithInjectionConstructor.class);
+                context.bind(Dependency.class, DependencyDependedOnComponent.class);
+
+                CyclicDependenciesFoundException exception = assertThrows(CyclicDependenciesFoundException.class, () -> context.get(Component.class));
+                Set<Class<?>> classes = Sets.newSet(exception.getComponents());
+                assertEquals(2, classes.size());
+                assertTrue(classes.contains(Component.class));
+                assertTrue(classes.contains(Dependency.class));
+            }
         }
 
         @Nested
