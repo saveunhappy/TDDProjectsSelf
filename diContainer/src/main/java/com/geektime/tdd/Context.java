@@ -43,7 +43,7 @@ public class Context {
             } catch (InvocationTargetException | InstantiationException | IllegalAccessException e) {
                 throw new RuntimeException(e);
             } finally {
-//                constructing = false;
+                constructing = false;
             }
         }
     }

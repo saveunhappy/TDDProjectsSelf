@@ -105,12 +105,6 @@ class ContainerTest {
                 assertThrows(CyclicDependenciesFoundException.class, () -> context.get(Component.class));
             }
 
-            @Test
-            public void should_throw_exception_if_constructing_not_reset() {
-                context.bind(Component.class, ComponentWithDefaultConstructor.class);
-                assertDoesNotThrow(() -> context.get(Component.class));
-                assertThrows(CyclicDependenciesFoundException.class, () -> context.get(Component.class));
-            }
         }
 
         @Nested
