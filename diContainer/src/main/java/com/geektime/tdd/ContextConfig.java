@@ -11,7 +11,6 @@ import java.util.stream.Collectors;
 import static java.util.Arrays.stream;
 
 public class ContextConfig {
-    private Map<Class<?>, Provider<?>> providers = new HashMap<>();
     private Map<Class<?>, ComponentProvider<?>> componentProviders = new HashMap<>();
 
     public <Type> void bind(Class<Type> type, Type instance) {
