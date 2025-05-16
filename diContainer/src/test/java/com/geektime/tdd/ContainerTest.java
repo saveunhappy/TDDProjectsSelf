@@ -91,11 +91,12 @@ class ContainerTest {
             }
 
             @Test
-            public void should_throw_exception_if_cyclic_dependencies_found() {
+            public void should_throw_exception_if_transitive_dependency_not_found() throws Exception {
                 context.bind(Component.class, ComponentWithInjectionConstructor.class);
-                context.bind(Dependency.class, DependencyDependedOnComponent.class);
-
-                assertThrows(CyclicDependenciesFoundException.class, () -> context.get(Component.class));
+                context.bind(Dependency.class, DependencyWithInjectionConstructor.class);
+                DependencyNotFoundException exception = assertThrows(DependencyNotFoundException.class, () ->
+                        context.get(Component.class).get());
+                assertEquals(String.class,exception.getDependency());
             }
 
             @Test
