@@ -24,10 +24,6 @@ public class ContextConfig {
         providers.put(type, new ConstructorInjectionProvider<>(type, injectConstructor));
     }
 
-    public <Type> Optional<Type> get(Class<Type> type) {
-        return getContext().get(type);
-    }
-
     public Context getContext() {
         return new Context() {
             @Override
@@ -53,9 +49,12 @@ public class ContextConfig {
             try {
                 constructing = true;
                 Object[] array = Arrays.stream(injectConstructor.getParameters())
-                        .map(p -> ContextConfig.this.get(p.getType()).orElseThrow(() -> {
-                            throw new DependencyNotFoundException(componentType, p.getType());
-                        })).toArray();
+                        .map(p -> {
+                            Class<?> type = p.getType();
+                            return getContext().get(type).orElseThrow(() -> {
+                                throw new DependencyNotFoundException(componentType, p.getType());
+                            });
+                        }).toArray();
                 return injectConstructor.newInstance(array);
             } catch (CyclicDependenciesFoundException e) {
                 throw new CyclicDependenciesFoundException(componentType, e);
