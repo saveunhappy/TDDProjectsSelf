@@ -46,7 +46,7 @@ public class Context {
 
         @Override
         public T get() {
-            if (constructing) throw new CyclicDependenciesFoundException();
+            if (constructing) throw new CyclicDependenciesFoundException(componentType);
             try {
                 constructing = true;
                 Object[] array = Arrays.stream(injectConstructor.getParameters())
@@ -54,6 +54,8 @@ public class Context {
                             throw new DependencyNotFoundException(componentType, p.getType());
                         })).toArray();
                 return injectConstructor.newInstance(array);
+            } catch (CyclicDependenciesFoundException e) {
+                throw new CyclicDependenciesFoundException(componentType, e);
             } catch (InvocationTargetException | InstantiationException | IllegalAccessException e) {
                 throw new RuntimeException(e);
             } finally {
