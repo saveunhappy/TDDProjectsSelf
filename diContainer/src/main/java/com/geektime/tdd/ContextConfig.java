@@ -16,12 +16,7 @@ public class ContextConfig {
 
     public <Type> void bind(Class<Type> type, Type instance) {
         providers.put(type, () -> instance);
-        componentProviders.put(type, new ComponentProvider<Object>() {
-            @Override
-            public Object get(Context context) {
-                return instance;
-            }
-        });
+        componentProviders.put(type, context -> instance);
     }
 
     public <Type, Implementation extends Type>
@@ -43,7 +38,7 @@ public class ContextConfig {
         T get(Context context);
     }
 
-    class ConstructorInjectionProvider<T> implements Provider<T>,ComponentProvider<T> {
+    class ConstructorInjectionProvider<T> implements Provider<T>, ComponentProvider<T> {
         private Class<?> componentType;
         private Constructor<T> injectConstructor;
         private boolean constructing = false;
