@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 
 import static java.util.Arrays.stream;
 
-public class ContextConfig implements Context {
+public class ContextConfig {
     private Map<Class<?>, Provider<?>> providers = new HashMap<>();
 
     public <Type> void bind(Class<Type> componentClass, Type component) {
@@ -24,7 +24,6 @@ public class ContextConfig implements Context {
         providers.put(type, new ConstructorInjectionProvider<>(type, injectConstructor));
     }
 
-    @Override
     public <Type> Optional<Type> get(Class<Type> type) {
         return getContext().get(type);
     }
