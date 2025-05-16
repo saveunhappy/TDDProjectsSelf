@@ -114,11 +114,11 @@ class ContainerTest {
                 context.bind(Dependency.class, DependencyDependedOnAnotherDependency.class);
                 context.bind(AnotherDependency.class, AnotherDependencyDependedOnComponent.class);
                 CyclicDependenciesFoundException exception = assertThrows(CyclicDependenciesFoundException.class, () -> context.get(Component.class));
-                List<Class<?>> list = Arrays.asList(exception.getComponents());
-                assertEquals(3,list.size());
-                assertTrue(list.contains(Component.class));
-                assertTrue(list.contains(Dependency.class));
-                assertTrue(list.contains(AnotherDependency.class));
+                List<Class<?>> classes = Arrays.asList(exception.getComponents());
+                assertEquals(3, classes.size());
+                assertTrue(classes.contains(Component.class));
+                assertTrue(classes.contains(Dependency.class));
+                assertTrue(classes.contains(AnotherDependency.class));
             }
 
             @Test
@@ -127,7 +127,7 @@ class ContainerTest {
                 context.bind(Dependency.class, DependencyDependedOnComponent.class);
 
                 CyclicDependenciesFoundException exception = assertThrows(CyclicDependenciesFoundException.class, () -> context.get(Component.class));
-                Set<Class<?>> classes = Sets.newSet(exception.getComponents());
+                List<Class<?>> classes = Arrays.asList(exception.getComponents());
                 assertEquals(2, classes.size());
                 assertTrue(classes.contains(Component.class));
                 assertTrue(classes.contains(Dependency.class));
