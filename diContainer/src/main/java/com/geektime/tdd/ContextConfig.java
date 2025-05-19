@@ -55,7 +55,6 @@ public class ContextConfig {
     class ConstructorInjectionProvider<T> implements ComponentProvider<T> {
         private Class<?> componentType;
         private Constructor<T> injectConstructor;
-        private boolean constructing = false;
 
         public ConstructorInjectionProvider(Class<?> componentType, Constructor<T> injectConstructor) {
             this.componentType = componentType;
@@ -65,9 +64,7 @@ public class ContextConfig {
 
         @Override
         public T get(Context context) {
-            if (constructing) throw new CyclicDependenciesFoundException(componentType);
             try {
-                constructing = true;
                 Object[] array = Arrays.stream(injectConstructor.getParameters())
                         .map(p -> context.get(p.getType()).get())
                         .toArray();
@@ -76,8 +73,6 @@ public class ContextConfig {
                 throw new CyclicDependenciesFoundException(componentType, e);
             } catch (InvocationTargetException | InstantiationException | IllegalAccessException e) {
                 throw new RuntimeException(e);
-            } finally {
-                constructing = false;
             }
         }
     }
