@@ -38,7 +38,7 @@ public class ContextConfig {
 
     public Context getContext() {
         //bind过的
-        dependencies.keySet().forEach(component -> checkDependencies(component, new Stack<>()));
+        providers.keySet().forEach(component -> checkDependencies(component, new Stack<>()));
 
         return new Context() {
             @Override
