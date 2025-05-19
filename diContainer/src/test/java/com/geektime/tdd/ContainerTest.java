@@ -165,9 +165,13 @@ class ContainerTest {
                 //get的时候应该能获取到对应的依赖，因为里面有Dependency的方法，如果依赖没有那么也是就报错了，所以这里是最终要实现的
                 //根据字段注入
                 ComponentWithFieldInjection component = provider.get(context);
-                Assert.assertSame(dependency, component.dependency);
+                assertSame(dependency, component.dependency);
             }
+            //TODO throw exception if field is final
             //TODO throw exception if dependency not found
+            //TODO throw exception if cyclic dependency
+            //TODO provided dependency information for field injection
+
 
             @Test
             public void should_throw_exception_when_field_dependency_missing() {
@@ -183,8 +187,6 @@ class ContainerTest {
                 //注意看getDependency()的实现，就是根据Constructor的参数是什么类型就添加到这个List中去
                 assertArrayEquals(new Class<?>[]{Dependency.class}, provider.getDependency().toArray());
             }
-            //TODO throw exception if field is final
-            //TODO throw exception if cyclic dependency
             class DependencyWithFieldInjection implements Dependency {
                 @Inject
                 ComponentWithFieldInjection component;
