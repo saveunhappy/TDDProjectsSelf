@@ -4,6 +4,7 @@ import jakarta.inject.Inject;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Parameter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -11,18 +12,29 @@ import static java.util.Arrays.stream;
 
 public class ContextConfig {
     private Map<Class<?>, ComponentProvider<?>> providers = new HashMap<>();
+    private Map<Class<?>, List<Class<?>>> dependencies = new HashMap();
 
     public <Type> void bind(Class<Type> type, Type instance) {
         providers.put(type, context -> instance);
+        dependencies.put(type, Arrays.asList());
     }
 
     public <Type, Implementation extends Type>
     void bind(Class<Type> type, Class<Implementation> implementation) {
         Constructor<Implementation> injectConstructor = getInjectConstructor(implementation);
         providers.put(type, new ConstructorInjectionProvider<>(type, injectConstructor));
+        dependencies.put(type, stream(injectConstructor.getParameters()).map(Parameter::getType).collect(Collectors.toList()));
     }
 
     public Context getContext() {
+        //bind过的
+        for(Class<?> component: dependencies.keySet()){
+            //查找bind过的，构造器，方法，字段这些是隐式的，可能会出现你没有bind过的情况
+            for(Class<?> dependency: dependencies.get(component)){
+                //找不到就抛出异常
+                if(!dependencies.containsKey(dependency)) throw new DependencyNotFoundException(component,dependency);
+            }
+        }
         return new Context() {
             @Override
             public <Type> Optional<Type> get(Class<Type> type) {
