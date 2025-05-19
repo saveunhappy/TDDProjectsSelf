@@ -39,6 +39,7 @@ public class ContextConfig {
             }
         };
     }
+
     private void checkDependencies(Class<?> component, Stack<Class<?>> visiting) {
         for (Class<?> dependency : dependencies.get(component)) {
             if (!dependencies.containsKey(dependency)) throw new DependencyNotFoundException(component, dependency);
@@ -48,6 +49,7 @@ public class ContextConfig {
             visiting.pop();
         }
     }
+
     interface ComponentProvider<T> {
         T get(Context context);
     }
