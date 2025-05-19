@@ -26,14 +26,12 @@ public class ContextConfig {
                 return List.of();
             }
         });
-        dependencies.put(type, Arrays.asList());
     }
 
     public <Type, Implementation extends Type>
     void bind(Class<Type> type, Class<Implementation> implementation) {
         Constructor<Implementation> injectConstructor = getInjectConstructor(implementation);
         providers.put(type, new ConstructorInjectionProvider<>(injectConstructor));
-        dependencies.put(type, stream(injectConstructor.getParameters()).map(Parameter::getType).collect(Collectors.toList()));
     }
 
     public Context getContext() {
