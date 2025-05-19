@@ -61,8 +61,8 @@ public class ContextConfig {
         List<Class<?>> getDependency();
     }
 
-    class ConstructorInjectionProvider<T> implements ComponentProvider<T> {
-        private Constructor<T> injectConstructor;
+    static class ConstructorInjectionProvider<T> implements ComponentProvider<T> {
+        private final Constructor<T> injectConstructor;
 
         public ConstructorInjectionProvider(Class<T> injectConstructor) {
             this.injectConstructor = getInjectConstructor(injectConstructor);
