@@ -71,8 +71,6 @@ public class ContextConfig {
                         .map(p -> context.get(p.getType()).get())
                         .toArray();
                 return injectConstructor.newInstance(array);
-            } catch (CyclicDependenciesFoundException e) {
-                throw new CyclicDependenciesFoundException(componentType, e);
             } catch (InvocationTargetException | InstantiationException | IllegalAccessException e) {
                 throw new RuntimeException(e);
             }
