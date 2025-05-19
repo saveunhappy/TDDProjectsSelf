@@ -26,6 +26,8 @@ public class ContextConfig {
         return new Context() {
             @Override
             public <Type> Optional<Type> get(Class<Type> type) {
+                //在Java中，当在内部类或匿名类中使用 this 时，它指的是该内部类或匿名类的实例，而不是外部类的实例，
+                // 所以这里的 this 就是指代当前创建的 Context 匿名实现类的实例本身
                 return Optional.ofNullable(providers.get(type)).map(provider -> (Type) provider.get(this));
             }
         };
@@ -54,9 +56,8 @@ public class ContextConfig {
                 Object[] array = Arrays.stream(injectConstructor.getParameters())
                         .map(p -> {
                             Class<?> type = p.getType();
-                            return context.get(type).orElseThrow(() -> {
-                                throw new DependencyNotFoundException(componentType, p.getType());
-                            });
+                            //context.get(type)就是一直在内部递归的传递context这个变量，就是内部的this
+                            return context.get(type).orElseThrow(() -> new DependencyNotFoundException(componentType, p.getType()));
                         }).toArray();
                 return injectConstructor.newInstance(array);
             } catch (CyclicDependenciesFoundException e) {
