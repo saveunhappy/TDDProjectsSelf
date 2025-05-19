@@ -34,7 +34,9 @@ public class ContextConfig {
                 //找不到就抛出异常
                 if(!dependencies.containsKey(dependency)) throw new DependencyNotFoundException(component,dependency);
             }
+            checkDependencies(component,new Stack<>());
         }
+
         return new Context() {
             @Override
             public <Type> Optional<Type> get(Class<Type> type) {
@@ -44,7 +46,14 @@ public class ContextConfig {
             }
         };
     }
-
+    private void checkDependencies(Class<?> component, Stack<Class<?>> visiting) {
+        for (Class<?> dependency : dependencies.get(component)) {
+            if (visiting.contains(dependency)) throw new CyclicDependenciesFoundException(visiting);
+            visiting.push(dependency);
+            checkDependencies(dependency, visiting);
+            visiting.pop();
+        }
+    }
     interface ComponentProvider<T> {
         T get(Context context);
     }
