@@ -66,11 +66,8 @@ public class ContextConfig {
             try {
                 constructing = true;
                 Object[] array = Arrays.stream(injectConstructor.getParameters())
-                        .map(p -> {
-                            Class<?> type = p.getType();
-                            //context.get(type)就是一直在内部递归的传递context这个变量，就是内部的this
-                            return context.get(type).orElseThrow(() -> new DependencyNotFoundException(componentType, p.getType()));
-                        }).toArray();
+                        .map(p -> context.get(p.getType()).get())
+                        .toArray();
                 return injectConstructor.newInstance(array);
             } catch (CyclicDependenciesFoundException e) {
                 throw new CyclicDependenciesFoundException(componentType, e);
