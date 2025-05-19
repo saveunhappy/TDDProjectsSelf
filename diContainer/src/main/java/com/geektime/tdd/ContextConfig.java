@@ -12,7 +12,6 @@ import static java.util.Arrays.stream;
 
 public class ContextConfig {
     private Map<Class<?>, ComponentProvider<?>> providers = new HashMap<>();
-    private Map<Class<?>, List<Class<?>>> dependencies = new HashMap();
 
     public <Type> void bind(Class<Type> type, Type instance) {
         providers.put(type, new ComponentProvider<>() {
