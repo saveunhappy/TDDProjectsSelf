@@ -29,11 +29,6 @@ public class ContextConfig {
     public Context getContext() {
         //bind过的
         for(Class<?> component: dependencies.keySet()){
-            //查找bind过的，构造器，方法，字段这些是隐式的，可能会出现你没有bind过的情况
-            for(Class<?> dependency: dependencies.get(component)){
-                //找不到就抛出异常
-                if(!dependencies.containsKey(dependency)) throw new DependencyNotFoundException(component,dependency);
-            }
             checkDependencies(component,new Stack<>());
         }
 
