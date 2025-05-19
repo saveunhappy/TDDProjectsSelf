@@ -91,7 +91,7 @@ public class ContextConfig {
 
         @Override
         public List<Class<?>> getDependency() {
-            return null;
+            return getCollect(injectConstructor);
         }
     }
 
