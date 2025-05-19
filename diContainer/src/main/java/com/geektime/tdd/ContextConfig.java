@@ -28,9 +28,7 @@ public class ContextConfig {
 
     public Context getContext() {
         //bind过的
-        for(Class<?> component: dependencies.keySet()){
-            checkDependencies(component,new Stack<>());
-        }
+        dependencies.keySet().forEach(component -> checkDependencies(component, new Stack<>()));
 
         return new Context() {
             @Override
