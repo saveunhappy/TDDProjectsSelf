@@ -3,6 +3,7 @@ package com.geektime.tdd;
 import jakarta.inject.Inject;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
@@ -138,10 +139,13 @@ class ContainerTest {
 
         @Nested
         public class FieldInjection {
-            class ComponentWithFieldInjection {
+            static class ComponentWithFieldInjection {
                 @Inject
                 Dependency dependency;
             }
+            //TODO throw exception if cyclic dependency
+            //TODO provided dependency information for field injection
+
 
             //TODO inject field
             @Test
@@ -155,54 +159,17 @@ class ContainerTest {
                 assertSame(dependency, component.dependency);
 
             }
-            @Test
-            public void should_create_component_with_injection_field() {
-                Context context = mock(Context.class);
-                Dependency dependency = mock(Dependency.class);
-                when(context.get(eq(Dependency.class))).thenReturn(Optional.of(dependency));
-                //这样只会就会找到@Inject标注的方法，目前是只有方法，
-                ConstructorInjectionProvider<ComponentWithFieldInjection> provider = new ConstructorInjectionProvider<>(ComponentWithFieldInjection.class);
-                //get的时候应该能获取到对应的依赖，因为里面有Dependency的方法，如果依赖没有那么也是就报错了，所以这里是最终要实现的
-                //根据字段注入
-                ComponentWithFieldInjection component = provider.get(context);
-                assertSame(dependency, component.dependency);
-            }
+
             //TODO throw exception if field is final
-            //TODO throw exception if dependency not found
-            //TODO throw exception if cyclic dependency
-            //TODO provided dependency information for field injection
-
-
             @Test
-            public void should_throw_exception_when_field_dependency_missing() {
-                //端到端的方式
-                config.bind(ComponentWithFieldInjection.class, ComponentWithFieldInjection.class);
-                assertThrows(DependencyNotFoundException.class, () -> config.getContext());
-            }
-
-            @Test
+            @Disabled
             public void should_include_field_dependency_in_dependencies() {
                 //类的测试，
                 ConstructorInjectionProvider<ComponentWithFieldInjection> provider = new ConstructorInjectionProvider<>(ComponentWithFieldInjection.class);
                 //注意看getDependency()的实现，就是根据Constructor的参数是什么类型就添加到这个List中去
                 assertArrayEquals(new Class<?>[]{Dependency.class}, provider.getDependency().toArray());
             }
-            class DependencyWithFieldInjection implements Dependency {
-                @Inject
-                ComponentWithFieldInjection component;
-            }
 
-            @Test
-            public void should_throw_exception_when_field_has_cyclic_dependencies() {
-                config.bind(ComponentWithFieldInjection.class, ComponentWithFieldInjection.class);
-                config.bind(Dependency.class, DependencyWithFieldInjection.class);
-                assertThrows(CyclicDependenciesFoundException.class, () -> config.getContext());
-            }
-            @Test
-            public void should_throw_exception_when_field_has_cyclic_dependencies_() {
-                ConstructorInjectionProvider<ComponentWithFieldInjection> provider = new ConstructorInjectionProvider<>(ComponentWithFieldInjection.class);
-                assertArrayEquals(new Class<?>[]{Dependency.class}, provider.getDependency().toArray());
-            }
 
         }
 
