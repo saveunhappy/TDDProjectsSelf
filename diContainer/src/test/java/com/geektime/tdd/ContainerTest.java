@@ -13,6 +13,7 @@ import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.eq;
@@ -143,7 +144,8 @@ class ContainerTest {
                 @Inject
                 Dependency dependency;
             }
-            //TODO throw exception if cyclic dependency
+            static class SubclassWithFieldInjection extends ComponentWithFieldInjection {
+            }
             //TODO provided dependency information for field injection
 
 
@@ -159,7 +161,15 @@ class ContainerTest {
                 assertSame(dependency, component.dependency);
 
             }
-
+            @Test
+            public void should_inject_dependency_via_superclass_inject_field() throws Exception{
+                Dependency dependency = new Dependency() {
+                };
+                config.bind(Dependency.class, dependency);
+                config.bind(SubclassWithFieldInjection.class, SubclassWithFieldInjection.class);
+                SubclassWithFieldInjection component = config.getContext().get(SubclassWithFieldInjection.class).get();
+                assertSame(dependency, component.dependency);
+            }
             //TODO throw exception if field is final
             @Test
             @Disabled
