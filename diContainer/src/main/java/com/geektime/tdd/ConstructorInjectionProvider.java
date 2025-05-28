@@ -6,6 +6,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Parameter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -37,8 +38,15 @@ class ConstructorInjectionProvider<T> implements ComponentProvider<T> {
     }
 
     private static <T> List<Field> getInjectFields(Class<T> component) {
-        return stream(component.getDeclaredFields())
-                .filter(f -> f.isAnnotationPresent(Inject.class)).toList();
+        List<Field> injectFields = new ArrayList<>();
+        Class<?> current = component;
+        while (current != Object.class){
+            //注意，这里是current
+            injectFields.addAll(stream(current.getDeclaredFields())
+                    .filter(f -> f.isAnnotationPresent(Inject.class)).toList());
+            current = current.getSuperclass();
+        }
+        return injectFields;
     }
 
     @Override
