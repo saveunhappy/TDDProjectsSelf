@@ -172,7 +172,6 @@ class ContainerTest {
             }
             //TODO throw exception if field is final
             @Test
-            @Disabled
             public void should_include_field_dependency_in_dependencies() {
                 //类的测试，
                 ConstructorInjectionProvider<ComponentWithFieldInjection> provider = new ConstructorInjectionProvider<>(ComponentWithFieldInjection.class);

@@ -9,6 +9,7 @@ import java.lang.reflect.Parameter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.Arrays.stream;
 
@@ -52,7 +53,7 @@ class ConstructorInjectionProvider<T> implements ComponentProvider<T> {
                 //之后就会去校验，如果不存在就会抛出异常，所以这里就可以直接调用.get()
                 //现在还没有加上Field的dependency，所以这里的getDependency()是没有用的
                 //但是如果加上Field的dependency，就可以在这里校验了
-                field.set(instance,context.get(field.getType()).get());
+                field.set(instance, context.get(field.getType()).get());
             }
             return instance;
         } catch (InvocationTargetException | InstantiationException | IllegalAccessException e) {
@@ -62,6 +63,7 @@ class ConstructorInjectionProvider<T> implements ComponentProvider<T> {
 
     @Override
     public List<Class<?>> getDependency() {
-        return stream(injectConstructor.getParameters()).map(Parameter::getType).collect(Collectors.toList());
+        return Stream.concat(stream(injectConstructor.getParameters()).map(Parameter::getType),
+                injectFields.stream().map(Field::getType)).collect(Collectors.toList());
     }
 }
