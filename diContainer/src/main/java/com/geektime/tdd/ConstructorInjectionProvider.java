@@ -40,7 +40,7 @@ class ConstructorInjectionProvider<T> implements ComponentProvider<T> {
     private static <T> List<Field> getInjectFields(Class<T> component) {
         List<Field> injectFields = new ArrayList<>();
         Class<?> current = component;
-        while (current != Object.class){
+        while (current != Object.class) {
             //注意，这里是current
             injectFields.addAll(stream(current.getDeclaredFields())
                     .filter(f -> f.isAnnotationPresent(Inject.class)).toList());
