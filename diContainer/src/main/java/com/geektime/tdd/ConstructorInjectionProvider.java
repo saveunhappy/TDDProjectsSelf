@@ -67,7 +67,7 @@ class ConstructorInjectionProvider<T> implements ComponentProvider<T> {
                 field.set(instance, context.get(field.getType()).get());
             }
             for (Method method: injectMethods){
-                Object[] args = stream(method.getParameters()).map(p -> context.get(p.getType()).get())
+                Object[] args = stream(method.getParameterTypes()).map(p -> context.get(p).get())
                         .toArray();
                 method.invoke(instance,args);
             }
