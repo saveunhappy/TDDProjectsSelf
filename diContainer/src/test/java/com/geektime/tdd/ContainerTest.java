@@ -144,6 +144,7 @@ class ContainerTest {
                 @Inject
                 Dependency dependency;
             }
+
             static class SubclassWithFieldInjection extends ComponentWithFieldInjection {
             }
             //TODO provided dependency information for field injection
@@ -161,8 +162,9 @@ class ContainerTest {
                 assertSame(dependency, component.dependency);
 
             }
+
             @Test
-            public void should_inject_dependency_via_superclass_inject_field() throws Exception{
+            public void should_inject_dependency_via_superclass_inject_field() throws Exception {
                 Dependency dependency = new Dependency() {
                 };
                 config.bind(Dependency.class, dependency);
@@ -170,6 +172,7 @@ class ContainerTest {
                 SubclassWithFieldInjection component = config.getContext().get(SubclassWithFieldInjection.class).get();
                 assertSame(dependency, component.dependency);
             }
+
             //TODO throw exception if field is final
             @Test
             public void should_include_field_dependency_in_dependencies() {
@@ -184,17 +187,18 @@ class ContainerTest {
 
         @Nested
         public class MethodInjection {
-            static class InjectMethodWithNoDependency{
+            static class InjectMethodWithNoDependency {
                 boolean called = false;
+
                 @Inject
-                void install(){
+                void install() {
                     called = true;
                 }
             }
 
             @Test
             public void should_call_inject_method_even_if_no_dependency_declared() {
-                config.bind(InjectMethodWithNoDependency.class,InjectMethodWithNoDependency.class);
+                config.bind(InjectMethodWithNoDependency.class, InjectMethodWithNoDependency.class);
                 InjectMethodWithNoDependency component = config.getContext().get(InjectMethodWithNoDependency.class).get();
                 assertTrue(component.called);
 
