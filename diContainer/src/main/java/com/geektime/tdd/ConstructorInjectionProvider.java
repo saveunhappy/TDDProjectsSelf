@@ -3,9 +3,7 @@ package com.geektime.tdd;
 import jakarta.inject.Inject;
 
 import java.lang.reflect.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -32,6 +30,7 @@ class ConstructorInjectionProvider<T> implements ComponentProvider<T> {
                     .toList());
             current = current.getSuperclass();
         }
+        Collections.reverse(injectMethods);
         return injectMethods;
     }
 
