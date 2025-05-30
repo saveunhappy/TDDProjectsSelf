@@ -1,15 +1,12 @@
 package com.geektime.tdd;
 
 import jakarta.inject.Inject;
-import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -18,7 +15,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 class ContainerTest {
     ContextConfig config;
@@ -203,6 +199,34 @@ class ContainerTest {
                 assertTrue(component.called);
 
             }
+
+            static class SuperClassWithInjectMethod {
+                boolean superCalled = false;
+
+                @Inject
+                void install() {
+                    superCalled = true;
+                }
+            }
+
+            static class SubClassWithInjectMethod extends SuperClassWithInjectMethod {
+                boolean subCalled = false;
+
+                @Inject
+                void installAnother() {
+                    subCalled = true;
+                }
+            }
+
+            @Test
+            public void should_inject_dependencies_via_inject_method_from_superclass() {
+                config.bind(SubClassWithInjectMethod.class, SubClassWithInjectMethod.class);
+                SubClassWithInjectMethod component = config.getContext().get(SubClassWithInjectMethod.class).get();
+                assertTrue(component.subCalled);
+                assertTrue(component.superCalled);
+            }
+
+
         }
 
     }
