@@ -27,6 +27,10 @@ class ConstructorInjectionProvider<T> implements ComponentProvider<T> {
         while (current != Object.class) {
             injectMethods.addAll(stream(current.getDeclaredMethods())
                     .filter(m -> m.isAnnotationPresent(Inject.class))
+                    //由子到父的添加，子类先添加完，就到injectMethods中了，然后到父类再找到
+                    //去对比子类中是否有同名方法，并且参数个数也相同，因为存在重载
+                    .filter(m -> injectMethods.stream().noneMatch(o -> o.getName().equals(m.getName())
+                            && Arrays.equals(o.getParameterTypes(),m.getParameterTypes())))
                     .toList());
             current = current.getSuperclass();
         }
