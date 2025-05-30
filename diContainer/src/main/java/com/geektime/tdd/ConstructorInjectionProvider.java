@@ -22,8 +22,17 @@ class ConstructorInjectionProvider<T> implements ComponentProvider<T> {
         this.injectMethods = getInjectMethods(injectConstructor);
     }
 
-    private static <T> List<Method> getInjectMethods(Class<T> injectConstructor) {
-        return stream(injectConstructor.getDeclaredMethods()).filter(m -> m.isAnnotationPresent(Inject.class)).toList();
+    private static <T> List<Method> getInjectMethods(Class<T> component) {
+
+        List<Method> injectMethods = new ArrayList<>();
+        Class<?> current = component;
+        while (current != Object.class) {
+            injectMethods.addAll(stream(current.getDeclaredMethods())
+                    .filter(m -> m.isAnnotationPresent(Inject.class))
+                    .toList());
+            current = current.getSuperclass();
+        }
+        return injectMethods;
     }
 
     private static <Type> Constructor<Type> getInjectConstructor(Class<Type> implementation) {
@@ -66,10 +75,10 @@ class ConstructorInjectionProvider<T> implements ComponentProvider<T> {
                 //但是如果加上Field的dependency，就可以在这里校验了
                 field.set(instance, context.get(field.getType()).get());
             }
-            for (Method method: injectMethods){
+            for (Method method : injectMethods) {
                 Object[] args = stream(method.getParameterTypes()).map(p -> context.get(p).get())
                         .toArray();
-                method.invoke(instance,args);
+                method.invoke(instance, args);
             }
             return instance;
         } catch (InvocationTargetException | InstantiationException | IllegalAccessException e) {
