@@ -228,6 +228,20 @@ class ContainerTest {
                 assertEquals(2,component.subCalled);
             }
 
+            static class SubClassOverrideSuperClassWithInject extends SuperClassWithInjectMethod {
+                @Inject
+                void install() {
+                    super.install();
+                }
+            }
+
+            @Test
+            public void should_only_call_once_if_subclass_override_inject_method_with_inject() throws Exception {
+                config.bind(SubClassOverrideSuperClassWithInject.class, SubClassOverrideSuperClassWithInject.class);
+                SubClassOverrideSuperClassWithInject component = config.getContext().get(SubClassOverrideSuperClassWithInject.class).get();
+                assertEquals(1, component.superCalled);
+            }
+
 
         }
 
