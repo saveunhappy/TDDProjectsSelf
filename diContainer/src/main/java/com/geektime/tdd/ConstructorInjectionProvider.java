@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Arrays.stream;
+import static java.util.stream.Stream.*;
 
 class ConstructorInjectionProvider<T> implements ComponentProvider<T> {
     private final Constructor<T> injectConstructor;
@@ -101,7 +102,12 @@ class ConstructorInjectionProvider<T> implements ComponentProvider<T> {
 
     @Override
     public List<Class<?>> getDependency() {
-        return Stream.concat(stream(injectConstructor.getParameters()).map(Parameter::getType),
-                injectFields.stream().map(Field::getType)).collect(Collectors.toList());
+        return concat(concat(stream(injectConstructor.getParameters()).map(Parameter::getType),
+                        injectFields.stream().map(Field::getType)),
+                //flatmap之后，m就是method本身，但是需要的是所有方法的参数，一个方法可能有两个参数，
+                //两个方法就是四个参数，需要组合成一个stream，那就每个都是stream(m.getParameterTypes())
+                //最后两两合并，变成一个list。
+                injectMethods.stream().flatMap(m -> stream(m.getParameterTypes())))
+                .collect(Collectors.toList());
     }
 }

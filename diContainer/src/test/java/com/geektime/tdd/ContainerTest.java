@@ -224,8 +224,8 @@ class ContainerTest {
                 SubClassWithInjectMethod component = config.getContext().get(SubClassWithInjectMethod.class).get();
                 //如果是先是子后是父，那么刚开始，superCalled是0，superCalled + 1是1，然后再调用父，父是0，加1还是1，就该都是1
                 //如果先是父后是子，那么父先加了，是1，然后子的superCalled是1,1 + 1就是2
-                assertEquals(1,component.superCalled);
-                assertEquals(2,component.subCalled);
+                assertEquals(1, component.superCalled);
+                assertEquals(2, component.subCalled);
             }
 
             static class SubClassOverrideSuperClassWithInject extends SuperClassWithInjectMethod {
@@ -241,6 +241,7 @@ class ContainerTest {
                 SubClassOverrideSuperClassWithInject component = config.getContext().get(SubClassOverrideSuperClassWithInject.class).get();
                 assertEquals(1, component.superCalled);
             }
+
             static class SubClassOverrideSuperClassWithNoInject extends SuperClassWithInjectMethod {
                 void install() {
                     super.install();
@@ -254,7 +255,34 @@ class ContainerTest {
                 assertEquals(0, component.superCalled);
             }
 
+            static class InjectMethodWithDependency {
+                Dependency dependency;
+
+                @Inject
+                void install(Dependency dependency) {
+                    this.dependency = dependency;
+                }
+            }
+
+            @Test
+            public void should_inject_dependency_via_inject_method() {
+                Dependency dependency = new Dependency() {
+                };
+                config.bind(Dependency.class,dependency);
+                config.bind(InjectMethodWithDependency.class,InjectMethodWithDependency.class);
+                InjectMethodWithDependency injectMethodWithDependency = config.getContext().get(InjectMethodWithDependency.class).get();
+                assertSame(injectMethodWithDependency.dependency,dependency);
+            }
+            @Test
+            public void should_include_dependencies_from_inject_method() {
+                ConstructorInjectionProvider<InjectMethodWithDependency> provider = new ConstructorInjectionProvider<>(InjectMethodWithDependency.class);
+                assertArrayEquals(new Class<?>[]{Dependency.class},provider.getDependency().toArray());
+            }
+
+
+
         }
+
 
     }
 
