@@ -27,7 +27,6 @@ class ContainerTest {
     @Nested
     public class ComponentConstruction {
 
-        //TODO: instance
         @Test
         public void should_bind_type_to_a_specific_type() {
             Component component = new Component() {
@@ -37,7 +36,16 @@ class ContainerTest {
 
         }
 
-        //TODO: abstract class
+        abstract class AbstractComponent implements Component {
+            @Inject
+            public AbstractComponent() {
+            }
+        }
+
+        @Test
+        public void should_throw_exception_if_component_is_abstract() {
+            assertThrows(IllegalComponentException.class, () -> new ConstructorInjectionProvider<>(AbstractComponent.class));
+        }
         //TODO: interface
         @Nested
         public class ConstructorInjection {
