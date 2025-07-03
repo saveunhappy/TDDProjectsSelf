@@ -164,6 +164,7 @@ class ContainerTest {
             //TODO provided dependency information for field injection
 
 
+
             @Test
             public void should_inject_dependency_via_field() {
                 Dependency dependency = new Dependency() {
@@ -198,6 +199,7 @@ class ContainerTest {
                 //注意看getDependency()的实现，就是根据Constructor的参数是什么类型就添加到这个List中去
                 assertArrayEquals(new Class<?>[]{Dependency.class}, provider.getDependency().toArray());
             }
+
 
 
         }
@@ -301,6 +303,17 @@ class ContainerTest {
                 assertArrayEquals(new Class<?>[]{Dependency.class}, provider.getDependency().toArray());
             }
 
+            static class InjectMethodWithTypeParameter {
+                @Inject
+                <T> void install() {
+
+                }
+            }
+
+            @Test
+            public void should_throw_exception_if_inject_method_has_type_parameter() {
+                assertThrows(IllegalComponentException.class, () -> new ConstructorInjectionProvider<>(InjectMethodWithTypeParameter.class));
+            }
 
         }
 
