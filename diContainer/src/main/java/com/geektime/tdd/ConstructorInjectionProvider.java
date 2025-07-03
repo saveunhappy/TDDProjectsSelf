@@ -20,6 +20,10 @@ class ConstructorInjectionProvider<T> implements ComponentProvider<T> {
         this.injectConstructor = getInjectConstructor(injectConstructor);
         this.injectFields = getInjectFields(injectConstructor);
         this.injectMethods = getInjectMethods(injectConstructor);
+        if (injectFields.stream().anyMatch(f -> Modifier.isFinal(f.getModifiers()))) {
+            throw new IllegalComponentException();
+        }
+
     }
 
     private static <T> List<Method> getInjectMethods(Class<T> component) {

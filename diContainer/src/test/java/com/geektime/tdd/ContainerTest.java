@@ -46,10 +46,12 @@ class ContainerTest {
         public void should_throw_exception_if_component_is_abstract() {
             assertThrows(IllegalComponentException.class, () -> new ConstructorInjectionProvider<>(AbstractComponent.class));
         }
+
         @Test
         public void should_throw_exception_if_component_is_interface() {
             assertThrows(IllegalComponentException.class, () -> new ConstructorInjectionProvider<>(Component.class));
         }
+
         @Nested
         public class ConstructorInjection {
             @Test
@@ -152,12 +154,16 @@ class ContainerTest {
                 Dependency dependency;
             }
 
+            static class FinalInjectField {
+                @Inject
+                final Dependency dependency = null;
+            }
+
             static class SubclassWithFieldInjection extends ComponentWithFieldInjection {
             }
             //TODO provided dependency information for field injection
 
 
-            //TODO inject field
             @Test
             public void should_inject_dependency_via_field() {
                 Dependency dependency = new Dependency() {
@@ -180,7 +186,11 @@ class ContainerTest {
                 assertSame(dependency, component.dependency);
             }
 
-            //TODO throw exception if field is final
+            @Test
+            public void should_throw_exception_if_inject_field_is_final() {
+                assertThrows(IllegalComponentException.class, () -> new ConstructorInjectionProvider<>(FinalInjectField.class));
+            }
+
             @Test
             public void should_include_field_dependency_in_dependencies() {
                 //类的测试，
@@ -279,17 +289,17 @@ class ContainerTest {
             public void should_inject_dependency_via_inject_method() {
                 Dependency dependency = new Dependency() {
                 };
-                config.bind(Dependency.class,dependency);
-                config.bind(InjectMethodWithDependency.class,InjectMethodWithDependency.class);
+                config.bind(Dependency.class, dependency);
+                config.bind(InjectMethodWithDependency.class, InjectMethodWithDependency.class);
                 InjectMethodWithDependency injectMethodWithDependency = config.getContext().get(InjectMethodWithDependency.class).get();
-                assertSame(injectMethodWithDependency.dependency,dependency);
+                assertSame(injectMethodWithDependency.dependency, dependency);
             }
+
             @Test
             public void should_include_dependencies_from_inject_method() {
                 ConstructorInjectionProvider<InjectMethodWithDependency> provider = new ConstructorInjectionProvider<>(InjectMethodWithDependency.class);
-                assertArrayEquals(new Class<?>[]{Dependency.class},provider.getDependency().toArray());
+                assertArrayEquals(new Class<?>[]{Dependency.class}, provider.getDependency().toArray());
             }
-
 
 
         }
