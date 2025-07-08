@@ -56,8 +56,11 @@ class ContainerTest {
         public class ConstructorInjection {
             @Test
             public void should_bind_type_to_a_class_with_default_constructor() {
-                config.bind(Component.class, ComponentWithDefaultConstructor.class);
-                Component component = config.getContext().get(Component.class).get();
+                Class<Component> type = Component.class;
+                Class<ComponentWithDefaultConstructor> implementation = ComponentWithDefaultConstructor.class;
+
+                config.bind(type, implementation);
+                Component component = config.getContext().get(type).get();
                 assertNotNull(component);
                 assertTrue(component instanceof ComponentWithDefaultConstructor);
             }
