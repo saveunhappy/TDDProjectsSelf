@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -47,6 +48,11 @@ class ContainerTest {
             assertThrows(IllegalComponentException.class, () -> new ConstructorInjectionProvider<>(AbstractComponent.class));
         }
 
+        @Test
+        public void should_return_empty_if_component_not_defined() throws Exception {
+            Optional<Component> component = config.getContext().get(Component.class);
+            assertTrue(component.isEmpty());
+        }
         @Test
         public void should_throw_exception_if_component_is_interface() {
             assertThrows(IllegalComponentException.class, () -> new ConstructorInjectionProvider<>(Component.class));
