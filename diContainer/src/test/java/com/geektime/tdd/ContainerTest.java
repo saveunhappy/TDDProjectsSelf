@@ -96,7 +96,6 @@ class ContainerTest {
             }
 
             private void getBind(Class<?> implementation) {
-//                config.bind(Component.class, implementation);
                 new ConstructorInjectionProvider<>(implementation);
             }
 
