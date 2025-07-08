@@ -105,97 +105,90 @@ class ContainerTest {
 
     }
 
-    interface Component {
-
-    }
-
-    interface Dependency {
-
-    }
-
-    static class ComponentWithDefaultConstructor implements Component {
-        public ComponentWithDefaultConstructor() {
-        }
-    }
-
-
-    static class ComponentWithInjectionConstructor implements Component {
-        Dependency dependency;
-
-        @Inject
-        public ComponentWithInjectionConstructor(Dependency dependency) {
-            this.dependency = dependency;
-        }
-
-        public Dependency getDependency() {
-            return dependency;
-        }
-    }
-
-    static class DependencyDependedOnComponent implements Dependency {
-        Component component;
-
-        @Inject
-        public DependencyDependedOnComponent(Component component) {
-            this.component = component;
-        }
-
-        public Component getComponent() {
-            return component;
-        }
-    }
-
-    static class DependencyWithInjectionConstructor implements Dependency {
-        String dependency;
-
-        @Inject
-        public DependencyWithInjectionConstructor(String dependency) {
-            this.dependency = dependency;
-        }
-
-        public String getDependency() {
-            return dependency;
-        }
-    }
-
-    static class ComponentWithMultiInjectionConstructor implements Component {
-        @Inject
-        public ComponentWithMultiInjectionConstructor(String name) {
-        }
-
-        @Inject
-        public ComponentWithMultiInjectionConstructor(String name, Double value) {
-        }
-    }
-
-    static class ComponentWithoutInjectionConstructorNorDefaultConstructor implements Component {
-        public ComponentWithoutInjectionConstructorNorDefaultConstructor(String name) {
-
-        }
-    }
-
-    static class DependencyDependedOnAnotherDependency implements Dependency {
-        AnotherDependency anotherDependency;
-
-        @Inject
-        public DependencyDependedOnAnotherDependency(AnotherDependency anotherDependency) {
-            this.anotherDependency = anotherDependency;
-        }
-    }
-
-    interface AnotherDependency {
-
-    }
-
-    static class AnotherDependencyDependedOnComponent implements AnotherDependency {
-        Component component;
-
-        @Inject
-
-        public AnotherDependencyDependedOnComponent(Component component) {
-            this.component = component;
-        }
-    }
 
 }
 
+
+interface Component {
+
+}
+
+interface Dependency {
+
+}
+ class ComponentWithDefaultConstructor implements Component {
+    public ComponentWithDefaultConstructor() {
+    }
+}
+
+ class ComponentWithInjectionConstructor implements Component {
+    Dependency dependency;
+
+    @Inject
+    public ComponentWithInjectionConstructor(Dependency dependency) {
+        this.dependency = dependency;
+    }
+
+    public Dependency getDependency() {
+        return dependency;
+    }
+}
+ class DependencyDependedOnComponent implements Dependency {
+    Component component;
+
+    @Inject
+    public DependencyDependedOnComponent(Component component) {
+        this.component = component;
+    }
+
+    public Component getComponent() {
+        return component;
+    }
+}
+ class DependencyWithInjectionConstructor implements Dependency {
+    String dependency;
+
+    @Inject
+    public DependencyWithInjectionConstructor(String dependency) {
+        this.dependency = dependency;
+    }
+
+    public String getDependency() {
+        return dependency;
+    }
+}
+ class ComponentWithMultiInjectionConstructor implements Component {
+    @Inject
+    public ComponentWithMultiInjectionConstructor(String name) {
+    }
+
+    @Inject
+    public ComponentWithMultiInjectionConstructor(String name, Double value) {
+    }
+}
+ class ComponentWithoutInjectionConstructorNorDefaultConstructor implements Component {
+    public ComponentWithoutInjectionConstructorNorDefaultConstructor(String name) {
+
+    }
+}
+ class DependencyDependedOnAnotherDependency implements Dependency {
+    AnotherDependency anotherDependency;
+
+    @Inject
+    public DependencyDependedOnAnotherDependency(AnotherDependency anotherDependency) {
+        this.anotherDependency = anotherDependency;
+    }
+}
+
+interface AnotherDependency {
+
+}
+ class AnotherDependencyDependedOnComponent implements AnotherDependency {
+    Component component;
+
+    @Inject
+
+    public AnotherDependencyDependedOnComponent(Component component) {
+        this.component = component;
+    }
+}
