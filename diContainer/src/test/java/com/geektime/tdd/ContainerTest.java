@@ -103,6 +103,12 @@ class ContainerTest {
             }
 
             @Test
+            public void should_include_dependency_from_inject_constructor() {
+                ConstructorInjectionProvider<ComponentWithInjectionConstructor> provider = new ConstructorInjectionProvider<>(ComponentWithInjectionConstructor.class);
+                assertArrayEquals(new Class<?>[]{Dependency.class}, provider.getDependency().toArray(Class<?>[]::new));
+            }
+
+            @Test
             public void should_throw_exception_if_dependency_not_found() {
                 config.bind(Component.class, ComponentWithInjectionConstructor.class);
                 DependencyNotFoundException exception = assertThrows(DependencyNotFoundException.class, () ->
@@ -164,7 +170,6 @@ class ContainerTest {
             //TODO provided dependency information for field injection
 
 
-
             @Test
             public void should_inject_dependency_via_field() {
                 Dependency dependency = new Dependency() {
@@ -199,7 +204,6 @@ class ContainerTest {
                 //注意看getDependency()的实现，就是根据Constructor的参数是什么类型就添加到这个List中去
                 assertArrayEquals(new Class<?>[]{Dependency.class}, provider.getDependency().toArray());
             }
-
 
 
         }
