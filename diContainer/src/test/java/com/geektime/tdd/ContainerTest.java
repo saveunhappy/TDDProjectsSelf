@@ -64,9 +64,9 @@ class ContainerTest {
                 assertTrue(component instanceof ComponentWithDefaultConstructor);
             }
 
-            private Component getComponent(Class<Component> type, Class<ComponentWithDefaultConstructor> implementation) {
+            private <T, R extends T> T getComponent(Class<T> type, Class<R> implementation) {
                 config.bind(type, implementation);
-                Component instance = config.getContext().get(type).get();
+                T instance = config.getContext().get(type).get();
                 return instance;
             }
 
