@@ -126,7 +126,6 @@ class ContainerTest {
 
             @Test
             public void should_throw_exception_if_transitive_dependency_not_found() throws Exception {
-                config.bind(Component.class, ComponentWithInjectionConstructor.class);
                 config.bind(Dependency.class, DependencyWithInjectionConstructor.class);
                 DependencyNotFoundException exception = assertThrows(DependencyNotFoundException.class, () ->
                         config.getContext());
