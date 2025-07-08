@@ -56,10 +56,8 @@ class ContainerTest {
         public class ConstructorInjection {
             @Test
             public void should_bind_type_to_a_class_with_default_constructor() {
-                Class<Component> type = Component.class;
-                Class<ComponentWithDefaultConstructor> implementation = ComponentWithDefaultConstructor.class;
 
-                Component component = getComponent(type, implementation);
+                Component component = getComponent(Component.class, ComponentWithDefaultConstructor.class);
                 assertNotNull(component);
                 assertTrue(component instanceof ComponentWithDefaultConstructor);
             }
