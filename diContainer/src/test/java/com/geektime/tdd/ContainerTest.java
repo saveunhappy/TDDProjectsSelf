@@ -92,17 +92,13 @@ class ContainerTest {
             @Test
             public void should_throw_exception_if_multi_inject_constructor_provided() {
                 assertThrows(IllegalComponentException.class,
-                        () -> getBind(ComponentWithMultiInjectionConstructor.class));
-            }
-
-            private void getBind(Class<?> implementation) {
-                new ConstructorInjectionProvider<>(implementation);
+                        () -> new ConstructorInjectionProvider<>((Class<?>) ComponentWithMultiInjectionConstructor.class));
             }
 
             @Test
             public void should_throw_exception_if_no_inject_nor_default_constructor_provided() {
                 assertThrows(IllegalComponentException.class, () -> {
-                    getBind(ComponentWithoutInjectionConstructorNorDefaultConstructor.class);
+                    new ConstructorInjectionProvider<>((Class<?>) ComponentWithoutInjectionConstructorNorDefaultConstructor.class);
                 });
             }
 
