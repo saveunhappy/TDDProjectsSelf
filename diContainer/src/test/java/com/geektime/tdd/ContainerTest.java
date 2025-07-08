@@ -59,10 +59,15 @@ class ContainerTest {
                 Class<Component> type = Component.class;
                 Class<ComponentWithDefaultConstructor> implementation = ComponentWithDefaultConstructor.class;
 
-                config.bind(type, implementation);
-                Component component = config.getContext().get(type).get();
+                Component component = getComponent(type, implementation);
                 assertNotNull(component);
                 assertTrue(component instanceof ComponentWithDefaultConstructor);
+            }
+
+            private Component getComponent(Class<Component> type, Class<ComponentWithDefaultConstructor> implementation) {
+                config.bind(type, implementation);
+                Component component = config.getContext().get(type).get();
+                return component;
             }
 
             @Test
