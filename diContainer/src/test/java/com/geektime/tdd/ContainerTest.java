@@ -66,8 +66,8 @@ class ContainerTest {
 
             private Component getComponent(Class<Component> type, Class<ComponentWithDefaultConstructor> implementation) {
                 config.bind(type, implementation);
-                Component component = config.getContext().get(type).get();
-                return component;
+                Component instance = config.getContext().get(type).get();
+                return instance;
             }
 
             @Test
