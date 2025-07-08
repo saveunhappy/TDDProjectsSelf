@@ -56,7 +56,6 @@ class ContainerTest {
         public class ConstructorInjection {
             @Test
             public void should_bind_type_to_a_class_with_default_constructor() {
-
                 Component component = getComponent(Component.class, ComponentWithDefaultConstructor.class);
                 assertNotNull(component);
                 assertTrue(component instanceof ComponentWithDefaultConstructor);
@@ -72,12 +71,12 @@ class ContainerTest {
             public void should_bind_type_to_a_class_with_injection_constructor() {
                 Dependency dependency = new Dependency() {
                 };
-                config.bind(Component.class, ComponentWithInjectionConstructor.class);
                 config.bind(Dependency.class, dependency);
-                Component component = config.getContext().get(Component.class).get();
-                assertNotNull(component);
-                assertTrue(component instanceof ComponentWithInjectionConstructor);
-                assertEquals(dependency, ((ComponentWithInjectionConstructor) component).getDependency());
+
+                Component instance = getComponent(Component.class, ComponentWithInjectionConstructor.class);
+                assertNotNull(instance);
+                assertTrue(instance instanceof ComponentWithInjectionConstructor);
+                assertEquals(dependency, ((ComponentWithInjectionConstructor) instance).getDependency());
 
             }
 
