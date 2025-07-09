@@ -38,14 +38,22 @@ public class InjectTest {
         }
 
 
+        static class InjectionConstructor {
+            private Dependency dependency;
+
+            @Inject
+            public InjectionConstructor(Dependency dependency) {
+                this.dependency = dependency;
+            }
+
+        }
+
         @Test
         public void should_inject_dependency_via_inject_constructor() {
 
-
-            ComponentWithInjectionConstructor instance = new ConstructorInjectionProvider<>(ComponentWithInjectionConstructor.class).get(context);
+            InjectionConstructor instance = new ConstructorInjectionProvider<>(InjectionConstructor.class).get(context);
             assertNotNull(instance);
-            assertEquals(dependency, instance.getDependency());
-
+            assertSame(dependency, instance.dependency);
         }
 
 
