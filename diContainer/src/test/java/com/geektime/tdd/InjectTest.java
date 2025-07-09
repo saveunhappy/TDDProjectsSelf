@@ -1,6 +1,7 @@
 package com.geektime.tdd;
 
 import jakarta.inject.Inject;
+import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -27,35 +28,45 @@ public class InjectTest {
 
     @Nested
     public class ConstructorInjection {
-        static class DefaultConstructor {
 
-        }
+        @Nested
+        class Injection {
+            static class DefaultConstructor {
 
-        @Test
-        public void should_call_default_constructor_if_no_inject_constructor() {
-            DefaultConstructor instance = new ConstructorInjectionProvider<>(DefaultConstructor.class).get(context);
-            assertNotNull(instance);
-        }
+            }
+
+            @Test
+            public void should_call_default_constructor_if_no_inject_constructor() {
+                DefaultConstructor instance = new ConstructorInjectionProvider<>(DefaultConstructor.class).get(context);
+                assertNotNull(instance);
+            }
 
 
-        static class InjectionConstructor {
-            private Dependency dependency;
+            static class InjectionConstructor {
+                private Dependency dependency;
 
-            @Inject
-            public InjectionConstructor(Dependency dependency) {
-                this.dependency = dependency;
+                @Inject
+                public InjectionConstructor(Dependency dependency) {
+                    this.dependency = dependency;
+                }
+
+            }
+
+            @Test
+            public void should_inject_dependency_via_inject_constructor() {
+
+                InjectionConstructor instance = new ConstructorInjectionProvider<>(InjectionConstructor.class).get(context);
+                assertNotNull(instance);
+                assertSame(dependency, instance.dependency);
+            }
+
+            @Test
+            public void should_include_dependency_from_inject_constructor() {
+                ConstructorInjectionProvider<InjectionConstructor> provider = new ConstructorInjectionProvider<>(InjectionConstructor.class);
+                Assert.assertArrayEquals(new Class<?>[]{Dependency.class}, provider.getDependency().toArray());
             }
 
         }
-
-        @Test
-        public void should_inject_dependency_via_inject_constructor() {
-
-            InjectionConstructor instance = new ConstructorInjectionProvider<>(InjectionConstructor.class).get(context);
-            assertNotNull(instance);
-            assertSame(dependency, instance.dependency);
-        }
-
 
         @Test
         public void should_throw_exception_if_multi_inject_constructor_provided() {
