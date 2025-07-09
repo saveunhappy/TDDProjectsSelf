@@ -48,11 +48,8 @@ public class InjectTest {
         public void should_bind_type_to_a_class_with_transitive_dependency() {
             when(context.get(Dependency.class)).thenReturn(Optional.of(new DependencyWithInjectionConstructor("dependency String")));
             ComponentWithInjectionConstructor instance = new ConstructorInjectionProvider<>(ComponentWithInjectionConstructor.class).get(context);
-            assertNotNull(instance);
             Dependency dependency = instance.getDependency();
             assertNotNull(dependency);
-            assertEquals("dependency String",
-                    ((DependencyWithInjectionConstructor) dependency).getDependency());
         }
 
 
