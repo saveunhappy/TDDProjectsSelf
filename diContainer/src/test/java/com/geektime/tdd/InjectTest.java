@@ -28,11 +28,6 @@ public class InjectTest {
             assertTrue(component instanceof ComponentWithDefaultConstructor);
         }
 
-        private <T, R extends T> T getComponent(Class<T> type, Class<R> implementation) {
-            config.bind(type, implementation);
-            T instance = config.getContext().get(type).get();
-            return instance;
-        }
 
         @Test
         public void should_bind_type_to_a_class_with_injection_constructor() {
@@ -81,6 +76,12 @@ public class InjectTest {
         }
 
 
+    }
+
+    private <T, R extends T> T getComponent(Class<T> type, Class<R> implementation) {
+        config.bind(type, implementation);
+        T instance = config.getContext().get(type).get();
+        return instance;
     }
 
     @Nested
