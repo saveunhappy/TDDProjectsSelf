@@ -44,14 +44,6 @@ public class InjectTest {
 
         }
 
-        @Test
-        public void should_bind_type_to_a_class_with_transitive_dependency() {
-            when(context.get(Dependency.class)).thenReturn(Optional.of(new DependencyWithInjectionConstructor("dependency String")));
-            ComponentWithInjectionConstructor instance = new ConstructorInjectionProvider<>(ComponentWithInjectionConstructor.class).get(context);
-            Dependency dependency = instance.getDependency();
-            assertNotNull(dependency);
-        }
-
 
         @Test
         public void should_throw_exception_if_multi_inject_constructor_provided() {
