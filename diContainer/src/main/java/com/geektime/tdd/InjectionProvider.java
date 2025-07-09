@@ -34,8 +34,7 @@ class InjectionProvider<T> implements ComponentProvider<T> {
         List<Method> injectMethods = new ArrayList<>();
         Class<?> current = component;
         while (current != Object.class) {
-            injectMethods.addAll(stream(current.getDeclaredMethods())
-                    .filter(m -> m.isAnnotationPresent(Inject.class))
+            injectMethods.addAll(getMethodStream(current)
                     //由子到父的添加，子类先添加完，就到injectMethods中了，然后到父类再找到
                     //去对比子类中是否有同名方法，并且参数个数也相同，因为存在重载，这里就是都被@Inject标注了
                     //但是只能调用一次，所以就把父类的方法过滤掉了，因为子类中已经有了
@@ -55,6 +54,10 @@ class InjectionProvider<T> implements ComponentProvider<T> {
         }
         Collections.reverse(injectMethods);
         return injectMethods;
+    }
+
+    private static Stream<Method> getMethodStream(Class<?> current) {
+        return injectable(current.getDeclaredMethods());
     }
 
     private static <Type> Constructor<Type> getInjectConstructor(Class<Type> implementation) {
