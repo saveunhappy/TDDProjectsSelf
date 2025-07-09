@@ -68,23 +68,53 @@ public class InjectTest {
 
         }
 
-        @Test
-        public void should_throw_exception_if_multi_inject_constructor_provided() {
-            assertThrows(IllegalComponentException.class,
-                    () -> new ConstructorInjectionProvider<>((Class<?>) ComponentWithMultiInjectionConstructor.class));
-        }
+        @Nested
+        class IllegalInjectionConstructors{
+            abstract class AbstractComponent implements Component {
+                @Inject
+                public AbstractComponent() {
 
-        @Test
-        public void should_throw_exception_if_no_inject_nor_default_constructor_provided() {
-            assertThrows(IllegalComponentException.class, () -> {
-                new ConstructorInjectionProvider<>((Class<?>) ComponentWithoutInjectionConstructorNorDefaultConstructor.class);
-            });
-        }
+                }
+            }
+            class MultiInjectionConstructor implements Component {
+                @Inject
+                public MultiInjectionConstructor(String name, Double value) {
 
-        @Test
-        public void should_include_dependency_from_inject_constructor() {
-            ConstructorInjectionProvider<ComponentWithInjectionConstructor> provider = new ConstructorInjectionProvider<>(ComponentWithInjectionConstructor.class);
-            assertArrayEquals(new Class<?>[]{Dependency.class}, provider.getDependency().toArray(Class<?>[]::new));
+                }
+
+                @Inject
+                public MultiInjectionConstructor(String name) {
+
+                }
+            }
+
+            class NorDefaultConstructor implements Component {
+                public NorDefaultConstructor(String name) {
+
+                }
+            }
+            @Test
+            public void should_throw_exception_if_component_is_abstract() {
+                assertThrows(IllegalComponentException.class, () -> new ConstructorInjectionProvider<>(AbstractComponent.class));
+            }
+            @Test
+            public void should_throw_exception_if_component_is_interface() {
+                assertThrows(IllegalComponentException.class, () -> new ConstructorInjectionProvider<>(Component.class));
+            }
+
+            @Test
+            public void should_throw_exception_if_multi_inject_constructors_provided() {
+                assertThrows(IllegalComponentException.class, () ->
+                        new ConstructorInjectionProvider<>((Class<? extends Component>) MultiInjectionConstructor.class)
+                );
+            }
+
+            @Test
+            public void should_throw_exception_if_no_inject_nor_default_constructor_provided() {
+                assertThrows(IllegalComponentException.class, () ->
+                        new ConstructorInjectionProvider<>((Class<? extends Component>) NorDefaultConstructor.class));
+            }
+
         }
 
 

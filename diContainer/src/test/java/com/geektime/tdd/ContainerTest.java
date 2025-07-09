@@ -37,17 +37,6 @@ class ContainerTest {
 
         }
 
-        abstract class AbstractComponent implements Component {
-            @Inject
-            public AbstractComponent() {
-            }
-        }
-
-        @Test
-        public void should_throw_exception_if_component_is_abstract() {
-            assertThrows(IllegalComponentException.class, () -> new ConstructorInjectionProvider<>(AbstractComponent.class));
-        }
-
         @Test
         public void should_return_empty_if_component_not_defined() throws Exception {
             Optional<Component> component = config.getContext().get(Component.class);
