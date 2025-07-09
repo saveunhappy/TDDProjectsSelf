@@ -17,14 +17,11 @@ import static org.mockito.Mockito.when;
 
 @Nested
 public class InjectTest {
-    ContextConfig config;
     Dependency dependency = mock(Dependency.class);
     Context context = mock(Context.class);
 
     @BeforeEach
     public void setup() {
-        config = new ContextConfig();
-        config.bind(Dependency.class, dependency);
         when(context.get(eq(Dependency.class))).thenReturn(Optional.of(dependency));
     }
 
