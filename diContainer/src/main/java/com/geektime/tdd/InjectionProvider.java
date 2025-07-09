@@ -5,17 +5,16 @@ import jakarta.inject.Inject;
 import java.lang.reflect.*;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static java.util.Arrays.stream;
 import static java.util.stream.Stream.*;
 
-class ConstructorInjectionProvider<T> implements ComponentProvider<T> {
+class InjectionProvider<T> implements ComponentProvider<T> {
     private final Constructor<T> injectConstructor;
     private List<Field> injectFields;
     private List<Method> injectMethods;
 
-    public ConstructorInjectionProvider(Class<T> injectConstructor) {
+    public InjectionProvider(Class<T> injectConstructor) {
         if (Modifier.isAbstract(injectConstructor.getModifiers())) throw new IllegalComponentException();
         this.injectConstructor = getInjectConstructor(injectConstructor);
         this.injectFields = getInjectFields(injectConstructor);
