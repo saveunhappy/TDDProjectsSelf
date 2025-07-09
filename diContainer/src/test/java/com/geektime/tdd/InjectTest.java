@@ -27,9 +27,13 @@ public class InjectTest {
 
     @Nested
     public class ConstructorInjection {
+        static class DefaultConstructor {
+
+        }
+
         @Test
         public void should_call_default_constructor_if_no_inject_constructor() {
-            ComponentWithDefaultConstructor instance = new ConstructorInjectionProvider<>(ComponentWithDefaultConstructor.class).get(context);
+            DefaultConstructor instance = new ConstructorInjectionProvider<>(DefaultConstructor.class).get(context);
             assertNotNull(instance);
         }
 
