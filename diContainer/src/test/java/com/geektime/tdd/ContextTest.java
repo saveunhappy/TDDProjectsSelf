@@ -224,4 +224,83 @@ public class ContextTest {
         }
     }
 
+
+
+    @ParameterizedTest(name = "indirect cyclic dependency between {0} and {1}")
+    @MethodSource
+    public void should_throw_exception_if_transitive_cyclic_dependencies_found(Class<? extends Component> component,
+                                                                               Class<? extends Dependency> dependency,
+                                                                               Class<? extends AnotherDependency> anotherDependency) {
+        config.bind(Component.class, component);
+        config.bind(Dependency.class, dependency);
+        config.bind(AnotherDependency.class, anotherDependency);
+        CyclicDependenciesFoundException exception = assertThrows(CyclicDependenciesFoundException.class,
+                () -> config.getContext());
+        List<Class<?>> classes = Arrays.asList(exception.getComponents());
+        assertEquals(3, classes.size());
+        assertTrue(classes.contains(Component.class));
+        assertTrue(classes.contains(Dependency.class));
+        assertTrue(classes.contains(AnotherDependency.class));
+    }
+
+    public static Stream<Arguments> should_throw_exception_if_transitive_cyclic_dependencies_found() {
+        List<Arguments> arguments = new ArrayList<>();
+        List<Named<? extends Class<? extends Component>>> componentInjections =
+                List.of(Named.of("Inject Constructor", CyclicComponentInjectConstructor.class),
+                        Named.of("Inject Field", CyclicComponentInjectField.class),
+                        Named.of("Inject Method", CyclicComponentInjectMethod.class));
+        List<Named<? extends Class<? extends Dependency>>> dependencyInjections =
+                List.of(Named.of("Inject Constructor", IndirectCyclicDependencyInjectConstructor.class),
+                        Named.of("Inject Field", IndirectCyclicDependencyInjectField.class),
+                        Named.of("Inject Method", IndirectCyclicDependencyInjectMethod.class));
+        List<Named<? extends Class<? extends AnotherDependency>>> anotherDependencyInjections =
+                List.of(Named.of("Inject Constructor", IndirectCyclicAnotherDependencyInjectConstructor.class),
+                        Named.of("Inject Field", IndirectCyclicAnotherDependencyInjectField.class),
+                        Named.of("Inject Method", IndirectCyclicAnotherDependencyInjectMethod.class));
+        for (Named component : componentInjections) {
+            for (Named dependency : dependencyInjections) {
+                for (Named anotherDependency : anotherDependencyInjections) {
+                    //每次传入的参数就是一个Arguments，所以list里面这么多也是一个一个去依赖的
+                    arguments.add(Arguments.of(component, dependency, anotherDependency));
+                }
+            }
+        }
+        return arguments.stream();
+    }
+
+    static class IndirectCyclicDependencyInjectConstructor implements Dependency {
+        @Inject
+        public IndirectCyclicDependencyInjectConstructor(AnotherDependency anotherDependency) {
+        }
+    }
+
+    static class IndirectCyclicDependencyInjectField implements Dependency {
+        @Inject
+        AnotherDependency anotherDependency;
+    }
+
+    static class IndirectCyclicDependencyInjectMethod implements Dependency {
+        @Inject
+        void inject(AnotherDependency anotherDependency) {
+
+        }
+    }
+
+    static class IndirectCyclicAnotherDependencyInjectConstructor implements AnotherDependency {
+        @Inject
+        public IndirectCyclicAnotherDependencyInjectConstructor(Component component) {
+        }
+    }
+
+    static class IndirectCyclicAnotherDependencyInjectField implements AnotherDependency {
+        @Inject
+        Component component;
+    }
+
+    static class IndirectCyclicAnotherDependencyInjectMethod implements AnotherDependency {
+        @Inject
+        void inject(Component component) {
+
+        }
+    }
 }
