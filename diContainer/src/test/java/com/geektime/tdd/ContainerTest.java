@@ -99,18 +99,21 @@ class ContainerTest {
 
 
 interface Component {
-
+    default Dependency dependency() {
+        return null;
+    }
 }
 
 interface Dependency {
 
 }
- class ComponentWithDefaultConstructor implements Component {
+
+class ComponentWithDefaultConstructor implements Component {
     public ComponentWithDefaultConstructor() {
     }
 }
 
- class ComponentWithInjectionConstructor implements Component {
+class ComponentWithInjectionConstructor implements Component {
     Dependency dependency;
 
     @Inject
@@ -122,7 +125,8 @@ interface Dependency {
         return dependency;
     }
 }
- class DependencyDependedOnComponent implements Dependency {
+
+class DependencyDependedOnComponent implements Dependency {
     Component component;
 
     @Inject
@@ -134,7 +138,8 @@ interface Dependency {
         return component;
     }
 }
- class DependencyWithInjectionConstructor implements Dependency {
+
+class DependencyWithInjectionConstructor implements Dependency {
     String dependency;
 
     @Inject
@@ -146,7 +151,8 @@ interface Dependency {
         return dependency;
     }
 }
- class ComponentWithMultiInjectionConstructor implements Component {
+
+class ComponentWithMultiInjectionConstructor implements Component {
     @Inject
     public ComponentWithMultiInjectionConstructor(String name) {
     }
@@ -155,12 +161,14 @@ interface Dependency {
     public ComponentWithMultiInjectionConstructor(String name, Double value) {
     }
 }
- class ComponentWithoutInjectionConstructorNorDefaultConstructor implements Component {
+
+class ComponentWithoutInjectionConstructorNorDefaultConstructor implements Component {
     public ComponentWithoutInjectionConstructorNorDefaultConstructor(String name) {
 
     }
 }
- class DependencyDependedOnAnotherDependency implements Dependency {
+
+class DependencyDependedOnAnotherDependency implements Dependency {
     AnotherDependency anotherDependency;
 
     @Inject
@@ -172,7 +180,8 @@ interface Dependency {
 interface AnotherDependency {
 
 }
- class AnotherDependencyDependedOnComponent implements AnotherDependency {
+
+class AnotherDependencyDependedOnComponent implements AnotherDependency {
     Component component;
 
     @Inject

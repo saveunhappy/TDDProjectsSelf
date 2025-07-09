@@ -46,23 +46,15 @@ public class ContextTest {
 
             Optional<Component> component = config.getContext().get(Component.class);
             assertTrue(component.isPresent());
-            assertSame(dependency,component.get().dependency());
-        }
-        public static Stream<Arguments> should_bind_type_to_an_injectable_component(){
-            return Stream.of(Arguments.of(Named.of("Constructor injection",ConstructorInjection.class)),
-                    Arguments.of(Named.of("Field injection",FieldInjection.class)),
-                    Arguments.of(Named.of("Method injection",MethodInjection.class)));
+            assertSame(dependency, component.get().dependency());
         }
 
-        interface Component {
-            default Dependency dependency(){
-                return null;
-            };
+        public static Stream<Arguments> should_bind_type_to_an_injectable_component() {
+            return Stream.of(Arguments.of(Named.of("Constructor injection", ConstructorInjection.class)),
+                    Arguments.of(Named.of("Field injection", FieldInjection.class)),
+                    Arguments.of(Named.of("Method injection", MethodInjection.class)));
         }
 
-        interface Dependency {
-
-        }
 
         interface AnotherDependency {
 
@@ -70,6 +62,7 @@ public class ContextTest {
 
         static class ConstructorInjection implements Component {
             Dependency dependency;
+
             @Inject
             public ConstructorInjection(Dependency dependency) {
                 this.dependency = dependency;
@@ -90,8 +83,10 @@ public class ContextTest {
                 return dependency;
             }
         }
+
         static class MethodInjection implements Component {
             Dependency dependency;
+
             @Inject
             void install(Dependency dependency) {
                 this.dependency = dependency;
