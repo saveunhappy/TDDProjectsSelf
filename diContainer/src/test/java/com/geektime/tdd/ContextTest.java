@@ -12,8 +12,9 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Nested
 public class ContextTest {
@@ -101,4 +102,46 @@ public class ContextTest {
         }
     }
 
+
+    @Nested
+    public class DependencyCheck {
+        @ParameterizedTest
+        @MethodSource
+        public void should_throw_exception_if_dependency_not_found(Class<? extends Component> component) {
+            config.bind(Component.class, component);
+            DependencyNotFoundException exception = assertThrows(DependencyNotFoundException.class,
+                    () -> config.getContext());
+            //这个就是哪个组件找不到哪个依赖，具体看checkDependencies这个方法
+            //Field和Method找不到可以去看getDependency()这个方法，它是把构造器的参数
+            //字段，还有方法的参数都添加进去了，进行concat
+            assertEquals(Dependency.class, exception.getDependency());
+            assertEquals(Component.class, exception.getComponent());
+
+        }
+
+        public static Stream<Arguments> should_throw_exception_if_dependency_not_found() {
+            return Stream.of(Arguments.of(Named.of("inject Constructor", MissingDependencyConstructor.class)),
+                    Arguments.of(Named.of("inject Field", MissingDependencyField.class)),
+                    Arguments.of(Named.of("inject Method", MissingDependencyMethod.class)));
+        }
+
+        static class MissingDependencyConstructor implements Component {
+            @Inject
+            public MissingDependencyConstructor(Dependency dependency) {
+
+            }
+        }
+
+        static class MissingDependencyField implements Component {
+            @Inject
+            Dependency dependency;
+        }
+
+        static class MissingDependencyMethod implements Component {
+            @Inject
+            void install(Dependency dependency) {
+
+            }
+        }
+    }
 }
