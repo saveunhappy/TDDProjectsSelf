@@ -69,13 +69,14 @@ public class InjectTest {
         }
 
         @Nested
-        class IllegalInjectionConstructors{
+        class IllegalInjectionConstructors {
             abstract class AbstractComponent implements Component {
                 @Inject
                 public AbstractComponent() {
 
                 }
             }
+
             class MultiInjectionConstructor implements Component {
                 @Inject
                 public MultiInjectionConstructor(String name, Double value) {
@@ -93,10 +94,12 @@ public class InjectTest {
 
                 }
             }
+
             @Test
             public void should_throw_exception_if_component_is_abstract() {
                 assertThrows(IllegalComponentException.class, () -> new ConstructorInjectionProvider<>(AbstractComponent.class));
             }
+
             @Test
             public void should_throw_exception_if_component_is_interface() {
                 assertThrows(IllegalComponentException.class, () -> new ConstructorInjectionProvider<>(Component.class));
@@ -122,48 +125,51 @@ public class InjectTest {
 
     @Nested
     public class FieldInjection {
-        static class ComponentWithFieldInjection {
-            @Inject
-            Dependency dependency;
+        @Nested
+        class Injection {
+            static class ComponentWithFieldInjection {
+                @Inject
+                Dependency dependency;
+            }
+
+            static class SubclassWithFieldInjection extends ComponentWithFieldInjection {
+            }
+
+            @Test
+            public void should_inject_dependency_via_field() {
+                ComponentWithFieldInjection component = new ConstructorInjectionProvider<>(ComponentWithFieldInjection.class).get(context);
+                assertSame(dependency, component.dependency);
+
+            }
+
+            @Test
+            public void should_inject_dependency_via_superclass_inject_field() throws Exception {
+
+                SubclassWithFieldInjection component = new ConstructorInjectionProvider<>(SubclassWithFieldInjection.class).get(context);
+                assertSame(dependency, component.dependency);
+            }
+
+            @Test
+            public void should_include_dependency_from_field_dependency() {
+                //类的测试，
+                ConstructorInjectionProvider<ComponentWithFieldInjection> provider = new ConstructorInjectionProvider<>(ComponentWithFieldInjection.class);
+                Assert.assertArrayEquals(new Class<?>[]{Dependency.class}, provider.getDependency().toArray());
+            }
         }
 
-        static class FinalInjectField {
-            @Inject
-            final Dependency dependency = null;
+
+        @Nested
+        class IllegalInjectFields {
+            static class FinalInjectField {
+                @Inject
+                final Dependency dependency = null;
+            }
+
+            @Test
+            public void should_throw_exception_if_inject_field_is_final() {
+                assertThrows(IllegalComponentException.class, () -> new ConstructorInjectionProvider<>(FinalInjectField.class));
+            }
         }
-
-        static class SubclassWithFieldInjection extends ComponentWithFieldInjection {
-        }
-
-
-        @Test
-        public void should_inject_dependency_via_field() {
-
-            ComponentWithFieldInjection component = new ConstructorInjectionProvider<>(ComponentWithFieldInjection.class).get(context);
-            assertSame(dependency, component.dependency);
-
-        }
-
-        @Test
-        public void should_inject_dependency_via_superclass_inject_field() throws Exception {
-
-            SubclassWithFieldInjection component = new ConstructorInjectionProvider<>(SubclassWithFieldInjection.class).get(context);
-            assertSame(dependency, component.dependency);
-        }
-
-        @Test
-        public void should_throw_exception_if_inject_field_is_final() {
-            assertThrows(IllegalComponentException.class, () -> new ConstructorInjectionProvider<>(FinalInjectField.class));
-        }
-
-        @Test
-        public void should_include_field_dependency_in_dependencies() {
-            //类的测试，
-            ConstructorInjectionProvider<ComponentWithFieldInjection> provider = new ConstructorInjectionProvider<>(ComponentWithFieldInjection.class);
-            //注意看getDependency()的实现，就是根据Constructor的参数是什么类型就添加到这个List中去
-            assertArrayEquals(new Class<?>[]{Dependency.class}, provider.getDependency().toArray());
-        }
-
 
     }
 
