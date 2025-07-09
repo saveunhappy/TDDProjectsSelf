@@ -13,10 +13,13 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @Nested
 public class InjectTest {
     ContextConfig config;
+    Dependency dependency = new Dependency() {
+    };
 
     @BeforeEach
     public void setup() {
         config = new ContextConfig();
+        config.bind(Dependency.class, dependency);
     }
 
     @Nested
@@ -31,9 +34,7 @@ public class InjectTest {
 
         @Test
         public void should_bind_type_to_a_class_with_injection_constructor() {
-            Dependency dependency = new Dependency() {
-            };
-            config.bind(Dependency.class, dependency);
+
 
             Component instance = getComponent(Component.class, ComponentWithInjectionConstructor.class);
             assertNotNull(instance);
