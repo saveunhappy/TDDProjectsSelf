@@ -58,8 +58,7 @@ class InjectionProvider<T> implements ComponentProvider<T> {
     }
 
     private static <Type> Constructor<Type> getInjectConstructor(Class<Type> implementation) {
-        List<Constructor<?>> injectConstructors = stream(implementation.getConstructors())
-                .filter(c -> c.isAnnotationPresent(Inject.class)).collect(Collectors.toList());
+        List<Constructor<?>> injectConstructors = injectable(implementation.getConstructors()).toList();
         if (injectConstructors.size() > 1) throw new IllegalComponentException();
 
         return (Constructor<Type>) injectConstructors.stream().findFirst().orElseGet(() -> {
@@ -82,7 +81,7 @@ class InjectionProvider<T> implements ComponentProvider<T> {
         return injectFields;
     }
 
-    private static Stream<Field> injectable(Field[] declaredFields) {
+    private static <T extends AnnotatedElement> Stream<T> injectable(T[] declaredFields) {
         return stream(declaredFields)
                 .filter(f -> f.isAnnotationPresent(Inject.class));
     }
