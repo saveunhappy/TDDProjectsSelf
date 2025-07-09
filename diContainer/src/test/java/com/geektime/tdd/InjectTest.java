@@ -99,15 +99,10 @@ public class InjectTest {
 
         static class SubclassWithFieldInjection extends ComponentWithFieldInjection {
         }
-        //TODO provided dependency information for field injection
 
 
         @Test
         public void should_inject_dependency_via_field() {
-            Dependency dependency = new Dependency() {
-            };
-            config.bind(Dependency.class, dependency);
-
 
             ComponentWithFieldInjection component = getComponent(ComponentWithFieldInjection.class, ComponentWithFieldInjection.class);
             assertSame(dependency, component.dependency);
@@ -116,9 +111,6 @@ public class InjectTest {
 
         @Test
         public void should_inject_dependency_via_superclass_inject_field() throws Exception {
-            Dependency dependency = new Dependency() {
-            };
-            config.bind(Dependency.class, dependency);
 
             SubclassWithFieldInjection component = getComponent(SubclassWithFieldInjection.class, SubclassWithFieldInjection.class);
             assertSame(dependency, component.dependency);
@@ -224,10 +216,6 @@ public class InjectTest {
 
         @Test
         public void should_inject_dependency_via_inject_method() {
-            Dependency dependency = new Dependency() {
-            };
-            config.bind(Dependency.class, dependency);
-
             InjectMethodWithDependency injectMethodWithDependency = getComponent(InjectMethodWithDependency.class, InjectMethodWithDependency.class);
             assertSame(injectMethodWithDependency.dependency, dependency);
         }
