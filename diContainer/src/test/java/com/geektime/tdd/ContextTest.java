@@ -56,10 +56,6 @@ public class ContextTest {
         }
 
 
-        interface AnotherDependency {
-
-        }
-
         static class ConstructorInjection implements Component {
             Dependency dependency;
 
