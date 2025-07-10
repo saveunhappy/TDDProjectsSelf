@@ -125,6 +125,18 @@ public class ContextTest {
             assertSame(instance, provider.get());
         }
 
+        @Test
+        public void should_retrieve_bind_type_as_unsupported_container() {
+            Component instance = new Component() {
+            };
+            config.bind(Component.class, instance);
+            Context context = config.getContext();
+            ParameterizedType type = new TypeLiteral<List<Component>>() {
+            }.getType();
+            assertFalse(context.get(type).isPresent());
+
+        }
+
         static abstract class TypeLiteral<T> {
             public ParameterizedType getType() {
                 return (ParameterizedType) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
@@ -251,7 +263,6 @@ public class ContextTest {
 
         }
     }
-
 
 
     @ParameterizedTest(name = "indirect cyclic dependency between {0} and {1}")
