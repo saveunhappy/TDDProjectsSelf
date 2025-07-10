@@ -13,6 +13,7 @@ import java.util.Optional;
 import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -73,7 +74,6 @@ public class InjectTest {
                 Assert.assertArrayEquals(new Class<?>[]{Dependency.class}, provider.getDependency().toArray());
             }
 
-            //TODO support inject constructor
             static class ProviderInjectConstructor {
                 private Provider<Dependency> dependency;
 
@@ -300,8 +300,21 @@ public class InjectTest {
                 Assert.assertArrayEquals(new Class<?>[]{Dependency.class}, provider.getDependency().toArray());
             }
 
-            //TODO support inject method
+            static class ProviderInjectMethod {
+                Provider<Dependency> dependency;
 
+                @Inject
+                void install(Provider<Dependency> dependency) {
+                    this.dependency = dependency;
+                }
+            }
+
+            @Test
+            public void should_inject_provider_via_inject_constructor() {
+                ProviderInjectMethod instance = new InjectionProvider<>(ProviderInjectMethod.class).get(context);
+                assertSame(dependencyProvider, instance.dependency);
+
+            }
         }
 
         @Nested
