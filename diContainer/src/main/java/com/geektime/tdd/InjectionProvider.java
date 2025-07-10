@@ -40,32 +40,26 @@ class InjectionProvider<T> implements ComponentProvider<T> {
     }
 
     private static <T> List<Method> getInjectMethods(Class<T> component) {
-        BiFunction<List<Method>, Class<?>, List<Method>> function = (methods, current) -> getC(component, methods, current);
 
-        List<Method> injectMethods = traverse(component, function);
+        List<Method> injectMethods = traverse(component,
+                (methods, current) -> injectable(current.getDeclaredMethods())
+                        //由子到父的添加，子类先添加完，就到injectMethods中了，然后到父类再找到
+                        //去对比子类中是否有同名方法，并且参数个数也相同，因为存在重载，这里就是都被@Inject标注了
+                        //但是只能调用一次，所以就把父类的方法过滤掉了，因为子类中已经有了
+                        .filter(m -> isOverrideByInjectMethod(methods, m))
+                        //第一轮子类的方法没有被@Inject标注，所以是空，第二轮发现父类被标注了@Inject，
+                        // 所以上一步筛选出来了被父类标注的
+                        //然后再去对比，和子类的那个没有被@Inject标注的那个方法名字一样不，一样的话，
+                        //那就得把父类的那个方法去掉了，否则我只new了一个子类，没有@Inject父类同名的方法
+                        //只是起了个同样的名字，那么父类的那个就不应该被调用
+                        .filter(m -> isOverrideByNoInjectMethod(component, m))
+                        .toList());
         Collections.reverse(injectMethods);
         return injectMethods;
     }
 
-    private static <T> List<Method> getC(Class<T> component, List<Method> injectMethods, Class<?> current) {
-        return injectable(current.getDeclaredMethods())
-                //由子到父的添加，子类先添加完，就到injectMethods中了，然后到父类再找到
-                //去对比子类中是否有同名方法，并且参数个数也相同，因为存在重载，这里就是都被@Inject标注了
-                //但是只能调用一次，所以就把父类的方法过滤掉了，因为子类中已经有了
-                .filter(m -> isOverrideByInjectMethod(injectMethods, m))
-                //第一轮子类的方法没有被@Inject标注，所以是空，第二轮发现父类被标注了@Inject，
-                // 所以上一步筛选出来了被父类标注的
-                //然后再去对比，和子类的那个没有被@Inject标注的那个方法名字一样不，一样的话，
-                //那就得把父类的那个方法去掉了，否则我只new了一个子类，没有@Inject父类同名的方法
-                //只是起了个同样的名字，那么父类的那个就不应该被调用
-                .filter(m -> isOverrideByNoInjectMethod(component, m))
-
-                .toList();
-    }
-
     private static <T> List<Field> getInjectFields(Class<T> component) {
-        BiFunction<List<Field>, Class<?>, List<Field>> function = InjectionProvider::getC;
-        return traverse(component, function);
+        return traverse(component, (injectFields1, current) -> injectable(current.getDeclaredFields()).toList());
     }
 
     private static <T> List<T> traverse(Class<?> component, BiFunction<List<T>, Class<?>, List<T>> finder) {
@@ -77,10 +71,6 @@ class InjectionProvider<T> implements ComponentProvider<T> {
             current = current.getSuperclass();
         }
         return members;
-    }
-
-    private static List<Field> getC(List<Field> injectFields, Class<?> current) {
-        return injectable(current.getDeclaredFields()).toList();
     }
 
     private static <T extends AnnotatedElement> Stream<T> injectable(T[] declaredFields) {
