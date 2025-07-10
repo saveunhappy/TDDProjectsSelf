@@ -72,7 +72,7 @@ class InjectionProvider<T> implements ComponentProvider<T> {
         Class<?> current = component;
         while (current != Object.class) {
             //注意，这里是current
-            BiFunction<List<Field>, Class<?>, List<Field>> function = (injectFields1, current1) -> getC(injectFields1, current1);
+            BiFunction<List<Field>, Class<?>, List<Field>> function = InjectionProvider::getC;
             injectFields.addAll(function.apply(injectFields, current));
             current = current.getSuperclass();
         }
