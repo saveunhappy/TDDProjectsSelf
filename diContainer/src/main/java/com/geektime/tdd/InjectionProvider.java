@@ -139,7 +139,7 @@ class InjectionProvider<T> implements ComponentProvider<T> {
     }
 
     @Override
-    public List<Class<?>> getDependency() {
+    public List<Class<?>> getDependencies() {
         return concat(concat(stream(injectConstructor.getParameterTypes()),
                         injectFields.stream().map(Field::getType)),
                 //flatmap之后，m就是method本身，但是需要的是所有方法的参数，一个方法可能有两个参数，
