@@ -1,6 +1,7 @@
 package com.geektime.tdd;
 
 import jakarta.inject.Inject;
+import jakarta.inject.Provider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Named;
 import org.junit.jupiter.api.Nested;
@@ -9,6 +10,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -106,6 +109,23 @@ public class ContextTest {
 
         //Context
         //TODO could get Provider<T> from context
+
+        @Test
+        public void should_retrieve_bind_type_as_provider() {
+            Component instance = new Component() {
+            };
+            config.bind(Component.class, instance);
+            Context context = config.getContext();
+            ParameterizedType type = (ParameterizedType) new TypeLiteral<Provider<Component>>() {}.getType();
+            assertEquals(Provider.class,type.getRawType());
+            assertEquals(Component.class,type.getActualTypeArguments()[0]);
+        }
+
+        static abstract class TypeLiteral<T> {
+            public Type getType(){
+                return ((ParameterizedType)getClass().getGenericSuperclass()).getActualTypeArguments()[0];
+            }
+        }
 
     }
 
