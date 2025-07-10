@@ -4,6 +4,7 @@ import jakarta.inject.Inject;
 
 import java.lang.reflect.*;
 import java.util.*;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -71,7 +72,8 @@ class InjectionProvider<T> implements ComponentProvider<T> {
         Class<?> current = component;
         while (current != Object.class) {
             //注意，这里是current
-            injectFields.addAll(getC(injectFields, current));
+            BiFunction<List<Field>, Class<?>, List<Field>> function = (injectFields1, current1) -> getC(injectFields1, current1);
+            injectFields.addAll(function.apply(injectFields, current));
             current = current.getSuperclass();
         }
         return injectFields;
