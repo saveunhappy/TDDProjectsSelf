@@ -180,7 +180,17 @@ public class InjectTest {
             }
 
             //TODO support inject field
+            static class ProviderInjectField {
+                @Inject
+                Provider<Dependency> dependency;
+            }
 
+            @Test
+            public void should_inject_provider_via_inject_constructor() {
+                ProviderInjectField instance = new InjectionProvider<>(ProviderInjectField.class).get(context);
+                assertSame(dependencyProvider, instance.dependency);
+
+            }
         }
 
 
