@@ -106,7 +106,7 @@ class InjectionProvider<T> implements ComponentProvider<T> {
                 //之后就会去校验，如果不存在就会抛出异常，所以这里就可以直接调用.get()
                 //现在还没有加上Field的dependency，所以这里的getDependency()是没有用的
                 //但是如果加上Field的dependency，就可以在这里校验了
-                field.set(instance, context.get(field.getType()).get());
+                field.set(instance, toDependency(context, field));
             }
             for (Method method : injectMethods) {
                 Object[] args = toDependency(context, method);
@@ -116,6 +116,10 @@ class InjectionProvider<T> implements ComponentProvider<T> {
         } catch (InvocationTargetException | InstantiationException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private static Object toDependency(Context context, Field field) {
+        return context.get(field.getType()).get();
     }
 
     private Object[] toDependency(Context context, Executable executable) {
