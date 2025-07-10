@@ -120,7 +120,7 @@ class InjectionProvider<T> implements ComponentProvider<T> {
         }
     }
 
-    private static Object[] toDependency(Context context, Constructor<T> injectConstructor1) {
+    private Object[] toDependency(Context context, Constructor<T> injectConstructor1) {
         return Arrays.stream(injectConstructor1.getParameterTypes())
                 .map(p -> context.get(p).get())
                 .toArray();
