@@ -37,6 +37,7 @@ class InjectionProvider<T> implements ComponentProvider<T> {
             throw new IllegalComponentException();
         }
     }
+
     private static <T> List<Method> getInjectMethods(Class<T> component) {
 
         List<Method> injectMethods = new ArrayList<>();
@@ -64,18 +65,19 @@ class InjectionProvider<T> implements ComponentProvider<T> {
 
                 .toList();
     }
+
     private static <T> List<Field> getInjectFields(Class<T> component) {
         List<Field> injectFields = new ArrayList<>();
         Class<?> current = component;
         while (current != Object.class) {
             //注意，这里是current
-            injectFields.addAll(getC(current));
+            injectFields.addAll(getC(injectFields, current));
             current = current.getSuperclass();
         }
         return injectFields;
     }
 
-    private static List<Field> getC(Class<?> current) {
+    private static List<Field> getC(List<Field> injectFields, Class<?> current) {
         return injectable(current.getDeclaredFields()).toList();
     }
 
@@ -117,7 +119,6 @@ class InjectionProvider<T> implements ComponentProvider<T> {
     }
 
 
-
     private static boolean isOverrideByInjectMethod(List<Method> injectMethods, Method m) {
         return injectMethods.stream().noneMatch(o -> isOverride(m, o));
     }
@@ -138,6 +139,7 @@ class InjectionProvider<T> implements ComponentProvider<T> {
 
         return (Constructor<Type>) injectConstructors.stream().findFirst().orElseGet(() -> defaultConstructor(implementation));
     }
+
     @Override
     public List<Class<?>> getDependency() {
         return concat(concat(stream(injectConstructor.getParameters()).map(Parameter::getType),
