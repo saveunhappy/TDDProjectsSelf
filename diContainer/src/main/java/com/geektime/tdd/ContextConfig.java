@@ -25,7 +25,6 @@ public class ContextConfig {
         providers.keySet().forEach(component -> checkDependencies(component, new Stack<>()));
 
         return new Context() {
-            private Context context = this;
 
             @Override
             public <Type> Optional<Type> get(Class<Type> type) {
@@ -37,12 +36,7 @@ public class ContextConfig {
             @Override
             public Optional<Object> get(ParameterizedType type) {
                 Class<?> componentType = (Class<?>) type.getActualTypeArguments()[0];
-                return Optional.ofNullable(providers.get(componentType)).map(provider -> new Provider<Object>() {
-                    @Override
-                    public Object get() {
-                        return provider.get(context);
-                    }
-                });
+                return Optional.ofNullable(providers.get(componentType)).map(provider -> (Provider<Object>) () -> provider.get(this));
             }
         };
     }
