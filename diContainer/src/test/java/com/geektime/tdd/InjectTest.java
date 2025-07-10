@@ -179,7 +179,6 @@ public class InjectTest {
                 Assert.assertArrayEquals(new Class<?>[]{Dependency.class}, provider.getDependency().toArray());
             }
 
-            //TODO support inject field
             static class ProviderInjectField {
                 @Inject
                 Provider<Dependency> dependency;
