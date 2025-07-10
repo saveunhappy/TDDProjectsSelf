@@ -99,8 +99,8 @@ class InjectionProvider<T> implements ComponentProvider<T> {
     @Override
     public T get(Context context) {
         try {
-            Object[] dependencies = Arrays.stream(injectConstructor.getParameters())
-                    .map(p -> context.get(p.getType()).get())
+            Object[] dependencies = Arrays.stream(injectConstructor.getParameterTypes())
+                    .map(p -> context.get(p).get())
                     .toArray();
             T instance = injectConstructor.newInstance(dependencies);
             for (Field field : injectFields) {
