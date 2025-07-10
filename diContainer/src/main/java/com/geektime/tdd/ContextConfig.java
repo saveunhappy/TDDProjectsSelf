@@ -1,5 +1,7 @@
 package com.geektime.tdd;
 
+import jakarta.inject.Provider;
+
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.*;
@@ -23,6 +25,8 @@ public class ContextConfig {
         providers.keySet().forEach(component -> checkDependencies(component, new Stack<>()));
 
         return new Context() {
+            private Context context = this;
+
             @Override
             public <Type> Optional<Type> get(Class<Type> type) {
                 //在Java中，当在内部类或匿名类中使用 this 时，它指的是该内部类或匿名类的实例，而不是外部类的实例，
@@ -33,7 +37,12 @@ public class ContextConfig {
             @Override
             public Optional<Object> get(ParameterizedType type) {
                 Class<?> componentType = (Class<?>) type.getActualTypeArguments()[0];
-                return Optional.ofNullable(providers.get(componentType)).map(provider -> (Type) provider.get(this));
+                return Optional.ofNullable(providers.get(componentType)).map(provider -> new Provider<Object>() {
+                    @Override
+                    public Object get() {
+                        return provider.get(context);
+                    }
+                });
             }
         };
     }
