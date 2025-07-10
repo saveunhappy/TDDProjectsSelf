@@ -99,9 +99,8 @@ class InjectionProvider<T> implements ComponentProvider<T> {
     @Override
     public T get(Context context) {
         try {
-            Constructor<T> injectConstructor1 = injectConstructor;
-            Object[] dependencies = toDependency(context, injectConstructor1);
-            T instance = injectConstructor1.newInstance(dependencies);
+            Object[] dependencies = toDependency(context, injectConstructor);
+            T instance = injectConstructor.newInstance(dependencies);
             for (Field field : injectFields) {
                 //这里直接调用.get()就可以，因为前面的getContext中得到Dependency
                 //之后就会去校验，如果不存在就会抛出异常，所以这里就可以直接调用.get()
@@ -110,14 +109,18 @@ class InjectionProvider<T> implements ComponentProvider<T> {
                 field.set(instance, context.get(field.getType()).get());
             }
             for (Method method : injectMethods) {
-                Object[] args = stream(method.getParameterTypes()).map(p -> context.get(p).get())
-                        .toArray();
+                Object[] args = getArray(context, method);
                 method.invoke(instance, args);
             }
             return instance;
         } catch (InvocationTargetException | InstantiationException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private static Object[] getArray(Context context, Method method) {
+        return stream(method.getParameterTypes()).map(p -> context.get(p).get())
+                .toArray();
     }
 
     private Object[] toDependency(Context context, Executable executable) {
