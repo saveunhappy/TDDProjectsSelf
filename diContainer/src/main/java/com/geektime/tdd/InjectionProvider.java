@@ -109,17 +109,13 @@ class InjectionProvider<T> implements ComponentProvider<T> {
                 field.set(instance, context.get(field.getType()).get());
             }
             for (Method method : injectMethods) {
-                Object[] args = getArray(context, method);
+                Object[] args = toDependency(context, method);
                 method.invoke(instance, args);
             }
             return instance;
         } catch (InvocationTargetException | InstantiationException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    private Object[] getArray(Context context, Method method) {
-        return toDependency(context, method);
     }
 
     private Object[] toDependency(Context context, Executable executable) {
