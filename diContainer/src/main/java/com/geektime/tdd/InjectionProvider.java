@@ -148,4 +148,11 @@ class InjectionProvider<T> implements ComponentProvider<T> {
                 injectMethods.stream().flatMap(m -> stream(m.getParameterTypes())))
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public List<Type> getDependencyTypes() {
+        //这个ParameterizedType就是带泛型的具体类型
+        return stream(injectConstructor.getParameters()).map(Parameter::getParameterizedType).toList();
+    }
+
 }

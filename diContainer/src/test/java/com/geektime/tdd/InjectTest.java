@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.Optional;
 
 import static org.junit.Assert.*;
@@ -26,12 +27,15 @@ public class InjectTest {
 
     Provider<Dependency> dependencyProvider = mock(Provider.class);
 
+    ParameterizedType dependencyProviderType;
+
     @BeforeEach
     public void setup() throws NoSuchFieldException {
         //mock一下，这个就是取巧的方式，直接通过反射取这个类mock出来的Provider，如果get的是Provider<Dependency>,那么就返回一个Optional包裹着的这个对象
-        ParameterizedType providerType = (ParameterizedType) InjectTest.class.getDeclaredField("dependencyProvider").getGenericType();
+        dependencyProviderType = (ParameterizedType) InjectTest.class.getDeclaredField("dependencyProvider").getGenericType();
         when(context.get(eq(Dependency.class))).thenReturn(Optional.of(dependency));
-        when(context.get(eq(providerType))).thenReturn(Optional.of(dependencyProvider));
+        //为什么不直接when(context.get(eq(Provider<Dependency>.class)))？因为语法不支持，编译不通过
+        when(context.get(eq(dependencyProviderType))).thenReturn(Optional.of(dependencyProvider));
     }
 
     @Nested
@@ -71,7 +75,13 @@ public class InjectTest {
             @Test
             public void should_include_dependency_from_inject_constructor() {
                 InjectionProvider<InjectionConstructor> provider = new InjectionProvider<>(InjectionConstructor.class);
-                Assert.assertArrayEquals(new Class<?>[]{Dependency.class}, provider.getDependencies().toArray());
+                assertArrayEquals(new Class<?>[]{Dependency.class}, provider.getDependencies().toArray());
+            }
+
+            @Test
+            public void should_include_provider_type_from_inject_constructor() {
+                InjectionProvider<ProviderInjectConstructor> provider = new InjectionProvider<>(ProviderInjectConstructor.class);
+                    assertArrayEquals(new Type[]{dependencyProviderType}, provider.getDependencyTypes().toArray(Type[]::new));
             }
 
             static class ProviderInjectConstructor {
@@ -88,6 +98,7 @@ public class InjectTest {
                 ProviderInjectConstructor instance = new InjectionProvider<>(ProviderInjectConstructor.class).get(context);
                 assertSame(dependencyProvider, instance.dependency);
             }
+
 
         }
 
