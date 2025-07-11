@@ -39,6 +39,7 @@ public class ContextConfig {
 
                 Class<?> componentType = (Class<?>) type.getActualTypeArguments()[0];
 //                return Optional.ofNullable(providers.get(componentType)).map(provider -> (Provider<Object>) () -> provider.get(this));
+                //这边返回的是直接new了一个Provider<Object>()，这里不会进入get方法的
                 return Optional.ofNullable(providers.get(componentType)).map(provider -> new Provider<Object>() {
                     @Override
                     public Object get() {
