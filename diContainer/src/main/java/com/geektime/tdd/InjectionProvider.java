@@ -81,17 +81,17 @@ class InjectionProvider<T> implements ComponentProvider<T> {
     @Override
     public T get(Context context) {
         try {
-            Object[] dependencies = toDependency(context, injectConstructor);
+            Object[] dependencies = toDependencies(context, injectConstructor);
             T instance = injectConstructor.newInstance(dependencies);
             for (Field field : injectFields) {
                 //这里直接调用.get()就可以，因为前面的getContext中得到Dependency
                 //之后就会去校验，如果不存在就会抛出异常，所以这里就可以直接调用.get()
                 //现在还没有加上Field的dependency，所以这里的getDependency()是没有用的
                 //但是如果加上Field的dependency，就可以在这里校验了
-                field.set(instance, toDependency(context, field));
+                field.set(instance, toDependencies(context, field));
             }
             for (Method method : injectMethods) {
-                Object[] args = toDependency(context, method);
+                Object[] args = toDependencies(context, method);
                 method.invoke(instance, args);
             }
             return instance;
@@ -100,13 +100,13 @@ class InjectionProvider<T> implements ComponentProvider<T> {
         }
     }
 
-    private static Object toDependency(Context context, Field field) {
+    private static Object toDependencies(Context context, Field field) {
         Type type = field.getGenericType();
         if (type instanceof ParameterizedType) return context.get((ParameterizedType) type).get();
         return context.get((Class<?>) type).get();
     }
 
-    private Object[] toDependency(Context context, Executable executable) {
+    private Object[] toDependencies(Context context, Executable executable) {
         return Arrays.stream(executable.getParameters())
                 .map(p -> {
                     Type type = p.getParameterizedType();
