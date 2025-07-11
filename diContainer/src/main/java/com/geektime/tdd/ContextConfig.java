@@ -25,7 +25,7 @@ public class ContextConfig {
         providers.keySet().forEach(component -> checkDependencies(component, new Stack<>()));
 
         return new Context() {
-
+            Context context = this;
             @Override
             public <Type> Optional<Type> get(Class<Type> type) {
                 //在Java中，当在内部类或匿名类中使用 this 时，它指的是该内部类或匿名类的实例，而不是外部类的实例，
@@ -38,7 +38,13 @@ public class ContextConfig {
                 if (type.getRawType() != Provider.class) return Optional.empty();
 
                 Class<?> componentType = (Class<?>) type.getActualTypeArguments()[0];
-                return Optional.ofNullable(providers.get(componentType)).map(provider -> (Provider<Object>) () -> provider.get(this));
+//                return Optional.ofNullable(providers.get(componentType)).map(provider -> (Provider<Object>) () -> provider.get(this));
+                return Optional.ofNullable(providers.get(componentType)).map(provider -> new Provider<Object>() {
+                    @Override
+                    public Object get() {
+                        return provider.get(context);
+                    }
+                });
             }
         };
     }

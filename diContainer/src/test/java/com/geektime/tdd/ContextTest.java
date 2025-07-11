@@ -21,6 +21,7 @@ import java.util.stream.Stream;
 import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Nested
 public class ContextTest {
@@ -362,5 +363,24 @@ public class ContextTest {
         void inject(Component component) {
 
         }
+    }
+
+    static class CyclicDependencyProviderConstructor implements Dependency {
+        String name = "222";
+        Provider<Component> component;
+        @Inject
+        public CyclicDependencyProviderConstructor(Provider<Component> component) {
+            this.component = component;
+        }
+    }
+
+    @Test
+    public void should_not_throw_exception_if_cyclic_dependency_via_provider() {
+        config.bind(Component.class, CyclicComponentInjectConstructor.class);
+        config.bind(Dependency.class, CyclicDependencyProviderConstructor.class);
+        Context context = config.getContext();
+        assertTrue(context.get(Component.class).isPresent());
+        assertTrue(context.get(Dependency.class).isPresent());
+
     }
 }
