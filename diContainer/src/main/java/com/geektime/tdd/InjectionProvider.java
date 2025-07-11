@@ -30,6 +30,12 @@ class InjectionProvider<T> implements ComponentProvider<T> {
 
     }
 
+    private static <Type> Constructor<Type> getInjectConstructor(Class<Type> implementation) {
+        List<Constructor<?>> injectConstructors = injectable(implementation.getConstructors()).toList();
+        if (injectConstructors.size() > 1) throw new IllegalComponentException();
+
+        return (Constructor<Type>) injectConstructors.stream().findFirst().orElseGet(() -> defaultConstructor(implementation));
+    }
 
     private static <Type> Constructor<Type> defaultConstructor(Class<Type> implementation) {
         try {
@@ -130,12 +136,6 @@ class InjectionProvider<T> implements ComponentProvider<T> {
                 && Arrays.equals(o.getParameterTypes(), m.getParameterTypes());
     }
 
-    private static <Type> Constructor<Type> getInjectConstructor(Class<Type> implementation) {
-        List<Constructor<?>> injectConstructors = injectable(implementation.getConstructors()).toList();
-        if (injectConstructors.size() > 1) throw new IllegalComponentException();
-
-        return (Constructor<Type>) injectConstructors.stream().findFirst().orElseGet(() -> defaultConstructor(implementation));
-    }
 
     @Override
     public List<Class<?>> getDependencies() {
