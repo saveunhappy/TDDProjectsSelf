@@ -340,7 +340,12 @@ public class InjectTest {
             public void should_inject_provider_via_inject_constructor() {
                 ProviderInjectMethod instance = new InjectionProvider<>(ProviderInjectMethod.class).get(context);
                 assertSame(dependencyProvider, instance.dependency);
+            }
 
+            @Test
+            public void should_include_provider_type_from_inject_method() {
+                InjectionProvider<ProviderInjectMethod> provider = new InjectionProvider<>(ProviderInjectMethod.class);
+                assertArrayEquals(new Type[]{dependencyProviderType}, provider.getDependencyTypes().toArray(Type[]::new));
             }
         }
 
