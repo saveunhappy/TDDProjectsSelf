@@ -44,12 +44,16 @@ public class ContextConfig {
 
     private void checkDependencies(Class<?> component, Stack<Class<?>> visiting) {
         for (Class<?> dependency : providers.get(component).getDependencies()) {
-            if (!providers.containsKey(dependency)) throw new DependencyNotFoundException(component, dependency);
-            if (visiting.contains(dependency)) throw new CyclicDependenciesFoundException(visiting);
-            visiting.push(dependency);
-            checkDependencies(dependency, visiting);
-            visiting.pop();
+            checkDependency(component, visiting, dependency);
         }
+    }
+
+    private void checkDependency(Class<?> component, Stack<Class<?>> visiting, Class<?> dependency) {
+        if (!providers.containsKey(dependency)) throw new DependencyNotFoundException(component, dependency);
+        if (visiting.contains(dependency)) throw new CyclicDependenciesFoundException(visiting);
+        visiting.push(dependency);
+        checkDependencies(dependency, visiting);
+        visiting.pop();
     }
 
 
