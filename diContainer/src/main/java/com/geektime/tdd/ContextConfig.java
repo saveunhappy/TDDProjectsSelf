@@ -27,7 +27,7 @@ public class ContextConfig {
         return new Context() {
             Context context = this;
 
-            public <Type> Optional<Type> get(Class<Type> type) {
+            private  <Type> Optional<Type> get(Class<Type> type) {
                 //在Java中，当在内部类或匿名类中使用 this 时，它指的是该内部类或匿名类的实例，而不是外部类的实例，
                 // 所以这里的 this 就是指代当前创建的 Context 匿名实现类的实例本身
                 return Optional.ofNullable(providers.get(type)).map(provider -> (Type) provider.get(this));
@@ -37,7 +37,7 @@ public class ContextConfig {
                 if (type instanceof ParameterizedType) return get((ParameterizedType) type);
                 return get((Class<?>) type);
             }
-            public Optional<Object> get(ParameterizedType type) {
+            private Optional<Object> get(ParameterizedType type) {
                 if (type.getRawType() != Provider.class) return Optional.empty();
 
                 Class<?> componentType = (Class<?>) type.getActualTypeArguments()[0];
