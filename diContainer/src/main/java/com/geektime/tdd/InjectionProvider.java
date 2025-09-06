@@ -5,7 +5,6 @@ import jakarta.inject.Inject;
 import java.lang.reflect.*;
 import java.util.*;
 import java.util.function.BiFunction;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Arrays.stream;
@@ -136,17 +135,6 @@ class InjectionProvider<T> implements ComponentProvider<T> {
                 && Arrays.equals(o.getParameterTypes(), m.getParameterTypes());
     }
 
-
-    @Override
-    public List<Class<?>> getDependencies() {
-        return concat(concat(stream(injectConstructor.getParameterTypes()),
-                        injectFields.stream().map(Field::getType)),
-                //flatmap之后，m就是method本身，但是需要的是所有方法的参数，一个方法可能有两个参数，
-                //两个方法就是四个参数，需要组合成一个stream，那就每个都是stream(m.getParameterTypes())
-                //最后两两合并，变成一个list。
-                injectMethods.stream().flatMap(m -> stream(m.getParameterTypes())))
-                .collect(Collectors.toList());
-    }
 
     @Override
     public List<Type> getDependencyTypes() {
