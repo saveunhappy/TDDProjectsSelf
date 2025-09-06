@@ -33,7 +33,11 @@ public class ContextConfig {
                 // 所以这里的 this 就是指代当前创建的 Context 匿名实现类的实例本身
                 return Optional.ofNullable(providers.get(type)).map(provider -> (Type) provider.get(this));
             }
-
+            @Override
+            public Optional getType(Type type) {
+                if (type instanceof ParameterizedType) return get((ParameterizedType) type);
+                return get((Class<?>) type);
+            }
             @Override
             public Optional<Object> get(ParameterizedType type) {
                 if (type.getRawType() != Provider.class) return Optional.empty();
