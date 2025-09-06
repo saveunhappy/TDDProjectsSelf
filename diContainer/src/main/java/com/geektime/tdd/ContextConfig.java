@@ -33,7 +33,7 @@ public class ContextConfig {
                 return Optional.ofNullable(providers.get(type)).map(provider -> (Type) provider.get(this));
             }
             @Override
-            public Optional getType(Type type) {
+            public Optional get(Type type) {
                 if (type instanceof ParameterizedType) return get((ParameterizedType) type);
                 return get((Class<?>) type);
             }
