@@ -137,7 +137,7 @@ class InjectionProvider<T> implements ComponentProvider<T> {
 
 
     @Override
-    public List<Type> getDependencyTypes() {
+    public List<Type> getDependencies() {
         //这个ParameterizedType就是带泛型的具体类型
         return concat(concat(stream(injectConstructor.getParameters()).map(Parameter::getParameterizedType),
                         injectFields.stream().map(Field::getGenericType)),
