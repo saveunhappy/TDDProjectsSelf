@@ -116,8 +116,7 @@ class InjectionProvider<T> implements ComponentProvider<T> {
     }
 
     private static Object toDependency(Context context, Type type) {
-        if (type instanceof ParameterizedType) return context.get((ParameterizedType) type).get();
-        return context.get((Class<?>) type).get();
+        return context.getType(type).get();
     }
 
 
