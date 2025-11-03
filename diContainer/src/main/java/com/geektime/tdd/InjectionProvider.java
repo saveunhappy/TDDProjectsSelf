@@ -137,7 +137,7 @@ class InjectionProvider<T> implements ComponentProvider<T> {
 
     @Override
     public List<Type> getDependencies() {
-        //这个ParameterizedType就是带泛型的具体类型
+        //1.调用getDependency改为调用DependencyTypes,为什么可以呢？因为原来getDependency是getParameterTypes,而DependencyTypes获取的是ParameterizedType，这个ParameterizedType是父类，可以是泛型的类型，也可以是Class类型，是父类，所以可以
         return concat(concat(stream(injectConstructor.getParameters()).map(Parameter::getParameterizedType),
                         injectFields.stream().map(Field::getGenericType)),
                 injectMethods.stream().flatMap(m -> stream(m.getParameters()).map(Parameter::getParameterizedType)))
