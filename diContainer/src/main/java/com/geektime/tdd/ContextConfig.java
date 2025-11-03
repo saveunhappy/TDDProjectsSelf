@@ -25,23 +25,19 @@ public class ContextConfig {
         providers.keySet().forEach(component -> checkDependencies(component, new Stack<>()));
 
         return new Context() {
-            Context context = this;
-
-            private <Type> Optional<Type> getComponent(Class<Type> type) {
-                //在Java中，当在内部类或匿名类中使用 this 时，它指的是该内部类或匿名类的实例，而不是外部类的实例，
-                // 所以这里的 this 就是指代当前创建的 Context 匿名实现类的实例本身
-                return Optional.ofNullable(providers.get(type)).map(provider -> (Type) provider.get(this));
-            }
-
             @Override
             public Optional get(Type type) {
                 if (isContainer(type)) return getContainer((ParameterizedType) type);
                 return getComponent((Class<?>) type);
             }
 
+            private <Type> Optional<Type> getComponent(Class<Type> type) {
+                //在Java中，当在内部类或匿名类中使用 this 时，它指的是该内部类或匿名类的实例，而不是外部类的实例，
+                // 所以这里的 this 就是指代当前创建的 Context 匿名实现类的实例本身
+                return Optional.ofNullable(providers.get(type)).map(provider -> (Type) provider.get(this));
+            }
             private Optional<Object> getContainer(ParameterizedType type) {
                 if (type.getRawType() != Provider.class) return Optional.empty();
-
                 return Optional.ofNullable(providers.get(getComponentType(type))).map(provider -> (Provider<Object>) () -> provider.get(this));
             }
         };
