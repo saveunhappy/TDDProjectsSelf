@@ -91,18 +91,16 @@ public class ContextConfig {
 
     private void checkContainerTypeDependency(Class<?> component, Type dependency) {
         Ref ref = Ref.of(dependency);
-        Class<?> componentType = ref.getComponent();
-        if (!providers.containsKey(componentType))
-            throw new DependencyNotFoundException(component, componentType);
+        if (!providers.containsKey(ref.getComponent()))
+            throw new DependencyNotFoundException(component, ref.getComponent());
     }
 
     private void checkComponentDependency(Class<?> component, Stack<Class<?>> visiting, Class<?> dependency) {
         Ref ref = Ref.of(dependency);
-        Class<?> componentType = ref.getComponent();
-        if (!providers.containsKey(componentType)) throw new DependencyNotFoundException(component, componentType);
-        if (visiting.contains(componentType)) throw new CyclicDependenciesFoundException(visiting);
-        visiting.push(componentType);
-        checkDependencies(componentType, visiting);
+        if (!providers.containsKey(ref.getComponent())) throw new DependencyNotFoundException(component, ref.getComponent());
+        if (visiting.contains(ref.getComponent())) throw new CyclicDependenciesFoundException(visiting);
+        visiting.push(ref.getComponent());
+        checkDependencies(ref.getComponent(), visiting);
         visiting.pop();
     }
 
