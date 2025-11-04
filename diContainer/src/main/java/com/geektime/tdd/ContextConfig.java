@@ -38,7 +38,7 @@ public class ContextConfig {
 
     private void checkDependencies(Class<?> component, Stack<Class<?>> visiting) {
         for (Type dependency : providers.get(component).getDependencies()) {
-            Context.Ref ref = Context.Ref.of(dependency);
+            Ref ref = Ref.of(dependency);
             if (!providers.containsKey(ref.getComponent()))
                 throw new DependencyNotFoundException(component, ref.getComponent());
             if (!ref.isContainer()) {
