@@ -32,13 +32,18 @@ public class ContextConfig {
             }
 
             private Optional getComponent(Class type) {
-                // 所以这里的 this 就是指代当前创建的 Context 匿名实现类的实例本身
-                return Optional.ofNullable(providers.get(type)).map(provider -> provider.get(this));
+                Type containerType = null;
+                Class componentType = type;
+
+                return Optional.ofNullable(providers.get(componentType)).map(provider -> provider.get(this));
             }
 
             private Optional<Object> getContainer(ParameterizedType type) {
-                if (type.getRawType() != Provider.class) return Optional.empty();
-                return Optional.ofNullable(providers.get(getComponentType(type))).map(provider -> (Provider<Object>) () -> provider.get(this));
+                Type containerType = type.getRawType();
+                Class<?> componentType = getComponentType(type);
+
+                if (containerType != Provider.class) return Optional.empty();
+                return Optional.ofNullable(providers.get(componentType)).map(provider -> (Provider<Object>) () -> provider.get(this));
             }
         };
     }
@@ -52,22 +57,25 @@ public class ContextConfig {
     }
 
     private void checkDependencies(Class<?> component, Stack<Class<?>> visiting) {
-        for (Type dependency : providers.get(component).getDependencies()) {
-            if (isContainer(dependency)) checkContainerTypeDependency(component, dependency);
-            else checkComponentDependency(component, visiting, (Class<?>) dependency);
+        Class<?> componentType = component;
+        for (Type dependency : providers.get(componentType).getDependencies()) {
+            if (isContainer(dependency)) checkContainerTypeDependency(componentType, dependency);
+            else checkComponentDependency(componentType, visiting, (Class<?>) dependency);
         }
     }
 
     private void checkContainerTypeDependency(Class<?> component, Type dependency) {
-        if (!providers.containsKey(getComponentType(dependency)))
-            throw new DependencyNotFoundException(component, getComponentType(dependency));
+        Class<?> componentType = getComponentType(dependency);
+        if (!providers.containsKey(componentType))
+            throw new DependencyNotFoundException(component, componentType);
     }
 
     private void checkComponentDependency(Class<?> component, Stack<Class<?>> visiting, Class<?> dependency) {
-        if (!providers.containsKey(dependency)) throw new DependencyNotFoundException(component, dependency);
-        if (visiting.contains(dependency)) throw new CyclicDependenciesFoundException(visiting);
-        visiting.push(dependency);
-        checkDependencies(dependency, visiting);
+        Class<?> componentType = dependency;
+        if (!providers.containsKey(componentType)) throw new DependencyNotFoundException(component, componentType);
+        if (visiting.contains(componentType)) throw new CyclicDependenciesFoundException(visiting);
+        visiting.push(componentType);
+        checkDependencies(componentType, visiting);
         visiting.pop();
     }
 
