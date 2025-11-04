@@ -83,13 +83,12 @@ public class ContextConfig {
 
     private void checkDependencies(Class<?> component, Stack<Class<?>> visiting) {
         for (Type dependency : providers.get(component).getDependencies()) {
+            Ref ref = Ref.of(dependency);
             if (isContainer(dependency)) {
-                Ref ref = Ref.of(dependency);
                 if (!providers.containsKey(ref.getComponent()))
                     throw new DependencyNotFoundException(component, ref.getComponent());
             }
             else {
-                Ref ref = Ref.of((Class<?>) dependency);
                 if (!providers.containsKey(ref.getComponent())) throw new DependencyNotFoundException(component, ref.getComponent());
                 if (visiting.contains(ref.getComponent())) throw new CyclicDependenciesFoundException(visiting);
                 visiting.push(ref.getComponent());
