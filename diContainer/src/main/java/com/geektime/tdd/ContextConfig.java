@@ -82,26 +82,21 @@ public class ContextConfig {
     }
 
     private void checkDependencies(Class<?> component, Stack<Class<?>> visiting) {
-        Class<?> componentType = component;
-        for (Type dependency : providers.get(componentType).getDependencies()) {
-            if (isContainer(dependency)) checkContainerTypeDependency(componentType, dependency);
-            else checkComponentDependency(componentType, visiting, (Class<?>) dependency);
+        for (Type dependency : providers.get(component).getDependencies()) {
+            if (isContainer(dependency)) {
+                Ref ref = Ref.of(dependency);
+                if (!providers.containsKey(ref.getComponent()))
+                    throw new DependencyNotFoundException(component, ref.getComponent());
+            }
+            else {
+                Ref ref = Ref.of((Class<?>) dependency);
+                if (!providers.containsKey(ref.getComponent())) throw new DependencyNotFoundException(component, ref.getComponent());
+                if (visiting.contains(ref.getComponent())) throw new CyclicDependenciesFoundException(visiting);
+                visiting.push(ref.getComponent());
+                checkDependencies(ref.getComponent(), visiting);
+                visiting.pop();
+            }
         }
-    }
-
-    private void checkContainerTypeDependency(Class<?> component, Type dependency) {
-        Ref ref = Ref.of(dependency);
-        if (!providers.containsKey(ref.getComponent()))
-            throw new DependencyNotFoundException(component, ref.getComponent());
-    }
-
-    private void checkComponentDependency(Class<?> component, Stack<Class<?>> visiting, Class<?> dependency) {
-        Ref ref = Ref.of(dependency);
-        if (!providers.containsKey(ref.getComponent())) throw new DependencyNotFoundException(component, ref.getComponent());
-        if (visiting.contains(ref.getComponent())) throw new CyclicDependenciesFoundException(visiting);
-        visiting.push(ref.getComponent());
-        checkDependencies(ref.getComponent(), visiting);
-        visiting.pop();
     }
 
 
