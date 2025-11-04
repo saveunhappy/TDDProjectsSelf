@@ -28,7 +28,8 @@ public class ContextConfig {
             @Override
             public Optional get(Type type) {
                 Ref ref = Ref.of(type);
-                if (isContainer(type)) {
+                boolean container = isContainer(type);
+                if (container) {
                     if (ref.getContainer() != Provider.class) return Optional.empty();
                     return Optional.ofNullable(providers.get(ref.getComponent())).map(provider -> (Provider<Object>) () -> provider.get(this));
                 }
