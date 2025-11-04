@@ -33,9 +33,9 @@ public class InjectTest {
     public void setup() throws NoSuchFieldException {
         //mock一下，这个就是取巧的方式，直接通过反射取这个类mock出来的Provider，如果get的是Provider<Dependency>,那么就返回一个Optional包裹着的这个对象
         dependencyProviderType = (ParameterizedType) InjectTest.class.getDeclaredField("dependencyProvider").getGenericType();
-        when(context.get(refEq(Ref.of(Dependency.class)))).thenReturn(Optional.of(dependency));
+        when(context.get(eq(Ref.of(Dependency.class)))).thenReturn(Optional.of(dependency));
         //为什么不直接when(context.get(eq(Provider<Dependency>.class)))？因为语法不支持，编译不通过
-        when(context.get(refEq(Ref.of(dependencyProviderType)))).thenReturn(Optional.of(dependencyProvider));
+        when(context.get(eq(Ref.of(dependencyProviderType)))).thenReturn(Optional.of(dependencyProvider));
     }
 
     @Nested
