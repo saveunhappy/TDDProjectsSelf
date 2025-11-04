@@ -73,14 +73,6 @@ public class ContextConfig {
         }
     }
 
-    private Class<?> getComponentType(Type type) {
-        return (Class<?>) ((ParameterizedType) type).getActualTypeArguments()[0];
-    }
-
-    private boolean isContainer(Type type) {
-        return type instanceof ParameterizedType;
-    }
-
     private void checkDependencies(Class<?> component, Stack<Class<?>> visiting) {
         for (Type dependency : providers.get(component).getDependencies()) {
             Ref ref = Ref.of(dependency);
