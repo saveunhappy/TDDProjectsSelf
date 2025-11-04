@@ -2,7 +2,6 @@ package com.geektime.tdd;
 
 import jakarta.inject.Provider;
 
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.*;
 
@@ -39,38 +38,6 @@ public class ContextConfig {
             }
 
         };
-    }
-
-    static class Ref {
-        private Class<?> component;
-        private Type container;
-
-        public Ref(Class<?> component) {
-            this.component = component;
-        }
-
-        public Ref(ParameterizedType container) {
-            this.container = container.getRawType();
-            this.component = (Class<?>) container.getActualTypeArguments()[0];
-        }
-
-        static Ref of(Type type) {
-            //jdk17新语法，instanceof 可以直接赋值
-            if (type instanceof ParameterizedType container) return new Ref(container);
-            return new Ref((Class<?>) type);
-        }
-
-        public Class<?> getComponent() {
-            return component;
-        }
-
-        public Type getContainer() {
-            return container;
-        }
-
-        public boolean isContainer() {
-            return container != null;
-        }
     }
 
     private void checkDependencies(Class<?> component, Stack<Class<?>> visiting) {
