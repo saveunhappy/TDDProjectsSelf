@@ -7,10 +7,6 @@ import java.util.Optional;
 public interface Context {
     Optional get(Ref ref);
 
-    default Optional get(Type type) {
-        return get(Ref.of(type));
-    }
-
     class Ref {
         public static Ref of(Type type) {
             //jdk17新语法，instanceof 可以直接赋值
