@@ -19,15 +19,18 @@ public class Ref<ComponentType> {
     private Type container;
 
     public Ref(Class<ComponentType> component) {
-        this.component = component;
+        init(component);
     }
 
     public Ref(ParameterizedType container) {
-        this.container = container.getRawType();
-        this.component = (Class<?>) container.getActualTypeArguments()[0];
+        init(container);
     }
     protected Ref() {
         Type type = ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
+        init(type);
+    }
+
+    private void init(Type type) {
         if(type instanceof ParameterizedType container) {
             this.container = container.getRawType();
             this.component = (Class<?>) container.getActualTypeArguments()[0];
