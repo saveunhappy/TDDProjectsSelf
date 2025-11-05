@@ -134,16 +134,6 @@ class InjectionProvider<T> implements ComponentProvider<T> {
                 && Arrays.equals(o.getParameterTypes(), m.getParameterTypes());
     }
 
-
-    @Override
-    public List<Type> getDependencies() {
-        //1.调用getDependency改为调用DependencyTypes,为什么可以呢？因为原来getDependency是getParameterTypes,而DependencyTypes获取的是ParameterizedType，这个ParameterizedType是父类，可以是泛型的类型，也可以是Class类型，是父类，所以可以
-        return concat(concat(stream(injectConstructor.getParameters()).map(Parameter::getParameterizedType),
-                        injectFields.stream().map(Field::getGenericType)),
-                injectMethods.stream().flatMap(m -> stream(m.getParameters()).map(Parameter::getParameterizedType)))
-                .toList();
-    }
-
     @Override
     public List<Ref> getDependenciesRef() {
         return concat(concat(stream(injectConstructor.getParameters()).map(Parameter::getParameterizedType),
