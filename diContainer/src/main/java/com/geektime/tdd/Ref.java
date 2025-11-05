@@ -10,9 +10,7 @@ public class Ref<ComponentType> {
     }
 
     public static Ref of(Type type) {
-        //jdk17新语法，instanceof 可以直接赋值
-        if (type instanceof ParameterizedType container) return new Ref(container);
-        return new Ref((Class<?>) type);
+        return new Ref(type);
     }
 
     private Class<?> component;
@@ -22,19 +20,20 @@ public class Ref<ComponentType> {
         init(component);
     }
 
-    public Ref(ParameterizedType container) {
-        init(container);
+    public Ref(Type type) {
+        init(type);
     }
+
     protected Ref() {
         Type type = ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
         init(type);
     }
 
     private void init(Type type) {
-        if(type instanceof ParameterizedType container) {
+        if (type instanceof ParameterizedType container) {
             this.container = container.getRawType();
             this.component = (Class<?>) container.getActualTypeArguments()[0];
-        }else{
+        } else {
             this.component = (Class<?>) type;
         }
     }
