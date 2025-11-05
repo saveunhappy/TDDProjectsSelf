@@ -2,7 +2,6 @@ package com.geektime.tdd;
 
 import jakarta.inject.Provider;
 
-import java.lang.reflect.Type;
 import java.util.*;
 
 import static java.util.Arrays.stream;
@@ -37,7 +36,7 @@ public class ContextConfig {
     }
 
     private void checkDependencies(Class<?> component, Stack<Class<?>> visiting) {
-        for (Ref ref : providers.get(component).getDependenciesRef()) {
+        for (Ref ref : providers.get(component).getDependencies()) {
             if (!providers.containsKey(ref.getComponent()))
                 throw new DependencyNotFoundException(component, ref.getComponent());
             if (!ref.isContainer()) {
