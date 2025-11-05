@@ -133,7 +133,7 @@ public class ContextTest {
             ParameterizedType type = new TypeLiteral<List<Component>>() {
             }.getType();
             assertFalse(context.get(Ref.of(type)).isPresent());
-
+            assertFalse(context.get(new Ref<List<Component>>(){}).isPresent());
         }
 
         static abstract class TypeLiteral<T> {

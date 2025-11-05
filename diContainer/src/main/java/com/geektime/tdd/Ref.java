@@ -26,6 +26,15 @@ public class Ref<ComponentType> {
         this.container = container.getRawType();
         this.component = (Class<?>) container.getActualTypeArguments()[0];
     }
+    protected Ref() {
+        Type type = ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
+        if(type instanceof ParameterizedType container) {
+            this.container = container.getRawType();
+            this.component = (Class<?>) container.getActualTypeArguments()[0];
+        }else{
+            this.component = (Class<?>) type;
+        }
+    }
 
     public Class<?> getComponent() {
         return component;
