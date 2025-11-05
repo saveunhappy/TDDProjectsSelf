@@ -105,7 +105,8 @@ public class ContextTest {
         @Test
         public void should_retrieve_empty_for_unbind_type() {
             Context context = config.getContext();
-            Optional<Component> component = context.get(Ref.of(Component.class));
+            Optional<Component> component1 = context.get(Ref.of(Component.class));
+            Optional<Component> component = component1;
             assertTrue(component.isEmpty());
         }
 

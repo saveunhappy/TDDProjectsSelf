@@ -4,7 +4,11 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Objects;
 
-public class Ref {
+public class Ref<ComponentType> {
+    public static <ComponentType> Ref<ComponentType> of(Class<ComponentType> component) {
+        return new Ref(component);
+    }
+
     public static Ref of(Type type) {
         //jdk17新语法，instanceof 可以直接赋值
         if (type instanceof ParameterizedType container) return new Ref(container);
@@ -14,7 +18,7 @@ public class Ref {
     private Class<?> component;
     private Type container;
 
-    public Ref(Class<?> component) {
+    public Ref(Class<ComponentType> component) {
         this.component = component;
     }
 
