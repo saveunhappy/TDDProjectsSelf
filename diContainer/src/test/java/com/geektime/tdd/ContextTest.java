@@ -120,7 +120,7 @@ public class ContextTest {
             assertEquals(Provider.class, type.getRawType());
             assertEquals(Component.class, type.getActualTypeArguments()[0]);
 
-            Provider<Component> provider = (Provider<Component>) context.get(Ref.of(type)).get();
+            Provider<Component> provider = context.get(new Ref<Provider<Component>>(){}).get();
             assertSame(instance, provider.get());
         }
 
@@ -371,7 +371,14 @@ public class ContextTest {
             this.component = component;
         }
     }
-
+    static class CyclicComponentProviderConstructor implements Component {
+        String name = "333";
+        Provider<Dependency> dependency;
+        @Inject
+        public CyclicComponentProviderConstructor(Provider<Dependency> dependency) {
+            this.dependency = dependency;
+        }
+    }
     @Test
     public void should_not_throw_exception_if_cyclic_dependency_via_provider() {
         config.bind(Component.class, CyclicComponentInjectConstructor.class);
@@ -380,5 +387,14 @@ public class ContextTest {
         assertTrue(context.get(Ref.of(Component.class)).isPresent());
         assertTrue(context.get(Ref.of(Dependency.class)).isPresent());
 
+    }
+
+    @Test
+    public void should_not_throw_exception_if_cyclic_dependency_via_other_provider() {
+        config.bind(Component.class, CyclicComponentProviderConstructor.class);
+        config.bind(Dependency.class, CyclicDependencyProviderConstructor.class);
+        Context context = config.getContext();
+        assertTrue(context.get(Ref.of(Component.class)).isPresent());
+        assertTrue(context.get(Ref.of(Dependency.class)).isPresent());
     }
 }
