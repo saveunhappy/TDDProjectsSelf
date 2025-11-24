@@ -10,6 +10,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -393,5 +394,17 @@ public class ContextTest {
     public class WithQualifier{
         //TODO dependency missing if qualifier not match
         //TODO check cyclic dependencies with qualifier
+    }
+}
+
+record NamedLiteral(String value1) implements jakarta.inject.Named{
+    @Override
+    public Class<? extends Annotation> annotationType() {
+        return jakarta.inject.Named.class;
+    }
+
+    @Override
+    public String value() {
+        return null;
     }
 }
