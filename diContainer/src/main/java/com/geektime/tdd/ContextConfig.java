@@ -2,6 +2,7 @@ package com.geektime.tdd;
 
 import jakarta.inject.Provider;
 
+import java.lang.annotation.Annotation;
 import java.util.*;
 
 import static java.util.Arrays.stream;
@@ -11,6 +12,9 @@ public class ContextConfig {
 
     public <Type> void bind(Class<Type> type, Type instance) {
         providers.put(type, context -> instance);
+    }
+
+    public <Type> void bind(Class<Type> type, Type instance, Annotation annotation) {
     }
 
     public <Type, Implementation extends Type>

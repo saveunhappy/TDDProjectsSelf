@@ -1,5 +1,6 @@
 package com.geektime.tdd;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Objects;
@@ -8,7 +9,9 @@ public class Ref<ComponentType> {
     public static <ComponentType> Ref<ComponentType> of(Class<ComponentType> component) {
         return new Ref(component);
     }
-
+    public static <ComponentType> Ref<ComponentType> of(Class<ComponentType> component, Annotation annotation) {
+        return new Ref(component);
+    }
     public static Ref of(Type type) {
         return new Ref(type);
     }

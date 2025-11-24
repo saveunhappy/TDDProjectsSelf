@@ -2,10 +2,7 @@ package com.geektime.tdd;
 
 import jakarta.inject.Inject;
 import jakarta.inject.Provider;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Named;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -130,8 +127,16 @@ public class ContextTest {
         }
 
         @Nested
-        public class WithQualifier{
+        public class WithQualifier {
             //TODO binding component with qualifier
+            @Test
+            public void should_bind_instance_with_qualifier() {
+                Component instance = new Component() {
+                };
+                config.bind(Component.class, instance, new NamedLiteral("chosenOne"));
+                Component chosenOne = config.getContext().get(Ref.of(Component.class, new NamedLiteral("chosenOne"))).get();
+                assertSame(instance, chosenOne);
+            }
             //TODO binding component with multi qualifiers
             //TODO throw illegal component if illegal qualifier
         }
@@ -359,19 +364,23 @@ public class ContextTest {
     static class CyclicDependencyProviderConstructor implements Dependency {
         String name = "222";
         Provider<Component> component;
+
         @Inject
         public CyclicDependencyProviderConstructor(Provider<Component> component) {
             this.component = component;
         }
     }
+
     static class CyclicComponentProviderConstructor implements Component {
         String name = "333";
         Provider<Dependency> dependency;
+
         @Inject
         public CyclicComponentProviderConstructor(Provider<Dependency> dependency) {
             this.dependency = dependency;
         }
     }
+
     @Test
     public void should_not_throw_exception_if_cyclic_dependency_via_provider() {
         config.bind(Component.class, CyclicComponentInjectConstructor.class);
@@ -391,13 +400,13 @@ public class ContextTest {
     }
 
     @Nested
-    public class WithQualifier{
+    public class WithQualifier {
         //TODO dependency missing if qualifier not match
         //TODO check cyclic dependencies with qualifier
     }
 }
 
-record NamedLiteral(String value) implements jakarta.inject.Named{
+record NamedLiteral(String value) implements jakarta.inject.Named {
     @Override
     public Class<? extends Annotation> annotationType() {
         return jakarta.inject.Named.class;
