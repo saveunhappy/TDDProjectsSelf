@@ -7,24 +7,23 @@ import java.util.Objects;
 
 public class Ref<ComponentType> {
     public static <ComponentType> Ref<ComponentType> of(Class<ComponentType> component) {
-        return new Ref(component);
+        return new Ref(component, null);
     }
     public static <ComponentType> Ref<ComponentType> of(Class<ComponentType> component, Annotation annotation) {
-        return new Ref(component);
+        return new Ref(component, annotation);
     }
     public static Ref of(Type type) {
-        return new Ref(type);
+        return new Ref(type, null);
     }
 
     private Class<?> component;
     private Type container;
 
-    public Ref(Class<ComponentType> component) {
-        init(component);
-    }
+    private Annotation qualifier;
 
-    public Ref(Type type) {
+    public Ref(Type type, Annotation qualifier) {
         init(type);
+        this.qualifier = qualifier;
     }
 
     protected Ref() {
@@ -49,20 +48,25 @@ public class Ref<ComponentType> {
         return container;
     }
 
+
     public boolean isContainer() {
         return container != null;
+    }
+
+    public Annotation getQualifier() {
+        return qualifier;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Ref ref = (Ref) o;
-        return Objects.equals(component, ref.component) && Objects.equals(container, ref.container);
+        Ref<?> ref = (Ref<?>) o;
+        return Objects.equals(component, ref.component) && Objects.equals(container, ref.container) && Objects.equals(qualifier, ref.qualifier);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(component);
+        return Objects.hash(component, container, qualifier);
     }
 }

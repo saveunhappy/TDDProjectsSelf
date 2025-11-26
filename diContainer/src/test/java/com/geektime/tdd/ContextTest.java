@@ -134,7 +134,8 @@ public class ContextTest {
                 Component instance = new Component() {
                 };
                 config.bind(Component.class, instance, new NamedLiteral("chosenOne"));
-                Component chosenOne = config.getContext().get(Ref.of(Component.class, new NamedLiteral("chosenOne"))).get();
+                Component chosenOne = config.getContext().
+                        get(Ref.of(Component.class, new NamedLiteral("chosenOne"))).get();
                 assertSame(instance, chosenOne);
             }
             //TODO binding component with multi qualifiers

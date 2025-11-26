@@ -10,11 +10,14 @@ import static java.util.Arrays.stream;
 public class ContextConfig {
     private Map<Class<?>, ComponentProvider<?>> providers = new HashMap<>();
 
+    private Map<Component, ComponentProvider<?>> components = new HashMap<>();
+
     public <Type> void bind(Class<Type> type, Type instance) {
         providers.put(type, context -> instance);
     }
 
-    public <Type> void bind(Class<Type> type, Type instance, Annotation annotation) {
+    public <Type> void bind(Class<Type> type, Type instance, Annotation qualifier) {
+        components.put(new Component(type, qualifier), context -> instance);
     }
 
     public <Type, Implementation extends Type>
@@ -22,20 +25,30 @@ public class ContextConfig {
         providers.put(type, new InjectionProvider<>(implementation));
     }
 
+    record Component(Class type, Annotation qualifier) {
+    }
+
     public Context getContext() {
         //bind过的
         providers.keySet().forEach(component -> checkDependencies(component, new Stack<>()));
 
         return new Context() {
+
             @Override
-            public Optional<?> get(Ref ref) {
+            public <ComponentType> Optional<ComponentType> get(Ref<ComponentType> ref) {
+                if(ref.getQualifier() != null){
+                    return Optional.ofNullable(components.get(new Component(ref.getComponent(), ref.getQualifier())))
+                            .map(provider ->((ComponentType) provider.get(this)));
+
+                }
+
                 if (ref.isContainer()) {
                     if (ref.getContainer() != Provider.class) return Optional.empty();
-                    return Optional.ofNullable(providers.get(ref.getComponent())).map(provider -> (Provider<Object>) () -> provider.get(this));
+                    return (Optional<ComponentType>) Optional.ofNullable(providers.get(ref.getComponent())).map(provider -> (Provider<Object>) () -> provider.get(this));
                 }
-                return Optional.ofNullable(providers.get(ref.getComponent())).map(provider -> provider.get(this));
+                return Optional.ofNullable(providers.get(ref.getComponent()))
+                        .map(provider ->((ComponentType) provider.get(this)));
             }
-
         };
     }
 
