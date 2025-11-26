@@ -160,9 +160,24 @@ public class ContextTest {
                 Component chosenOne = context.get(Ref.of(Component.class, new NamedLiteral("chosenOne"))).get();
                 Component skyWalker = context.get(Ref.of(Component.class, new NamedLiteral("skyWalker"))).get();
                 assertSame(chosenOne,skyWalker);
+            }
+
+            @Test
+            public void should_bind_component_with_multi_qualifiers() {
+                Dependency dependency = new Dependency() {
+                };
+                config.bind(Dependency.class,dependency);
+                config.bind(ConstructorInjection.class,ConstructorInjection.class,new NamedLiteral("chosenOne"),new NamedLiteral("skyWalker"));
+                Context context = config.getContext();
+                ConstructorInjection chosenOne = context.get(Ref.of(ConstructorInjection.class, new NamedLiteral("chosenOne"))).get();
+                ConstructorInjection skyWalker = context.get(Ref.of(ConstructorInjection.class, new NamedLiteral("skyWalker"))).get();
+                assertSame(dependency,chosenOne.dependency);
+                assertSame(dependency,skyWalker.dependency);
 
 
             }
+
+
             //TODO throw illegal component if illegal qualifier
         }
     }
