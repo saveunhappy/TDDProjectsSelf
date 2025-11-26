@@ -113,7 +113,8 @@ public class ContextTest {
             };
             config.bind(Component.class, instance);
             Context context = config.getContext();
-            Provider<Component> provider = context.get(new Ref<Provider<Component>>(){}).get();
+            Provider<Component> provider = context.get(new Ref<Provider<Component>>() {
+            }).get();
             assertSame(instance, provider.get());
         }
 
@@ -123,12 +124,12 @@ public class ContextTest {
             };
             config.bind(Component.class, instance);
             Context context = config.getContext();
-            assertFalse(context.get(new Ref<List<Component>>(){}).isPresent());
+            assertFalse(context.get(new Ref<List<Component>>() {
+            }).isPresent());
         }
 
         @Nested
         public class WithQualifier {
-            //TODO binding component with qualifier
             @Test
             public void should_bind_instance_with_qualifier() {
                 Component instance = new Component() {
@@ -137,6 +138,17 @@ public class ContextTest {
                 Component chosenOne = config.getContext().
                         get(Ref.of(Component.class, new NamedLiteral("chosenOne"))).get();
                 assertSame(instance, chosenOne);
+            }
+
+            @Test
+            public void should_bind_component_with_qualifier() {
+                Dependency dependency = new Dependency() {
+                };
+                config.bind(Dependency.class, dependency);
+                config.bind(ConstructorInjection.class, ConstructorInjection.class, new NamedLiteral("chosenOne"));
+                Context context = config.getContext();
+                ConstructorInjection chosenOne = context.get(Ref.of(ConstructorInjection.class, new NamedLiteral("chosenOne"))).get();
+                assertSame(dependency,chosenOne.dependency);
             }
             //TODO binding component with multi qualifiers
             //TODO throw illegal component if illegal qualifier

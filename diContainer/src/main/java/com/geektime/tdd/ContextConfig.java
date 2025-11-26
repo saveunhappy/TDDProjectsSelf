@@ -24,6 +24,10 @@ public class ContextConfig {
     void bind(Class<Type> type, Class<Implementation> implementation) {
         providers.put(type, new InjectionProvider<>(implementation));
     }
+    public <Type, Implementation extends Type>
+    void bind(Class<Type> type, Class<Implementation> implementation,Annotation qualifier) {
+        components.put(new Component(type,qualifier), new InjectionProvider<>(implementation));
+    }
 
     record Component(Class type, Annotation qualifier) {
     }
