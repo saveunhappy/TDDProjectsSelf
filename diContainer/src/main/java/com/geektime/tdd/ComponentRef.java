@@ -9,9 +9,11 @@ public class ComponentRef<ComponentType> {
     public static <ComponentType> ComponentRef<ComponentType> of(Class<ComponentType> component) {
         return new ComponentRef(component, null);
     }
+
     public static <ComponentType> ComponentRef<ComponentType> of(Class<ComponentType> component, Annotation annotation) {
         return new ComponentRef(component, annotation);
     }
+
     public static ComponentRef of(Type type) {
         return new ComponentRef(type, null);
     }
@@ -24,22 +26,23 @@ public class ComponentRef<ComponentType> {
     private Annotation qualifier;
 
     public ComponentRef(Type type, Annotation qualifier) {
-        init(type);
+        init(type, qualifier);
         this.qualifier = qualifier;
     }
 
     protected ComponentRef() {
         Type type = ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
-        init(type);
+        init(type, null);
     }
 
-    private void init(Type type) {
+    private void init(Type type, Annotation qualifier) {
         if (type instanceof ParameterizedType container) {
             this.container = container.getRawType();
             this.componentType = (Class<ComponentType>) container.getActualTypeArguments()[0];
         } else {
             this.componentType = (Class<ComponentType>) type;
         }
+        this.component = new Component(componentType,qualifier);
     }
 
     public Class<?> getComponentType() {
@@ -47,7 +50,7 @@ public class ComponentRef<ComponentType> {
     }
 
     public Type getContainer() {
-        return  container;
+        return container;
     }
 
 
@@ -59,7 +62,7 @@ public class ComponentRef<ComponentType> {
         return qualifier;
     }
 
-    public Component component(){
+    public Component component() {
         return component;
     }
 
