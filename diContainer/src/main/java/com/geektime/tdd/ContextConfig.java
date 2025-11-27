@@ -1,6 +1,7 @@
 package com.geektime.tdd;
 
 import jakarta.inject.Provider;
+import jakarta.inject.Qualifier;
 
 import java.lang.annotation.Annotation;
 import java.util.*;
@@ -15,6 +16,9 @@ public class ContextConfig {
     }
 
     public <Type> void bind(Class<Type> type, Type instance, Annotation... qualifiers) {
+        if (stream(qualifiers).anyMatch(q -> !q.annotationType().isAnnotationPresent(Qualifier.class))){
+            throw new IllegalComponentException();
+        }
         for (Annotation qualifier : qualifiers) {
             components.put(new Component(type, qualifier), context -> instance);
         }
@@ -58,7 +62,8 @@ public class ContextConfig {
             if (!components.containsKey(dependency.component()))
                 throw new DependencyNotFoundException(component.type(), dependency.getComponentType());
             if (!dependency.isContainer()) {
-                if (visiting.contains(dependency.getComponentType())) throw new CyclicDependenciesFoundException(visiting);
+                if (visiting.contains(dependency.getComponentType()))
+                    throw new CyclicDependenciesFoundException(visiting);
                 visiting.push(dependency.getComponentType());
                 checkDependencies(dependency.component(), visiting);
                 visiting.pop();

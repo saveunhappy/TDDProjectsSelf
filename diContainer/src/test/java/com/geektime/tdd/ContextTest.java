@@ -60,6 +60,13 @@ public class ContextTest {
                     Arguments.of(Named.of("Method injection", MethodInjection.class)));
         }
 
+        interface Component {
+            default Dependency dependency() {
+                return null;
+            }
+
+        }
+
 
         static class ConstructorInjection implements TestComponent {
             Dependency dependency;
@@ -134,30 +141,37 @@ public class ContextTest {
             public void should_bind_type_with_multi_qualifiers() {
                 TestComponent instance = new TestComponent() {
                 };
-                config.bind(TestComponent.class,instance,new NamedLiteral("chosenOne"),new NamedLiteral("skyWalker"));
+                config.bind(TestComponent.class, instance, new NamedLiteral("chosenOne"), new NamedLiteral("skyWalker"));
                 Context context = config.getContext();
                 TestComponent chosenOne = context.get(ComponentRef.of(TestComponent.class, new NamedLiteral("chosenOne"))).get();
                 TestComponent skyWalker = context.get(ComponentRef.of(TestComponent.class, new NamedLiteral("skyWalker"))).get();
-                assertSame(chosenOne,skyWalker);
+                assertSame(chosenOne, skyWalker);
             }
 
             @Test
             public void should_bind_component_with_multi_qualifiers() {
                 Dependency dependency = new Dependency() {
                 };
-                config.bind(Dependency.class,dependency);
-                config.bind(ConstructorInjection.class,ConstructorInjection.class,new NamedLiteral("chosenOne"),new NamedLiteral("skyWalker"));
+                config.bind(Dependency.class, dependency);
+                config.bind(ConstructorInjection.class, ConstructorInjection.class, new NamedLiteral("chosenOne"), new NamedLiteral("skyWalker"));
                 Context context = config.getContext();
                 ConstructorInjection chosenOne = context.get(ComponentRef.of(ConstructorInjection.class, new NamedLiteral("chosenOne"))).get();
                 ConstructorInjection skyWalker = context.get(ComponentRef.of(ConstructorInjection.class, new NamedLiteral("skyWalker"))).get();
-                assertSame(dependency,chosenOne.dependency);
-                assertSame(dependency,skyWalker.dependency);
+                assertSame(dependency, chosenOne.dependency);
+                assertSame(dependency, skyWalker.dependency);
 
 
             }
 
 
             //TODO throw illegal component if illegal qualifier
+            @Test
+            public void should_throw_exception_if_illegal_qualifier_given_to_instance() {
+                Component instance = new Component() {
+                };
+                assertThrows(IllegalComponentException.class, () -> config.bind(Component.class, instance, new TestLiteral()));
+
+            }
         }
     }
 
@@ -399,6 +413,7 @@ public class ContextTest {
             this.dependency = dependency;
         }
     }
+
     @Test
     public void should_not_throw_exception_if_cyclic_dependency_via_provider() {
         config.bind(TestComponent.class, CyclicComponentInjectConstructor.class);
@@ -428,5 +443,13 @@ record NamedLiteral(String value) implements jakarta.inject.Named {
     @Override
     public Class<? extends Annotation> annotationType() {
         return jakarta.inject.Named.class;
+    }
+}
+
+record TestLiteral() implements Test {
+
+    @Override
+    public Class<? extends Annotation> annotationType() {
+        return Test.class;
     }
 }
