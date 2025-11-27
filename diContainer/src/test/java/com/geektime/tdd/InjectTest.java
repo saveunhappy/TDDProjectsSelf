@@ -102,14 +102,14 @@ public class InjectTest {
 
         @Nested
         class IllegalInjectionConstructors {
-            abstract class AbstractComponent implements Component {
+            abstract class AbstractComponent implements TestComponent {
                 @Inject
                 public AbstractComponent() {
 
                 }
             }
 
-            class MultiInjectionConstructor implements Component {
+            class MultiInjectionConstructor implements TestComponent {
                 @Inject
                 public MultiInjectionConstructor(String name, Double value) {
 
@@ -121,7 +121,7 @@ public class InjectTest {
                 }
             }
 
-            class NorDefaultConstructor implements Component {
+            class NorDefaultConstructor implements TestComponent {
                 public NorDefaultConstructor(String name) {
 
                 }
@@ -134,20 +134,20 @@ public class InjectTest {
 
             @Test
             public void should_throw_exception_if_component_is_interface() {
-                assertThrows(IllegalComponentException.class, () -> new InjectionProvider<>(Component.class));
+                assertThrows(IllegalComponentException.class, () -> new InjectionProvider<>(TestComponent.class));
             }
 
             @Test
             public void should_throw_exception_if_multi_inject_constructors_provided() {
                 assertThrows(IllegalComponentException.class, () ->
-                        new InjectionProvider<>((Class<? extends Component>) MultiInjectionConstructor.class)
+                        new InjectionProvider<>((Class<? extends TestComponent>) MultiInjectionConstructor.class)
                 );
             }
 
             @Test
             public void should_throw_exception_if_no_inject_nor_default_constructor_provided() {
                 assertThrows(IllegalComponentException.class, () ->
-                        new InjectionProvider<>((Class<? extends Component>) NorDefaultConstructor.class));
+                        new InjectionProvider<>((Class<? extends TestComponent>) NorDefaultConstructor.class));
             }
 
         }
