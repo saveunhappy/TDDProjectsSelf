@@ -41,7 +41,7 @@ public class ContextConfig {
         return new Context() {
 
             @Override
-            public <ComponentType> Optional<ComponentType> get(Ref<ComponentType> ref) {
+            public <ComponentType> Optional<ComponentType> get(ComponentRef<ComponentType> ref) {
                 if (ref.isContainer()) {
                     if (ref.getContainer() != Provider.class) return Optional.empty();
                     return (Optional<ComponentType>) Optional.ofNullable(getComponent(ref)).map(provider -> (Provider<Object>) () -> provider.get(this));
@@ -52,12 +52,12 @@ public class ContextConfig {
         };
     }
 
-    private <ComponentType> ComponentProvider<?> getComponent(Ref<ComponentType> ref) {
+    private <ComponentType> ComponentProvider<?> getComponent(ComponentRef<ComponentType> ref) {
         return components.get(new Component(ref.getComponent(), ref.getQualifier()));
     }
 
     private void checkDependencies(Component component, Stack<Class<?>> visiting) {
-        for (Ref dependency : components.get(component).getDependencies()) {
+        for (ComponentRef dependency : components.get(component).getDependencies()) {
             if (!components.containsKey(new Component(dependency.getComponent(), dependency.getQualifier())))
                 throw new DependencyNotFoundException(component.type(), dependency.getComponent());
             if (!dependency.isContainer()) {

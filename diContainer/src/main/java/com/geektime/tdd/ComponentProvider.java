@@ -5,7 +5,7 @@ import java.util.List;
 interface ComponentProvider<T> {
     T get(Context context);
 
-    default List<Ref> getDependencies(){
+    default List<ComponentRef> getDependencies(){
         return List.of();
     }
 

@@ -3,5 +3,5 @@ package com.geektime.tdd;
 import java.util.Optional;
 
 public interface Context {
-    <ComponentType> Optional<ComponentType> get(Ref<ComponentType> ref);
+    <ComponentType> Optional<ComponentType> get(ComponentRef<ComponentType> ref);
 }
