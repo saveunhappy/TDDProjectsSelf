@@ -16,8 +16,9 @@ public class ComponentRef<ComponentType> {
         return new ComponentRef(type, null);
     }
 
-    private Class<ComponentType> component;
     private Type container;
+    //private Component component;
+    private Class<ComponentType> component;
 
     private Annotation qualifier;
 

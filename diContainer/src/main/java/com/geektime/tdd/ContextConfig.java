@@ -32,9 +32,6 @@ public class ContextConfig {
         }
     }
 
-    record Component(Class<?> type, Annotation qualifier) {
-    }
-
     public Context getContext() {
         components.keySet().forEach(component -> checkDependencies(component, new Stack<>()));
 
