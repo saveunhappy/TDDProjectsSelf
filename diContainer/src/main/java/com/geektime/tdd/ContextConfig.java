@@ -13,10 +13,10 @@ public class ContextConfig {
     private Map<Component, ComponentProvider<?>> components = new HashMap<>();
 
     public <Type> void bind(Class<Type> type, Type instance) {
-        providers.put(type, context -> instance);
+        components.put(new Component(type, null), context -> instance);
     }
 
-    public <Type> void bind(Class<Type> type, Type instance, Annotation ... qualifiers) {
+    public <Type> void bind(Class<Type> type, Type instance, Annotation... qualifiers) {
         for (Annotation qualifier : qualifiers) {
             components.put(new Component(type, qualifier), context -> instance);
         }
@@ -24,12 +24,13 @@ public class ContextConfig {
 
     public <Type, Implementation extends Type>
     void bind(Class<Type> type, Class<Implementation> implementation) {
-        providers.put(type, new InjectionProvider<>(implementation));
+        components.put(new Component(type, null), new InjectionProvider<>(implementation));
     }
+
     public <Type, Implementation extends Type>
-    void bind(Class<Type> type, Class<Implementation> implementation,Annotation ... qualifiers) {
+    void bind(Class<Type> type, Class<Implementation> implementation, Annotation... qualifiers) {
         for (Annotation qualifier : qualifiers) {
-            components.put(new Component(type,qualifier), new InjectionProvider<>(implementation));
+            components.put(new Component(type, qualifier), new InjectionProvider<>(implementation));
         }
     }
 
@@ -46,9 +47,9 @@ public class ContextConfig {
 
             @Override
             public <ComponentType> Optional<ComponentType> get(Ref<ComponentType> ref) {
-                if(ref.getQualifier() != null){
+                if (ref.getQualifier() != null) {
                     return Optional.ofNullable(components.get(new Component(ref.getComponent(), ref.getQualifier())))
-                            .map(provider ->((ComponentType) provider.get(this)));
+                            .map(provider -> ((ComponentType) provider.get(this)));
 
                 }
 
@@ -57,14 +58,14 @@ public class ContextConfig {
                     return (Optional<ComponentType>) Optional.ofNullable(getComponent(ref)).map(provider -> (Provider<Object>) () -> provider.get(this));
                 }
                 return Optional.ofNullable(getComponent(ref))
-                        .map(provider ->((ComponentType) provider.get(this)));
+                        .map(provider -> ((ComponentType) provider.get(this)));
             }
         };
     }
 
     private <ComponentType> ComponentProvider<?> getComponent(Ref<ComponentType> ref) {
-        //return components.get(new Component(ref.getComponent(),ref.getQualifier());
-        return providers.get(ref.getComponent());
+        return components.get(new Component(ref.getComponent(),ref.getQualifier()));
+//        return providers.get(ref.getComponent());
     }
 
     private void checkDependencies(/* Component */Class<?> component, Stack<Class<?>> visiting) {

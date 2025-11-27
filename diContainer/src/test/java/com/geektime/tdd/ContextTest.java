@@ -420,7 +420,7 @@ public class ContextTest {
             this.dependency = dependency;
         }
     }
-
+//1.现在是bind的都是好的，DependencyCheck和循环依赖的都失败了(provider成功)，因为判断报错是在getContext的里面进行报错的，现在bind已经变成components这个map了，但是DependencyCheck还是使用的providers这个map，但是providers是空的，所以不会进去那个checkDependencies方法，assertThrows也就是空的，但是should_not_throw_exception_if_cyclic_dependency_via_provider是获取到容器之后去调用get了，get是从components中去获取的，而且是明确调用了get，那个是期望调用getContext()的时候就抛出异常，但是没有调用get，只是获取到了对象，期望内部调用checkDependencies抛出异常，但是对象为空，不会进入，所以报错
     @Test
     public void should_not_throw_exception_if_cyclic_dependency_via_provider() {
         config.bind(Component.class, CyclicComponentInjectConstructor.class);
