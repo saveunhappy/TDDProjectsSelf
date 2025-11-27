@@ -2,18 +2,22 @@ package com.geektime.tdd;
 
 import jakarta.inject.Inject;
 import jakarta.inject.Provider;
+import jakarta.inject.Qualifier;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.lang.annotation.Annotation;
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -153,10 +157,10 @@ public class ContextTest {
                 Dependency dependency = new Dependency() {
                 };
                 config.bind(Dependency.class, dependency);
-                config.bind(ConstructorInjection.class, ConstructorInjection.class, new NamedLiteral("chosenOne"), new NamedLiteral("skyWalker"));
+                config.bind(ConstructorInjection.class, ConstructorInjection.class, new NamedLiteral("chosenOne"), new SkyWalkerLiteral());
                 Context context = config.getContext();
                 ConstructorInjection chosenOne = context.get(ComponentRef.of(ConstructorInjection.class, new NamedLiteral("chosenOne"))).get();
-                ConstructorInjection skyWalker = context.get(ComponentRef.of(ConstructorInjection.class, new NamedLiteral("skyWalker"))).get();
+                ConstructorInjection skyWalker = context.get(ComponentRef.of(ConstructorInjection.class, new SkyWalkerLiteral())).get();
                 assertSame(dependency, chosenOne.dependency);
                 assertSame(dependency, skyWalker.dependency);
 
@@ -438,6 +442,22 @@ public class ContextTest {
         //TODO check cyclic dependencies with qualifier
     }
 }
+
+@Qualifier
+@Documented
+@Retention(RUNTIME)
+@interface SkyWalker {
+
+}
+
+record SkyWalkerLiteral() implements SkyWalker {
+
+    @Override
+    public Class<? extends Annotation> annotationType() {
+        return SkyWalker.class;
+    }
+}
+
 
 record NamedLiteral(String value) implements jakarta.inject.Named {
     @Override
