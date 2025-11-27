@@ -50,17 +50,17 @@ public class ContextConfig {
     }
 
     private <ComponentType> ComponentProvider<?> getComponent(ComponentRef<ComponentType> ref) {
-        return components.get(new Component(ref.getComponent(), ref.getQualifier()));
+        return components.get(new Component(ref.getComponentType(), ref.getQualifier()));
     }
 
     private void checkDependencies(Component component, Stack<Class<?>> visiting) {
         for (ComponentRef dependency : components.get(component).getDependencies()) {
-            if (!components.containsKey(new Component(dependency.getComponent(), dependency.getQualifier())))
-                throw new DependencyNotFoundException(component.type(), dependency.getComponent());
+            if (!components.containsKey(new Component(dependency.getComponentType(), dependency.getQualifier())))
+                throw new DependencyNotFoundException(component.type(), dependency.getComponentType());
             if (!dependency.isContainer()) {
-                if (visiting.contains(dependency.getComponent())) throw new CyclicDependenciesFoundException(visiting);
-                visiting.push(dependency.getComponent());
-                checkDependencies(new Component(dependency.getComponent(), dependency.getQualifier()), visiting);
+                if (visiting.contains(dependency.getComponentType())) throw new CyclicDependenciesFoundException(visiting);
+                visiting.push(dependency.getComponentType());
+                checkDependencies(new Component(dependency.getComponentType(), dependency.getQualifier()), visiting);
                 visiting.pop();
             }
         }

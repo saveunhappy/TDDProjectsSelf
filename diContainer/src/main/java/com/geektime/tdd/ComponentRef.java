@@ -17,8 +17,9 @@ public class ComponentRef<ComponentType> {
     }
 
     private Type container;
-    //private Component component;
-    private Class<ComponentType> component;
+
+    private Component component;
+    private Class<ComponentType> componentType;
 
     private Annotation qualifier;
 
@@ -35,18 +36,18 @@ public class ComponentRef<ComponentType> {
     private void init(Type type) {
         if (type instanceof ParameterizedType container) {
             this.container = container.getRawType();
-            this.component = (Class<ComponentType>) container.getActualTypeArguments()[0];
+            this.componentType = (Class<ComponentType>) container.getActualTypeArguments()[0];
         } else {
-            this.component = (Class<ComponentType>) type;
+            this.componentType = (Class<ComponentType>) type;
         }
     }
 
-    public Class<?> getComponent() {
-        return component;
+    public Class<?> getComponentType() {
+        return componentType;
     }
 
     public Type getContainer() {
-        return container;
+        return  container;
     }
 
 
@@ -58,16 +59,20 @@ public class ComponentRef<ComponentType> {
         return qualifier;
     }
 
+    public Component component(){
+        return component;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ComponentRef<?> ref = (ComponentRef<?>) o;
-        return Objects.equals(component, ref.component) && Objects.equals(container, ref.container) && Objects.equals(qualifier, ref.qualifier);
+        return Objects.equals(componentType, ref.componentType) && Objects.equals(container, ref.container) && Objects.equals(qualifier, ref.qualifier);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(component, container, qualifier);
+        return Objects.hash(componentType, container, qualifier);
     }
 }
