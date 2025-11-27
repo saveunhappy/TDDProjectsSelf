@@ -21,7 +21,6 @@ public class ComponentRef<ComponentType> {
     private Type container;
 
     private Component component;
-    private Class<ComponentType> componentType;
 
     public ComponentRef(Type type, Annotation qualifier) {
         init(type, qualifier);
