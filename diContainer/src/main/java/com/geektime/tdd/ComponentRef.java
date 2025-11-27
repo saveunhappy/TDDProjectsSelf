@@ -23,11 +23,8 @@ public class ComponentRef<ComponentType> {
     private Component component;
     private Class<ComponentType> componentType;
 
-    private Annotation qualifier;
-
     public ComponentRef(Type type, Annotation qualifier) {
         init(type, qualifier);
-        this.qualifier = qualifier;
     }
 
     protected ComponentRef() {
@@ -66,12 +63,12 @@ public class ComponentRef<ComponentType> {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        ComponentRef<?> ref = (ComponentRef<?>) o;
-        return Objects.equals(componentType, ref.componentType) && Objects.equals(container, ref.container) && Objects.equals(qualifier, ref.qualifier);
+        ComponentRef<?> that = (ComponentRef<?>) o;
+        return Objects.equals(container, that.container) && Objects.equals(component, that.component);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(componentType, container, qualifier);
+        return Objects.hash(container, component);
     }
 }
