@@ -46,7 +46,7 @@ public class ComponentRef<ComponentType> {
     }
 
     public Class<?> getComponentType() {
-        return componentType;
+        return component.type();
     }
 
     public Type getContainer() {
@@ -56,10 +56,6 @@ public class ComponentRef<ComponentType> {
 
     public boolean isContainer() {
         return container != null;
-    }
-
-    public Annotation getQualifier() {
-        return qualifier;
     }
 
     public Component component() {
