@@ -1,6 +1,7 @@
 package com.geektime.tdd;
 
 import jakarta.inject.Inject;
+import jakarta.inject.Named;
 import jakarta.inject.Provider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -153,8 +154,23 @@ public class InjectTest {
         }
 
         @Nested
-        public class WithQualifier{
+        public class WithQualifier {
             //TODO inject with qualifier
+            //TODO include qualifier with dependency
+            @Test
+            public void should_include_qualifier_with_dependency() {
+                InjectionProvider<InjectConstructor> provider = new InjectionProvider<>(InjectConstructor.class);
+                assertArrayEquals(new ComponentRef<?>[]{
+                                ComponentRef.of(Dependency.class, new NamedLiteral("chosenOne"))
+                        },
+                        provider.getDependencies().toArray(new ComponentRef[0]));
+            }
+
+            static class InjectConstructor {
+                @Inject
+                public InjectConstructor(@Named("chosenOne") Dependency dependency) {
+                }
+            }
             //TODO throw illegal component if illegal qualifier given to injection point
         }
     }
@@ -179,7 +195,7 @@ public class InjectTest {
             }
 
             @Test
-            public void should_inject_dependency_via_superclass_inject_field()  {
+            public void should_inject_dependency_via_superclass_inject_field() {
 
                 SubclassWithFieldInjection component = new InjectionProvider<>(SubclassWithFieldInjection.class).get(context);
                 assertSame(dependency, component.dependency);
@@ -227,7 +243,7 @@ public class InjectTest {
         }
 
         @Nested
-        public class WithQualifier{
+        public class WithQualifier {
             //TODO inject with qualifier
             //TODO throw illegal component if illegal qualifier given to injection point
         }
@@ -250,7 +266,7 @@ public class InjectTest {
             }
 
             @Test
-            public void should_call_inject_method_even_if_no_dependency_declared()  {
+            public void should_call_inject_method_even_if_no_dependency_declared() {
 
                 InjectMethodWithNoDependency component = new InjectionProvider<>(InjectMethodWithNoDependency.class).get(context);
                 assertTrue(component.called);
@@ -266,7 +282,7 @@ public class InjectTest {
             }
 
             @Test
-            public void should_inject_dependency_via_inject_method()  {
+            public void should_inject_dependency_via_inject_method() {
                 InjectMethodWithDependency component = new InjectionProvider<>(InjectMethodWithDependency.class).get(context);
                 assertEquals(dependency, component.dependency);
             }
@@ -291,7 +307,7 @@ public class InjectTest {
             }
 
             @Test
-            public void should_inject_dependencies_via_inject_method_from_superclass()  {
+            public void should_inject_dependencies_via_inject_method_from_superclass() {
 
                 SubClassWithInjectMethod component = new InjectionProvider<>(SubClassWithInjectMethod.class).get(context);
                 //如果是先是子后是父，那么刚开始，superCalled是0，superCalled + 1是1，然后再调用父，父是0，加1还是1，就该都是1
@@ -330,7 +346,7 @@ public class InjectTest {
             }
 
             @Test
-            public void should_include_dependencies_from_inject_method()  {
+            public void should_include_dependencies_from_inject_method() {
                 InjectionProvider<InjectMethodWithDependency> provider = new InjectionProvider<>(InjectMethodWithDependency.class);
                 assertArrayEquals(new ComponentRef[]{ComponentRef.of(Dependency.class)}, provider.getDependencies().toArray());
             }
@@ -373,7 +389,7 @@ public class InjectTest {
         }
 
         @Nested
-        public class WithQualifier{
+        public class WithQualifier {
             //TODO inject with qualifier
             //TODO throw illegal component if illegal qualifier given to injection point
         }
