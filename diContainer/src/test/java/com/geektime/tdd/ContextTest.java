@@ -175,6 +175,7 @@ public class ContextTest {
                 };
                 assertThrows(IllegalComponentException.class, () -> config.bind(Component.class, instance, new TestLiteral()));
             }
+
             @Test
             public void should_throw_exception_if_illegal_qualifier_given_to_component() {
                 assertThrows(IllegalComponentException.class, () -> config.bind(ConstructorInjection.class, ConstructorInjection.class, new TestLiteral()));
@@ -442,6 +443,20 @@ public class ContextTest {
     @Nested
     public class WithQualifier {
         //TODO dependency missing if qualifier not match
+        @Test
+        public void should_throw_exception_if_qualifier_not_found() {
+            Dependency dependency = new Dependency() {
+            };
+            config.bind(Dependency.class, dependency);
+            config.bind(InjectConstructor.class, InjectConstructor.class);
+            assertThrows(DependencyNotFoundException.class, () -> config.getContext());
+        }
+
+        static class InjectConstructor {
+            @Inject
+            public InjectConstructor(@SkyWalker Dependency dependency) {
+            }
+        }
         //TODO check cyclic dependencies with qualifier
     }
 }
