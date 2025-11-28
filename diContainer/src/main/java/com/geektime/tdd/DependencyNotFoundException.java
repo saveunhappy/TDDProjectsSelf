@@ -12,11 +12,11 @@ public class DependencyNotFoundException extends RuntimeException {
     }
 
     public Class<?> getDependency() {
-        return dependencyComponent.type();
+        return getDependencyComponent().type();
     }
 
     public Class<?> getComponent() {
-        return componentComponent.type();
+        return getComponentComponent().type();
     }
 
     public Component getDependencyComponent() {
