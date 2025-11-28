@@ -13,11 +13,28 @@ public class DependencyNotFoundException extends RuntimeException{
         this.dependency = dependency;
     }
 
+    private Component componentComponent;
+
+    private Component dependencyComponent;
+
+    public DependencyNotFoundException(Component componentComponent, Component dependencyComponent) {
+        this.componentComponent = componentComponent;
+        this.dependencyComponent = dependencyComponent;
+    }
+
     public Class<?> getDependency() {
         return dependency;
     }
 
     public Class<?> getComponent() {
         return component;
+    }
+
+    public Component getDependencyComponent() {
+        return dependencyComponent;
+    }
+
+    public Component getComponentComponent() {
+        return componentComponent;
     }
 }
