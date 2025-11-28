@@ -474,6 +474,11 @@ record SkyWalkerLiteral() implements SkyWalker {
     public Class<? extends Annotation> annotationType() {
         return SkyWalker.class;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        return o instanceof SkyWalker;
+    }
 }
 
 
