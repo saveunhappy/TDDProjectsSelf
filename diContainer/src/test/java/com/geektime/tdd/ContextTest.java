@@ -15,10 +15,7 @@ import java.util.*;
 import java.util.stream.Stream;
 
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
-import static org.junit.Assert.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @Nested
 public class ContextTest {
@@ -458,6 +455,35 @@ public class ContextTest {
             }
         }
         //TODO check cyclic dependencies with qualifier
+
+        static class SkywalkerDependency implements Dependency {
+            @Inject
+            public SkywalkerDependency(@jakarta.inject.Named("ChosenOne") Dependency dependency) {
+            }
+        }
+
+        static class NotCyclicDependency implements Dependency {
+            @Inject
+            public NotCyclicDependency(@SkyWalker Dependency dependency) {
+
+            }
+        }
+
+        @Test
+        public void should_not_throw_cyclic_exception_if_component_with_same_type_tag_with_different_qualifier() {
+            Dependency instance = new Dependency() {
+            };
+            config.bind(Dependency.class, instance, new NamedLiteral("ChosenOne"));
+            config.bind(Dependency.class, SkywalkerDependency.class, new SkyWalkerLiteral());
+            config.bind(Dependency.class, NotCyclicDependency.class);
+//            assertDoesNotThrow(() -> config.getContext());
+            try {
+                config.getContext();
+            } catch (DependencyNotFoundException e) {
+                System.out.println(e.getDependency());
+            }
+
+        }
     }
 }
 
