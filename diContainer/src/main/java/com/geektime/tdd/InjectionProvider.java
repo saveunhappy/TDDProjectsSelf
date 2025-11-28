@@ -1,7 +1,9 @@
 package com.geektime.tdd;
 
 import jakarta.inject.Inject;
+import jakarta.inject.Qualifier;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
 import java.util.*;
 import java.util.function.BiFunction;
@@ -144,6 +146,9 @@ class InjectionProvider<T> implements ComponentProvider<T> {
     }
 
     private static ComponentRef toComponentRef(Parameter p) {
-        return ComponentRef.of(p.getParameterizedType());
+        Annotation qualifier = stream(p.getAnnotations()).filter
+                        (a -> a.annotationType().isAnnotationPresent(Qualifier.class))
+                .findFirst().orElse(null);
+        return ComponentRef.of(p.getParameterizedType(), qualifier);
     }
 }
