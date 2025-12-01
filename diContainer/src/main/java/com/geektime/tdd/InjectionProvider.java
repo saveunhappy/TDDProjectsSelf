@@ -140,7 +140,7 @@ class InjectionProvider<T> implements ComponentProvider<T> {
     public List<ComponentRef> getDependencies() {
         return concat(concat(stream(injectConstructor.getParameters()).map(InjectionProvider::toComponentRef),
                         injectFields.stream().map(Field::getGenericType).map(ComponentRef::of)),
-                injectMethods.stream().flatMap(m -> stream(m.getParameters()).map(Parameter::getParameterizedType)).map(ComponentRef::of))
+                injectMethods.stream().flatMap(m -> stream(m.getParameters()).map(InjectionProvider::toComponentRef)))
                 .toList();
 
     }

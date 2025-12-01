@@ -246,7 +246,8 @@ public class InjectTest {
             @Test
             public void should_include_dependency_with_qualifier() {
                 InjectionProvider<InjectMethod> provider = new InjectionProvider<>(InjectMethod.class);
-                assertArrayEquals(new ComponentRef<?>[]{ComponentRef.of(Dependency.class, new NamedLiteral("chosenOne"))}, provider.getDependencies().toArray(new ComponentRef[0]));
+                assertArrayEquals(new ComponentRef<?>[]{ComponentRef.of(Dependency.class, new NamedLiteral("chosenOne"))},
+                        provider.getDependencies().toArray(new ComponentRef[0]));
             }
 
             static class InjectMethod {
