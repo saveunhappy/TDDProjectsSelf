@@ -139,7 +139,7 @@ class InjectionProvider<T> implements ComponentProvider<T> {
     @Override
     public List<ComponentRef> getDependencies() {
         return concat(concat(stream(injectConstructor.getParameters()).map(InjectionProvider::toComponentRef),
-                        injectFields.stream().map(Field::getGenericType).map(ComponentRef::of)),
+                        injectFields.stream().map(InjectionProvider::toComponentRef)),
                 injectMethods.stream().flatMap(m -> stream(m.getParameters()).map(InjectionProvider::toComponentRef)))
                 .toList();
 
@@ -150,5 +150,12 @@ class InjectionProvider<T> implements ComponentProvider<T> {
                         (a -> a.annotationType().isAnnotationPresent(Qualifier.class))
                 .findFirst().orElse(null);
         return ComponentRef.of(p.getParameterizedType(), qualifier);
+    }
+
+    private static ComponentRef toComponentRef(Field field) {
+        Annotation qualifier = stream(field.getAnnotations()).filter
+                        (a -> a.annotationType().isAnnotationPresent(Qualifier.class))
+                .findFirst().orElse(null);
+        return ComponentRef.of(field.getGenericType(), qualifier);
     }
 }
