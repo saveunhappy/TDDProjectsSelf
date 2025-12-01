@@ -162,7 +162,6 @@ public class ContextTest {
             }
 
 
-            //TODO throw illegal component if illegal qualifier
             @Test
             public void should_throw_exception_if_illegal_qualifier_given_to_instance() {
                 Component instance = new Component() {
@@ -436,7 +435,6 @@ public class ContextTest {
 
     @Nested
     public class WithQualifier {
-        //TODO dependency missing if qualifier not match
         @Test
         public void should_throw_exception_if_qualifier_not_found() {
             Dependency dependency = new Dependency() {
@@ -454,7 +452,6 @@ public class ContextTest {
             public InjectConstructor(@SkyWalker Dependency dependency) {
             }
         }
-        //TODO check cyclic dependencies with qualifier
 
         static class SkywalkerDependency implements Dependency {
             @Inject
