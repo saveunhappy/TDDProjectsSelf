@@ -44,10 +44,6 @@ public class ComponentRef<ComponentType> {
         }
     }
 
-    public Class<?> getComponentType() {
-        return component.type();
-    }
-
     public Type getContainer() {
         return container;
     }
