@@ -163,10 +163,18 @@ public class InjectTest {
                         },
                         provider.getDependencies().toArray(new ComponentRef[0]));
             }
+            @Test
+            public void should_inject_dependency_with_qualifier_via_constructor() {
 
+                InjectionProvider<InjectConstructor> provider = new InjectionProvider<>(InjectConstructor.class);
+                InjectConstructor component = provider.get(context);
+                assertSame(dependency,component.dependency);
+            }
             static class InjectConstructor {
+                Dependency dependency;
                 @Inject
                 public InjectConstructor(@Named("chosenOne") Dependency dependency) {
+                    this.dependency = dependency;
                 }
             }
             //TODO throw illegal component if illegal qualifier given to injection point
@@ -242,7 +250,6 @@ public class InjectTest {
 
         @Nested
         public class WithQualifier {
-            //TODO inject with qualifier
             @Test
             public void should_include_dependency_with_qualifier() {
                 InjectionProvider<InjectField> provider = new InjectionProvider<>(InjectField.class);
