@@ -187,7 +187,20 @@ public class InjectTest {
                     this.dependency = dependency;
                 }
             }
+
             //TODO throw illegal component if illegal qualifier given to injection point
+            static class MultiQualifierInjectConstructor {
+                @Inject
+
+                public MultiQualifierInjectConstructor(@Named("ChosenOne") @SkyWalker Dependency dependency) {
+                }
+            }
+
+            @Test
+            public void should_throw_exception_if_multi_qualifiers_given() {
+                assertThrows(IllegalComponentException.class, () -> new InjectionProvider<>(MultiQualifierInjectConstructor.class));
+
+            }
         }
     }
 
@@ -441,6 +454,7 @@ public class InjectTest {
                 Mockito.reset(context);
                 when(context.get(eq(ComponentRef.of(Dependency.class, new NamedLiteral("chosenOne"))))).thenReturn(Optional.of(dependency));
             }
+
             @Test
             public void should_include_dependency_with_qualifier() {
                 InjectionProvider<InjectField> provider = new InjectionProvider<>(InjectField.class);
@@ -452,7 +466,7 @@ public class InjectTest {
             public void should_inject_dependency_with_qualifier_via_field() {
                 InjectionProvider<InjectField> provider = new InjectionProvider<>(InjectField.class);
                 InjectField component = provider.get(context);
-                assertSame(dependency,component.dependency);
+                assertSame(dependency, component.dependency);
             }
 
             static class InjectField {
