@@ -159,6 +159,7 @@ public class InjectTest {
             @BeforeEach
             public void before() {
                 Mockito.reset(context);
+                when(context.get(eq(ComponentRef.of(Dependency.class, new NamedLiteral("chosenOne"))))).thenReturn(Optional.of(dependency));
             }
 
             @Test
