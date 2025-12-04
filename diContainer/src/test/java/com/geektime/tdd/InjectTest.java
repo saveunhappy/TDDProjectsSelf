@@ -435,6 +435,12 @@ public class InjectTest {
 
         @Nested
         public class WithQualifier {
+
+            @BeforeEach
+            public void before() {
+                Mockito.reset(context);
+                when(context.get(eq(ComponentRef.of(Dependency.class, new NamedLiteral("ChosenOne"))))).thenReturn(Optional.of(dependency));
+            }
             @Test
             public void should_include_dependency_with_qualifier() {
                 InjectionProvider<InjectField> provider = new InjectionProvider<>(InjectField.class);
@@ -442,11 +448,20 @@ public class InjectTest {
                         provider.getDependencies().toArray(new ComponentRef[0]));
             }
 
+            @Test
+            public void should_inject_dependency_with_qualifier_via_field() {
+                InjectionProvider<InjectField> provider = new InjectionProvider<>(InjectField.class);
+                InjectField component = provider.get(context);
+                assertSame(dependency,component.dependency);
+            }
+
             static class InjectField {
                 @Inject
                 @Named("chosenOne")
                 Dependency dependency;
             }
+
+
             //TODO throw illegal component if illegal qualifier given to injection point
         }
 
