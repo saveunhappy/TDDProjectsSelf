@@ -7,6 +7,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
 import java.util.*;
 import java.util.function.BiFunction;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Arrays.stream;
@@ -16,6 +17,8 @@ class InjectionProvider<T> implements ComponentProvider<T> {
     private final Constructor<T> injectConstructor;
     private List<Field> injectFields;
     private List<Method> injectMethods;
+
+    private List<ComponentRef> dependencies;
 
     public InjectionProvider(Class<T> injectConstructor) {
         if (Modifier.isAbstract(injectConstructor.getModifiers())) throw new IllegalComponentException();
@@ -28,6 +31,7 @@ class InjectionProvider<T> implements ComponentProvider<T> {
         if (injectMethods.stream().anyMatch(m -> m.getTypeParameters().length != 0)) {
             throw new IllegalComponentException();
         }
+        dependencies = getDependencies();
 
     }
 
@@ -150,14 +154,13 @@ class InjectionProvider<T> implements ComponentProvider<T> {
     }
 
 
-
     private static ComponentRef toComponentRef(Field field) {
         return ComponentRef.of(field.getGenericType(), getQualifier(field));
     }
 
-    private static Annotation getQualifier(AnnotatedElement p) {
-        return stream(p.getAnnotations()).filter
-                        (a -> a.annotationType().isAnnotationPresent(Qualifier.class))
-                .findFirst().orElse(null);
+    private static Annotation getQualifier(AnnotatedElement field) {
+        List<Annotation> qualifiers = stream(field.getAnnotations()).filter(a -> a.annotationType().isAnnotationPresent(Qualifier.class)).collect(Collectors.toList());
+        if (qualifiers.size() > 1) throw new IllegalComponentException();
+        return qualifiers.stream().findFirst().orElse(null);
     }
 }
