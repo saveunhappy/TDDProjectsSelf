@@ -6,6 +6,7 @@ import jakarta.inject.Provider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import java.lang.reflect.ParameterizedType;
 import java.util.Optional;
@@ -155,6 +156,11 @@ public class InjectTest {
 
         @Nested
         public class WithQualifier {
+            @BeforeEach
+            public void before() {
+                Mockito.reset(context);
+            }
+
             @Test
             public void should_include_dependency_with_qualifier() {
                 InjectionProvider<InjectConstructor> provider = new InjectionProvider<>(InjectConstructor.class);
@@ -163,15 +169,18 @@ public class InjectTest {
                         },
                         provider.getDependencies().toArray(new ComponentRef[0]));
             }
+
             @Test
             public void should_inject_dependency_with_qualifier_via_constructor() {
 
                 InjectionProvider<InjectConstructor> provider = new InjectionProvider<>(InjectConstructor.class);
                 InjectConstructor component = provider.get(context);
-                assertSame(dependency,component.dependency);
+                assertSame(dependency, component.dependency);
             }
+
             static class InjectConstructor {
                 Dependency dependency;
+
                 @Inject
                 public InjectConstructor(@Named("chosenOne") Dependency dependency) {
                     this.dependency = dependency;
@@ -259,7 +268,8 @@ public class InjectTest {
 
             static class InjectField {
                 @Inject
-                @Named("chosenOne") Dependency dependency;
+                @Named("chosenOne")
+                Dependency dependency;
             }
             //TODO throw illegal component if illegal qualifier given to injection point
         }
