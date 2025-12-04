@@ -108,7 +108,7 @@ class InjectionProvider<T> implements ComponentProvider<T> {
     }
 
     private static Object toDependencies(Context context, Field field) {
-        return toDependency(context, field.getGenericType());
+        return toDependency(context, field.getGenericType(), null);
     }
 
     private Object[] toDependencies(Context context, Executable executable) {
@@ -118,10 +118,10 @@ class InjectionProvider<T> implements ComponentProvider<T> {
     }
 
     private static Object getDependency(Context context, Parameter p) {
-        return toDependency(context, p.getParameterizedType());
+        return toDependency(context, p.getParameterizedType(), null);
     }
 
-    private static Object toDependency(Context context, Type type) {
+    private static Object toDependency(Context context, Type type, Annotation qualifier) {
         return context.get(ComponentRef.of(type)).get();
     }
 
