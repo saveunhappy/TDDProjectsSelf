@@ -150,10 +150,13 @@ class InjectionProvider<T> implements ComponentProvider<T> {
     }
 
     private static ComponentRef toComponentRef(Parameter p) {
-        Annotation qualifier = stream(p.getAnnotations()).filter
+        return ComponentRef.of(p.getParameterizedType(), getQualifier(p));
+    }
+
+    private static Annotation getQualifier(Parameter p) {
+        return stream(p.getAnnotations()).filter
                         (a -> a.annotationType().isAnnotationPresent(Qualifier.class))
                 .findFirst().orElse(null);
-        return ComponentRef.of(p.getParameterizedType(), qualifier);
     }
 
     private static ComponentRef toComponentRef(Field field) {
