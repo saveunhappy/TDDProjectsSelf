@@ -160,7 +160,13 @@ public class ContextTest {
 
 
             }
-
+            @Test
+            public void should_retrieve_empty_if_no_matched_qualifier() {
+                config.bind(TestComponent.class, new TestComponent() {
+                });
+                Optional<TestComponent> component = config.getContext().get(ComponentRef.of(TestComponent.class, new SkyWalkerLiteral()));
+                assertTrue(component.isEmpty());
+            }
 
             @Test
             public void should_throw_exception_if_illegal_qualifier_given_to_instance() {
