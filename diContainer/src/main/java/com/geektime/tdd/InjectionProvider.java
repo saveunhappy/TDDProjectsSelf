@@ -21,16 +21,18 @@ class InjectionProvider<T> implements ComponentProvider<T> {
 
     private Injectable<Constructor<T>> injectConstructor;
 
+    private List<Injectable<Method>> injectableMethods;
+
     public InjectionProvider(Class<T> component) {
         if (Modifier.isAbstract(component.getModifiers())) throw new IllegalComponentException();
         this.injectConstructor = getInjectable(getInjectConstructor(component));
+        this.injectableMethods = getInjectMethods(component).stream().map(this::getInjectable).collect(Collectors.toList());
 
         this.injectFields = getInjectFields(component);
-        this.injectMethods = getInjectMethods(component);
         if (injectFields.stream().anyMatch(f -> Modifier.isFinal(f.getModifiers()))) {
             throw new IllegalComponentException();
         }
-        if (injectMethods.stream().anyMatch(m -> m.getTypeParameters().length != 0)) {
+        if (injectableMethods.stream().map(Injectable::element).anyMatch(m -> m.getTypeParameters().length != 0)) {
             throw new IllegalComponentException();
         }
         dependencies = getDependencies();
@@ -53,7 +55,7 @@ class InjectionProvider<T> implements ComponentProvider<T> {
     public List<ComponentRef> getDependencies() {
         return concat(concat(stream(injectConstructor.require()),
                         injectFields.stream().map(InjectionProvider::toComponentRef)),
-                injectMethods.stream().flatMap(m -> stream(m.getParameters()).map(InjectionProvider::toComponentRef)))
+                injectableMethods.stream().flatMap(m -> stream(m.element().getParameters()).map(InjectionProvider::toComponentRef)))
                 .toList();
 
     }
@@ -123,9 +125,8 @@ class InjectionProvider<T> implements ComponentProvider<T> {
                 //但是如果加上Field的dependency，就可以在这里校验了
                 field.set(instance, toDependencies(context, field));
             }
-            for (Method method : injectMethods) {
-                Object[] args = toDependencies(context, method);
-                method.invoke(instance, args);
+            for (Injectable<Method> injectableMethod : injectableMethods) {
+                injectableMethod.element().invoke(instance, toDependencies(context, injectableMethod.element()));
             }
             return instance;
         } catch (InvocationTargetException | InstantiationException | IllegalAccessException e) {
