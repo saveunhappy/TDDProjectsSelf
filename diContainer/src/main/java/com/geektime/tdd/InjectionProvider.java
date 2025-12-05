@@ -44,7 +44,14 @@ class InjectionProvider<T> implements ComponentProvider<T> {
     record Injectable<Element extends AccessibleObject>(Element element, ComponentRef<?>[] require) {
 
     }
+    @Override
+    public List<ComponentRef> getDependencies() {
+        return concat(concat(stream(injectableConstructor.require()),
+                        injectFields.stream().map(InjectionProvider::toComponentRef)),
+                injectMethods.stream().flatMap(m -> stream(m.getParameters()).map(InjectionProvider::toComponentRef)))
+                .toList();
 
+    }
     private static <Type> Constructor<Type> getInjectConstructor(Class<Type> implementation) {
         List<Constructor<?>> injectConstructors = injectable(implementation.getConstructors()).toList();
         if (injectConstructors.size() > 1) throw new IllegalComponentException();
@@ -146,14 +153,7 @@ class InjectionProvider<T> implements ComponentProvider<T> {
                 && Arrays.equals(o.getParameterTypes(), m.getParameterTypes());
     }
 
-    @Override
-    public List<ComponentRef> getDependencies() {
-        return concat(concat(stream(injectConstructor.getParameters()).map(InjectionProvider::toComponentRef),
-                        injectFields.stream().map(InjectionProvider::toComponentRef)),
-                injectMethods.stream().flatMap(m -> stream(m.getParameters()).map(InjectionProvider::toComponentRef)))
-                .toList();
 
-    }
 
     private static Annotation getQualifier(AnnotatedElement field) {
         List<Annotation> qualifiers = stream(field.getAnnotations()).filter(a -> a.annotationType().isAnnotationPresent(Qualifier.class)).collect(Collectors.toList());
