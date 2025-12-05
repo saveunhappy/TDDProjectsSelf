@@ -39,10 +39,8 @@ class InjectionProvider<T> implements ComponentProvider<T> {
 
     }
 
-    private <Element extends Executable> Injectable<Constructor<T>> getInjectable(Constructor<T> constructor) {
-        ComponentRef<?>[] require = stream(constructor.getParameters()).map(p -> toComponentRef(p)).toArray(ComponentRef<?>[]::new);
-        Injectable<Constructor<T>> injectConstructor1 = new Injectable<>(constructor, require);
-        return injectConstructor1;
+    private <Element extends Executable> Injectable<Element> getInjectable(Element constructor) {
+        return new Injectable<>(constructor, stream(constructor.getParameters()).map(InjectionProvider::toComponentRef).toArray(ComponentRef<?>[]::new));
     }
 
     record Injectable<Element extends AccessibleObject>(Element element, ComponentRef<?>[] require) {
