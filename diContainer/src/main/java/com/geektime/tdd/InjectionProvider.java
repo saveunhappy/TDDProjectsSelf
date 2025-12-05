@@ -121,9 +121,6 @@ class InjectionProvider<T> implements ComponentProvider<T> {
                 .toArray();
     }
 
-    private static Object toDependency(Context context, Type type, Annotation qualifier) {
-        return context.get(ComponentRef.of(type, qualifier)).get();
-    }
 
 
     private static boolean isOverrideByInjectMethod(List<Method> injectMethods, Method m) {
@@ -149,6 +146,15 @@ class InjectionProvider<T> implements ComponentProvider<T> {
 
     }
 
+    private static Annotation getQualifier(AnnotatedElement field) {
+        List<Annotation> qualifiers = stream(field.getAnnotations()).filter(a -> a.annotationType().isAnnotationPresent(Qualifier.class)).collect(Collectors.toList());
+        if (qualifiers.size() > 1) throw new IllegalComponentException();
+        return qualifiers.stream().findFirst().orElse(null);
+    }
+
+    private static Object toDependency(Context context, Type type, Annotation qualifier) {
+        return context.get(ComponentRef.of(type, qualifier)).get();
+    }
     private static ComponentRef toComponentRef(Parameter p) {
         return ComponentRef.of(p.getParameterizedType(), getQualifier(p));
     }
@@ -156,11 +162,5 @@ class InjectionProvider<T> implements ComponentProvider<T> {
 
     private static ComponentRef toComponentRef(Field field) {
         return ComponentRef.of(field.getGenericType(), getQualifier(field));
-    }
-
-    private static Annotation getQualifier(AnnotatedElement field) {
-        List<Annotation> qualifiers = stream(field.getAnnotations()).filter(a -> a.annotationType().isAnnotationPresent(Qualifier.class)).collect(Collectors.toList());
-        if (qualifiers.size() > 1) throw new IllegalComponentException();
-        return qualifiers.stream().findFirst().orElse(null);
     }
 }
