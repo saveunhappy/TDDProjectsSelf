@@ -20,6 +20,8 @@ class InjectionProvider<T> implements ComponentProvider<T> {
 
     private List<ComponentRef> dependencies;
 
+    private Injectable<Constructor<T>> injectableConstructor;
+
     public InjectionProvider(Class<T> injectConstructor) {
         if (Modifier.isAbstract(injectConstructor.getModifiers())) throw new IllegalComponentException();
         this.injectConstructor = getInjectConstructor(injectConstructor);
@@ -34,7 +36,9 @@ class InjectionProvider<T> implements ComponentProvider<T> {
         dependencies = getDependencies();
 
     }
+    record Injectable<Element extends AccessibleObject>(Element element,ComponentRef<?>[] require){
 
+    }
     private static <Type> Constructor<Type> getInjectConstructor(Class<Type> implementation) {
         List<Constructor<?>> injectConstructors = injectable(implementation.getConstructors()).toList();
         if (injectConstructors.size() > 1) throw new IllegalComponentException();
@@ -112,12 +116,12 @@ class InjectionProvider<T> implements ComponentProvider<T> {
     }
 
     private static Object toDependencies(Context context, Field field) {
-        return toDependency(context, field.getGenericType(), getQualifier(field));
+        return toDependency(context, toComponentRef(field));
     }
 
     private Object[] toDependencies(Context context, Executable executable) {
         return Arrays.stream(executable.getParameters())
-                .map(p -> toDependency(context, p.getParameterizedType(), getQualifier(p)))
+                .map(p -> toDependency(context, toComponentRef(p)))
                 .toArray();
     }
 
@@ -150,11 +154,6 @@ class InjectionProvider<T> implements ComponentProvider<T> {
         List<Annotation> qualifiers = stream(field.getAnnotations()).filter(a -> a.annotationType().isAnnotationPresent(Qualifier.class)).collect(Collectors.toList());
         if (qualifiers.size() > 1) throw new IllegalComponentException();
         return qualifiers.stream().findFirst().orElse(null);
-    }
-
-    private static Object toDependency(Context context, Type type, Annotation qualifier) {
-        return toDependency(context, ComponentRef.of(type, qualifier));
-//        return context.get(ComponentRef.of(type, qualifier)).get();
     }
 
     private static Object toDependency(Context context, ComponentRef of) {
