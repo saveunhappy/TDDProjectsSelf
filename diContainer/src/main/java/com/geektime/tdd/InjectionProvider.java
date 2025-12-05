@@ -14,21 +14,19 @@ import static java.util.Arrays.stream;
 import static java.util.stream.Stream.*;
 
 class InjectionProvider<T> implements ComponentProvider<T> {
-    private final Constructor<T> injectConstructor;
     private List<Field> injectFields;
     private List<Method> injectMethods;
 
     private List<ComponentRef> dependencies;
 
-    private Injectable<Constructor<T>> injectableConstructor;
+    private Injectable<Constructor<T>> injectConstructor;
 
     public InjectionProvider(Class<T> injectConstructor) {
         if (Modifier.isAbstract(injectConstructor.getModifiers())) throw new IllegalComponentException();
         Constructor<T> constructor = getInjectConstructor(injectConstructor);
         ComponentRef<?>[] require = stream(constructor.getParameters()).map(p -> toComponentRef(p)).toArray(ComponentRef<?>[]::new);
-        this.injectableConstructor = new Injectable<>(constructor, require);
+        this.injectConstructor = new Injectable<>(constructor, require);
 
-        this.injectConstructor = constructor;
         this.injectFields = getInjectFields(injectConstructor);
         this.injectMethods = getInjectMethods(injectConstructor);
         if (injectFields.stream().anyMatch(f -> Modifier.isFinal(f.getModifiers()))) {
@@ -51,7 +49,7 @@ class InjectionProvider<T> implements ComponentProvider<T> {
 
     @Override
     public List<ComponentRef> getDependencies() {
-        return concat(concat(stream(injectableConstructor.require()),
+        return concat(concat(stream(injectConstructor.require()),
                         injectFields.stream().map(InjectionProvider::toComponentRef)),
                 injectMethods.stream().flatMap(m -> stream(m.getParameters()).map(InjectionProvider::toComponentRef)))
                 .toList();
@@ -115,7 +113,7 @@ class InjectionProvider<T> implements ComponentProvider<T> {
     @Override
     public T get(Context context) {
         try {
-            T instance = injectableConstructor.element().newInstance(injectableConstructor.toDependencies(context));
+            T instance = injectConstructor.element().newInstance(injectConstructor.toDependencies(context));
             for (Field field : injectFields) {
                 //这里直接调用.get()就可以，因为前面的getContext中得到Dependency
                 //之后就会去校验，如果不存在就会抛出异常，所以这里就可以直接调用.get()
