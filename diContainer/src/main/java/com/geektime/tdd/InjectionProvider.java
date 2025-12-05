@@ -109,8 +109,7 @@ class InjectionProvider<T> implements ComponentProvider<T> {
     @Override
     public T get(Context context) {
         try {
-            Object[] dependencies = toDependencies(context, injectableConstructor.element());
-            T instance = injectableConstructor.element().newInstance(dependencies);
+            T instance = injectableConstructor.element().newInstance(toDependencies(context, injectableConstructor.element()));
             for (Field field : injectFields) {
                 //这里直接调用.get()就可以，因为前面的getContext中得到Dependency
                 //之后就会去校验，如果不存在就会抛出异常，所以这里就可以直接调用.get()
