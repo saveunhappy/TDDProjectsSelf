@@ -39,7 +39,22 @@ class InjectionProvider<T> implements ComponentProvider<T> {
     }
 
     private static List<Injectable<Method>> getMethods(Class<?> component) {
-        return getInjectMethods(component).stream().map(Injectable::of).collect(Collectors.toList());
+
+        List<Method> injectMethods = traverse(component,
+                (methods, current) -> injectable(current.getDeclaredMethods())
+                        //由子到父的添加，子类先添加完，就到injectMethods中了，然后到父类再找到
+                        //去对比子类中是否有同名方法，并且参数个数也相同，因为存在重载，这里就是都被@Inject标注了
+                        //但是只能调用一次，所以就把父类的方法过滤掉了，因为子类中已经有了
+                        .filter(m -> isOverrideByInjectMethod(methods, m))
+                        //第一轮子类的方法没有被@Inject标注，所以是空，第二轮发现父类被标注了@Inject，
+                        // 所以上一步筛选出来了被父类标注的
+                        //然后再去对比，和子类的那个没有被@Inject标注的那个方法名字一样不，一样的话，
+                        //那就得把父类的那个方法去掉了，否则我只new了一个子类，没有@Inject父类同名的方法
+                        //只是起了个同样的名字，那么父类的那个就不应该被调用
+                        .filter(m -> isOverrideByNoInjectMethod(component, m))
+                        .toList());
+        Collections.reverse(injectMethods);
+        return injectMethods.stream().map(Injectable::of).collect(Collectors.toList());
     }
 
     record Injectable<Element extends AccessibleObject>(Element element, ComponentRef<?>[] require) {
@@ -93,25 +108,6 @@ class InjectionProvider<T> implements ComponentProvider<T> {
         } catch (NoSuchMethodException e) {
             throw new IllegalComponentException();
         }
-    }
-
-    private static <T> List<Method> getInjectMethods(Class<T> component) {
-
-        List<Method> injectMethods = traverse(component,
-                (methods, current) -> injectable(current.getDeclaredMethods())
-                        //由子到父的添加，子类先添加完，就到injectMethods中了，然后到父类再找到
-                        //去对比子类中是否有同名方法，并且参数个数也相同，因为存在重载，这里就是都被@Inject标注了
-                        //但是只能调用一次，所以就把父类的方法过滤掉了，因为子类中已经有了
-                        .filter(m -> isOverrideByInjectMethod(methods, m))
-                        //第一轮子类的方法没有被@Inject标注，所以是空，第二轮发现父类被标注了@Inject，
-                        // 所以上一步筛选出来了被父类标注的
-                        //然后再去对比，和子类的那个没有被@Inject标注的那个方法名字一样不，一样的话，
-                        //那就得把父类的那个方法去掉了，否则我只new了一个子类，没有@Inject父类同名的方法
-                        //只是起了个同样的名字，那么父类的那个就不应该被调用
-                        .filter(m -> isOverrideByNoInjectMethod(component, m))
-                        .toList());
-        Collections.reverse(injectMethods);
-        return injectMethods;
     }
 
     private static <T> List<Field> getInjectFields(Class<T> component) {
