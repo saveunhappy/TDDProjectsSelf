@@ -40,11 +40,26 @@ class InjectionProvider<T> implements ComponentProvider<T> {
 
     record Injectable<Element extends AccessibleObject>(Element element, ComponentRef<?>[] require) {
         private static <Element extends Executable> Injectable<Element> of(Element constructor) {
-            return new Injectable<>(constructor, stream(constructor.getParameters()).map(InjectionProvider::toComponentRef).toArray(ComponentRef<?>[]::new));
+            return new Injectable<>(constructor, stream(constructor.getParameters()).map(Injectable::toComponentRef).toArray(ComponentRef<?>[]::new));
         }
         static Injectable<Field> of(Field field) {
             return new Injectable<>(field,new ComponentRef<?>[]{toComponentRef(field)});
         }
+
+        private static ComponentRef toComponentRef(Field field) {
+            return ComponentRef.of(field.getGenericType(), getQualifier(field));
+        }
+
+        private static ComponentRef toComponentRef(Parameter p) {
+            return ComponentRef.of(p.getParameterizedType(), getQualifier(p));
+        }
+
+        private static Annotation getQualifier(AnnotatedElement field) {
+            List<Annotation> qualifiers = stream(field.getAnnotations()).filter(a -> a.annotationType().isAnnotationPresent(Qualifier.class)).collect(Collectors.toList());
+            if (qualifiers.size() > 1) throw new IllegalComponentException();
+            return qualifiers.stream().findFirst().orElse(null);
+        }
+
         Object[] toDependencies(Context context) {
             return stream(require())
                     .map(ref -> context.get(ref).get())
@@ -55,8 +70,8 @@ class InjectionProvider<T> implements ComponentProvider<T> {
     @Override
     public List<ComponentRef> getDependencies() {
         return concat(concat(stream(injectConstructor.require()),
-                        injectFields.stream().map(Injectable::element).map(InjectionProvider::toComponentRef)),
-                injectMethods.stream().flatMap(m -> stream(m.element().getParameters()).map(InjectionProvider::toComponentRef)))
+                        injectFields.stream().map(Injectable::element).map(Injectable::toComponentRef)),
+                injectMethods.stream().flatMap(m -> stream(m.element().getParameters()).map(Injectable::toComponentRef)))
                 .toList();
 
     }
@@ -152,18 +167,4 @@ class InjectionProvider<T> implements ComponentProvider<T> {
     }
 
 
-    private static Annotation getQualifier(AnnotatedElement field) {
-        List<Annotation> qualifiers = stream(field.getAnnotations()).filter(a -> a.annotationType().isAnnotationPresent(Qualifier.class)).collect(Collectors.toList());
-        if (qualifiers.size() > 1) throw new IllegalComponentException();
-        return qualifiers.stream().findFirst().orElse(null);
-    }
-
-    private static ComponentRef toComponentRef(Parameter p) {
-        return ComponentRef.of(p.getParameterizedType(), getQualifier(p));
-    }
-
-
-    private static ComponentRef toComponentRef(Field field) {
-        return ComponentRef.of(field.getGenericType(), getQualifier(field));
-    }
 }
