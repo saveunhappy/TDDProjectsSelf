@@ -100,14 +100,10 @@ class InjectionProvider<T> implements ComponentProvider<T> {
     }
 
     @Override
-    public List<ComponentRef> getDependencies() {
-//        return concat(concat(stream(injectConstructor.require()),
-//                        injectFields.stream().map(Injectable::element).map(Injectable::toComponentRef)),
-//                injectMethods.stream().flatMap(m -> stream(m.element().getParameters()).map(Injectable::toComponentRef)))
-//                .toList();
-        return concat(concat(Stream.of(injectConstructor),injectMethods.stream()),injectFields.stream()).flatMap(i->stream(i.require())).toList();
-
-
+    public List<ComponentRef<?>> getDependencies() {
+        return concat(concat(Stream.of(injectConstructor),
+                injectMethods.stream()), injectFields.stream())
+                .flatMap(i -> stream(i.require())).toList();
     }
 
     private static <Type> Constructor<Type> defaultConstructor(Class<Type> implementation) {
