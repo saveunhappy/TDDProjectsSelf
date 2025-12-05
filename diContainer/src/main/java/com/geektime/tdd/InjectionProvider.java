@@ -25,8 +25,8 @@ class InjectionProvider<T> implements ComponentProvider<T> {
 
     public InjectionProvider(Class<T> component) {
         if (Modifier.isAbstract(component.getModifiers())) throw new IllegalComponentException();
-        this.injectConstructor = getInjectable(getInjectConstructor(component));
-        this.injectableMethods = getInjectMethods(component).stream().map(InjectionProvider::getInjectable).collect(Collectors.toList());
+        this.injectConstructor = Injectable.getInjectable(getInjectConstructor(component));
+        this.injectableMethods = getInjectMethods(component).stream().map(Injectable::getInjectable).collect(Collectors.toList());
 
         this.injectFields = getInjectFields(component);
         if (injectFields.stream().anyMatch(f -> Modifier.isFinal(f.getModifiers()))) {
@@ -39,11 +39,11 @@ class InjectionProvider<T> implements ComponentProvider<T> {
 
     }
 
-    private static <Element extends Executable> Injectable<Element> getInjectable(Element constructor) {
-        return new Injectable<>(constructor, stream(constructor.getParameters()).map(InjectionProvider::toComponentRef).toArray(ComponentRef<?>[]::new));
-    }
-
     record Injectable<Element extends AccessibleObject>(Element element, ComponentRef<?>[] require) {
+        private static <Element extends Executable> Injectable<Element> getInjectable(Element constructor) {
+            return new Injectable<>(constructor, stream(constructor.getParameters()).map(InjectionProvider::toComponentRef).toArray(ComponentRef<?>[]::new));
+        }
+
         Object[] toDependencies(Context context) {
             return stream(require())
                     .map(ref -> context.get(ref).get())
