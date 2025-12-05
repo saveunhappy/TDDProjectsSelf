@@ -23,9 +23,7 @@ class InjectionProvider<T> implements ComponentProvider<T> {
 
     public InjectionProvider(Class<T> component) {
         if (Modifier.isAbstract(component.getModifiers())) throw new IllegalComponentException();
-        Constructor<T> constructor = getInjectConstructor(component);
-        Injectable<Constructor<T>> injectConstructor1 = getInjectable(constructor);
-        this.injectConstructor = injectConstructor1;
+        this.injectConstructor = getInjectable(getInjectConstructor(component));
 
         this.injectFields = getInjectFields(component);
         this.injectMethods = getInjectMethods(component);
