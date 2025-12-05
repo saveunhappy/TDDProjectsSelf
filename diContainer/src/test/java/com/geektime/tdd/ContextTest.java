@@ -493,7 +493,7 @@ public class ContextTest {
 
 
     @Nested
-    class WithQualifier {
+    public class WithQualifier {
 
         @ParameterizedTest
         @MethodSource
@@ -620,22 +620,31 @@ public class ContextTest {
                     arguments.add(Arguments.of(skywalker, notCyclic));
             return arguments.stream();
         }
-        @Nested
-        public class WithScope {
-            static class NoSingleton {
 
-            }
+    }
+    @Nested
+    public class WithScope {
+        static class NoSingleton {
+
+        }
+        @Test
+        public void should_not_be_singleton_scope_by_default() {
+            config.bind(NoSingleton.class,NoSingleton.class);
+            Context context = config.getContext();
+            assertNotSame(context.get(ComponentRef.of(NoSingleton.class)).get(),context.get(ComponentRef.of(NoSingleton.class)).get());
+        }
+        //TODO bind component as singleton scoped
+        //TODO get scope from component class
+        //TODO get scope from component with qualifier
+        //TODO bind component with customize scope annotation
+        @Nested
+        public class WithQualifier {
             @Test
             public void should_not_be_singleton_scope_by_default() {
-                config.bind(NoSingleton.class,NoSingleton.class);
+                config.bind(NoSingleton.class,NoSingleton.class,new SkyWalkerLiteral());
                 Context context = config.getContext();
-                assertNotSame(context.get(ComponentRef.of(NoSingleton.class)).get(),context.get(ComponentRef.of(NoSingleton.class)).get());
+                assertNotSame(context.get(ComponentRef.of(NoSingleton.class,new SkyWalkerLiteral())).get(),context.get(ComponentRef.of(NoSingleton.class,new SkyWalkerLiteral())).get());
             }
-            //TODO bind component as singleton scoped
-            //TODO bind component with qualifiers as singleton scoped
-            //TODO get scope from component class
-            //TODO get scope from component with qualifier
-            //TODO bind component with customize scope annotation
         }
     }
 }
