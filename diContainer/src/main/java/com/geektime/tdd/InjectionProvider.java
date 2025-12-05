@@ -25,7 +25,7 @@ class InjectionProvider<T> implements ComponentProvider<T> {
 
     public InjectionProvider(Class<T> component) {
         if (Modifier.isAbstract(component.getModifiers())) throw new IllegalComponentException();
-        this.injectConstructor = Injectable.of(getInjectConstructor(component));
+        this.injectConstructor = getOf(component);
         this.injectMethods = getInjectMethods(component);
         this.injectFields = getInjectFields(component).stream().map(Injectable::of).toList();
 
@@ -36,6 +36,13 @@ class InjectionProvider<T> implements ComponentProvider<T> {
             throw new IllegalComponentException();
         }
 
+    }
+
+    private static <T> Injectable<Constructor<T>> getOf(Class<T> component) {
+        List<Constructor<?>> injectConstructors = injectable(component.getConstructors()).toList();
+        if (injectConstructors.size() > 1) throw new IllegalComponentException();
+
+        return Injectable.of((Constructor<T>) injectConstructors.stream().findFirst().orElseGet(() -> defaultConstructor(component)));
     }
 
     private static List<Injectable<Method>> getInjectMethods(Class<?> component) {
@@ -61,8 +68,9 @@ class InjectionProvider<T> implements ComponentProvider<T> {
         private static <Element extends Executable> Injectable<Element> of(Element constructor) {
             return new Injectable<>(constructor, stream(constructor.getParameters()).map(Injectable::toComponentRef).toArray(ComponentRef<?>[]::new));
         }
+
         static Injectable<Field> of(Field field) {
-            return new Injectable<>(field,new ComponentRef<?>[]{toComponentRef(field)});
+            return new Injectable<>(field, new ComponentRef<?>[]{toComponentRef(field)});
         }
 
         private static ComponentRef toComponentRef(Field field) {
@@ -93,13 +101,6 @@ class InjectionProvider<T> implements ComponentProvider<T> {
                 injectMethods.stream().flatMap(m -> stream(m.element().getParameters()).map(Injectable::toComponentRef)))
                 .toList();
 
-    }
-
-    private static <Type> Constructor<Type> getInjectConstructor(Class<Type> implementation) {
-        List<Constructor<?>> injectConstructors = injectable(implementation.getConstructors()).toList();
-        if (injectConstructors.size() > 1) throw new IllegalComponentException();
-
-        return (Constructor<Type>) injectConstructors.stream().findFirst().orElseGet(() -> defaultConstructor(implementation));
     }
 
     private static <Type> Constructor<Type> defaultConstructor(Class<Type> implementation) {
@@ -149,7 +150,6 @@ class InjectionProvider<T> implements ComponentProvider<T> {
             throw new RuntimeException(e);
         }
     }
-
 
 
     private static boolean isOverrideByInjectMethod(List<Method> injectMethods, Method m) {
