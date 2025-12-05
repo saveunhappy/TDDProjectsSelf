@@ -24,7 +24,11 @@ class InjectionProvider<T> implements ComponentProvider<T> {
 
     public InjectionProvider(Class<T> injectConstructor) {
         if (Modifier.isAbstract(injectConstructor.getModifiers())) throw new IllegalComponentException();
-        this.injectConstructor = getInjectConstructor(injectConstructor);
+        Constructor<T> constructor = getInjectConstructor(injectConstructor);
+        ComponentRef<?>[] require = stream(constructor.getParameters()).map(p -> toComponentRef(p)).toArray(ComponentRef<?>[]::new);
+        this.injectableConstructor = new Injectable<>(constructor,require);
+
+        this.injectConstructor = constructor;
         this.injectFields = getInjectFields(injectConstructor);
         this.injectMethods = getInjectMethods(injectConstructor);
         if (injectFields.stream().anyMatch(f -> Modifier.isFinal(f.getModifiers()))) {
@@ -36,9 +40,11 @@ class InjectionProvider<T> implements ComponentProvider<T> {
         dependencies = getDependencies();
 
     }
-    record Injectable<Element extends AccessibleObject>(Element element,ComponentRef<?>[] require){
+
+    record Injectable<Element extends AccessibleObject>(Element element, ComponentRef<?>[] require) {
 
     }
+
     private static <Type> Constructor<Type> getInjectConstructor(Class<Type> implementation) {
         List<Constructor<?>> injectConstructors = injectable(implementation.getConstructors()).toList();
         if (injectConstructors.size() > 1) throw new IllegalComponentException();
@@ -124,7 +130,6 @@ class InjectionProvider<T> implements ComponentProvider<T> {
                 .map(p -> toDependency(context, toComponentRef(p)))
                 .toArray();
     }
-
 
 
     private static boolean isOverrideByInjectMethod(List<Method> injectMethods, Method m) {
