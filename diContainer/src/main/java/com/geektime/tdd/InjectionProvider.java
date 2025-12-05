@@ -15,7 +15,6 @@ import static java.util.stream.Stream.*;
 
 class InjectionProvider<T> implements ComponentProvider<T> {
 
-    private final List<ComponentRef> dependencies;
 
     private final Injectable<Constructor<T>> injectConstructor;
 
@@ -36,7 +35,6 @@ class InjectionProvider<T> implements ComponentProvider<T> {
         if (injectableMethods.stream().map(Injectable::element).anyMatch(m -> m.getTypeParameters().length != 0)) {
             throw new IllegalComponentException();
         }
-        dependencies = getDependencies();
 
     }
 
