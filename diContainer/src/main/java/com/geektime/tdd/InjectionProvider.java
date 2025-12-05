@@ -26,7 +26,7 @@ class InjectionProvider<T> implements ComponentProvider<T> {
     public InjectionProvider(Class<T> component) {
         if (Modifier.isAbstract(component.getModifiers())) throw new IllegalComponentException();
         this.injectConstructor = Injectable.of(getInjectConstructor(component));
-        this.injectMethods = getInjectMethods(component).stream().map(Injectable::of).collect(Collectors.toList());
+        this.injectMethods = getMethods(component);
         this.injectFields = getInjectFields(component).stream().map(Injectable::of).toList();
 
         if (injectFields.stream().map(Injectable::element).anyMatch(f -> Modifier.isFinal(f.getModifiers()))) {
@@ -36,6 +36,10 @@ class InjectionProvider<T> implements ComponentProvider<T> {
             throw new IllegalComponentException();
         }
 
+    }
+
+    private static List<Injectable<Method>> getMethods(Class<?> component) {
+        return getInjectMethods(component).stream().map(Injectable::of).collect(Collectors.toList());
     }
 
     record Injectable<Element extends AccessibleObject>(Element element, ComponentRef<?>[] require) {
