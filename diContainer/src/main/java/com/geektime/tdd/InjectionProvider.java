@@ -26,7 +26,7 @@ class InjectionProvider<T> implements ComponentProvider<T> {
         if (Modifier.isAbstract(injectConstructor.getModifiers())) throw new IllegalComponentException();
         Constructor<T> constructor = getInjectConstructor(injectConstructor);
         ComponentRef<?>[] require = stream(constructor.getParameters()).map(p -> toComponentRef(p)).toArray(ComponentRef<?>[]::new);
-        this.injectableConstructor = new Injectable<>(constructor,require);
+        this.injectableConstructor = new Injectable<>(constructor, require);
 
         this.injectConstructor = constructor;
         this.injectFields = getInjectFields(injectConstructor);
@@ -42,8 +42,15 @@ class InjectionProvider<T> implements ComponentProvider<T> {
     }
 
     record Injectable<Element extends AccessibleObject>(Element element, ComponentRef<?>[] require) {
-
+        Object[] toDependencies(Context context) {
+            List<Object> list = new ArrayList<>();
+            for (ComponentRef<?> ref : require) {
+                list.add(context.get(ref).get());
+            }
+            return list.toArray();
+        }
     }
+
     @Override
     public List<ComponentRef> getDependencies() {
         return concat(concat(stream(injectableConstructor.require()),
@@ -52,6 +59,7 @@ class InjectionProvider<T> implements ComponentProvider<T> {
                 .toList();
 
     }
+
     private static <Type> Constructor<Type> getInjectConstructor(Class<Type> implementation) {
         List<Constructor<?>> injectConstructors = injectable(implementation.getConstructors()).toList();
         if (injectConstructors.size() > 1) throw new IllegalComponentException();
@@ -109,7 +117,7 @@ class InjectionProvider<T> implements ComponentProvider<T> {
     @Override
     public T get(Context context) {
         try {
-            T instance = injectableConstructor.element().newInstance(toDependencies(context, injectableConstructor.element()));
+            T instance = injectableConstructor.element().newInstance(injectableConstructor.toDependencies(context));
             for (Field field : injectFields) {
                 //这里直接调用.get()就可以，因为前面的getContext中得到Dependency
                 //之后就会去校验，如果不存在就会抛出异常，所以这里就可以直接调用.get()
@@ -151,7 +159,6 @@ class InjectionProvider<T> implements ComponentProvider<T> {
         return o.getName().equals(m.getName())
                 && Arrays.equals(o.getParameterTypes(), m.getParameterTypes());
     }
-
 
 
     private static Annotation getQualifier(AnnotatedElement field) {
