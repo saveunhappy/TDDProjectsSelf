@@ -620,7 +620,15 @@ public class ContextTest {
                     arguments.add(Arguments.of(skywalker, notCyclic));
             return arguments.stream();
         }
-        // dependency missing if qualifier not match
+        @Nested
+        public class WithScope {
+            //TODO default scope should not be singleton
+            //TODO bind component as singleton scoped
+            //TODO bind component with qualifiers as singleton scoped
+            //TODO get scope from component class
+            //TODO get scope from component with qualifier
+            //TODO bind component with customize scope annotation
+        }
     }
 }
 
