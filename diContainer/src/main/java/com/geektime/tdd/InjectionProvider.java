@@ -25,9 +25,9 @@ class InjectionProvider<T> implements ComponentProvider<T> {
 
     public InjectionProvider(Class<T> component) {
         if (Modifier.isAbstract(component.getModifiers())) throw new IllegalComponentException();
-        this.injectConstructor = getOf(component);
+        this.injectConstructor = getInjectConstructor(component);
         this.injectMethods = getInjectMethods(component);
-        this.injectFields = getInjectFields(component).stream().map(Injectable::of).toList();
+        this.injectFields = getInjectFields(component);
 
         if (injectFields.stream().map(Injectable::element).anyMatch(f -> Modifier.isFinal(f.getModifiers()))) {
             throw new IllegalComponentException();
@@ -38,7 +38,12 @@ class InjectionProvider<T> implements ComponentProvider<T> {
 
     }
 
-    private static <T> Injectable<Constructor<T>> getOf(Class<T> component) {
+    private static <T> List<Injectable<Field>> getInjectFields(Class<T> component) {
+        return InjectionProvider.<Field>traverse(component, (injectFields1, current) ->
+                injectable(current.getDeclaredFields()).toList()).stream().map(Injectable::of).toList();
+    }
+
+    private static <T> Injectable<Constructor<T>> getInjectConstructor(Class<T> component) {
         List<Constructor<?>> injectConstructors = injectable(component.getConstructors()).toList();
         if (injectConstructors.size() > 1) throw new IllegalComponentException();
 
@@ -109,10 +114,6 @@ class InjectionProvider<T> implements ComponentProvider<T> {
         } catch (NoSuchMethodException e) {
             throw new IllegalComponentException();
         }
-    }
-
-    private static <T> List<Field> getInjectFields(Class<T> component) {
-        return traverse(component, (injectFields1, current) -> injectable(current.getDeclaredFields()).toList());
     }
 
     private static <T> List<T> traverse(Class<?> component, BiFunction<List<T>, Class<?>, List<T>> finder) {
