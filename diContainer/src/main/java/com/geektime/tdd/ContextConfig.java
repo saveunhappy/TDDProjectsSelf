@@ -30,11 +30,11 @@ public class ContextConfig {
     }
 
     public <Type, Implementation extends Type>
-    void bind(Class<Type> type, Class<Implementation> implementation, Annotation... qualifiers) {
-        if (stream(qualifiers).anyMatch(q -> !q.annotationType().isAnnotationPresent(Qualifier.class))) {
+    void bind(Class<Type> type, Class<Implementation> implementation, Annotation... annotations) {
+        if (stream(annotations).anyMatch(q -> !q.annotationType().isAnnotationPresent(Qualifier.class))) {
             throw new IllegalComponentException();
         }
-        for (Annotation qualifier : qualifiers) {
+        for (Annotation qualifier : annotations) {
             components.put(new Component(type, qualifier), new InjectionProvider<>(implementation));
         }
     }
