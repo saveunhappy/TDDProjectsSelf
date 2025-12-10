@@ -638,7 +638,6 @@ public class ContextTest {
             assertNotSame(context.get(ComponentRef.of(NoSingleton.class)).get(), context.get(ComponentRef.of(NoSingleton.class)).get());
         }
 
-        //TODO bind component as singleton scoped
         @Test
         public void should_bind_component_as_singleton() {
             config.bind(NoSingleton.class, NoSingleton.class, new SingletonLiteral());
@@ -647,6 +646,16 @@ public class ContextTest {
         }
 
         //TODO get scope from component class
+        @Singleton
+        static class SingletonAnnotated{
+
+        }
+        @Test
+        public void should_retrieve_scope_annotation_from_component() {
+            config.bind(SingletonAnnotated.class,SingletonAnnotated.class);
+            Context context = config.getContext();
+            assertSame(context.get(ComponentRef.of(SingletonAnnotated.class)).get(),context.get(ComponentRef.of(SingletonAnnotated.class)).get());
+        }
         //TODO get scope from component with qualifier
         //TODO bind component with customize scope annotation
         @Nested
