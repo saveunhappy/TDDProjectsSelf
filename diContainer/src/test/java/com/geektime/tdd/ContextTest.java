@@ -210,11 +210,16 @@ public class ContextTest {
                     Arguments.of(Named.of("Provider in inject Constructor", MissingDependencyProviderConstructor.class)),
                     Arguments.of(Named.of("Provider in inject Field", MissingDependencyProviderField.class)),
                     Arguments.of(Named.of("Provider in inject Method", MissingDependencyProviderMethod.class)),
-                    Arguments.of(Named.of("Scoped", MissingDependencyScoped.class))
+                    Arguments.of(Named.of("Scoped", MissingDependencyScoped.class)),
+                    Arguments.of(Named.of("Provider Scoped", MissingDependencyProviderScoped.class))
 
             );
         }
-
+        @Singleton
+        static class MissingDependencyProviderScoped implements TestComponent {
+            @Inject
+            Provider<Dependency> dependency;
+        }
         @Singleton
         static class MissingDependencyScoped implements TestComponent {
             @Inject
