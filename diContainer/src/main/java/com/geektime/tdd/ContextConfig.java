@@ -5,8 +5,11 @@ import jakarta.inject.Qualifier;
 import jakarta.inject.Scope;
 
 import java.lang.annotation.Annotation;
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
 import java.util.*;
 
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import static java.util.Arrays.stream;
 
 public class ContextConfig {
@@ -109,4 +112,43 @@ public class ContextConfig {
         }
     }
 
+
+
+}
+
+@Scope
+@Documented
+@Retention(RUNTIME)
+@interface Pooled {
+}
+
+record PooledLiteral() implements Pooled {
+    @Override
+    public Class<? extends Annotation> annotationType() {
+        return Pooled.class;
+    }
+}
+
+class PooledProvider<T> implements ComponentProvider<T> {
+    static int MAX = 2;
+    private List<T> pool;
+    int current;
+    private ComponentProvider<T> provider;
+
+    public PooledProvider(ComponentProvider<T> provider) {
+        this.provider = provider;
+    }
+
+    @Override
+    public T get(Context context) {
+        if (pool.size() < MAX) {
+            pool.add(provider.get(context));
+        }
+        return pool.get(current++ % MAX);
+    }
+
+    @Override
+    public List<ComponentRef<?>> getDependencies() {
+        return provider.getDependencies();
+    }
 }

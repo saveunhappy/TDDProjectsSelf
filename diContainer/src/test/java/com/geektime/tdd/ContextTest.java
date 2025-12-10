@@ -13,6 +13,7 @@ import java.lang.annotation.Annotation;
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.util.*;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
@@ -657,7 +658,6 @@ public class ContextTest {
             assertSame(context.get(ComponentRef.of(NoSingleton.class)).get(), context.get(ComponentRef.of(NoSingleton.class)).get());
         }
 
-        //TODO get scope from component class
         @Singleton
         static class SingletonAnnotated{
 
@@ -669,6 +669,13 @@ public class ContextTest {
             assertSame(context.get(ComponentRef.of(SingletonAnnotated.class)).get(),context.get(ComponentRef.of(SingletonAnnotated.class)).get());
         }
         //TODO get scope from component with qualifier
+        @Test
+        public void should_bind_component_as_customize_scope() {
+            config.bind(NoSingleton.class, NoSingleton.class, new PooledLiteral());
+            Context context = config.getContext();
+            List<NoSingleton> instances = IntStream.range(0, 5).mapToObj(i -> context.get(ComponentRef.of(NoSingleton.class)).get()).toList();
+            assertEquals(PooledProvider.MAX,new HashSet<>(instances).size());
+        }
         //TODO bind component with customize scope annotation
         @Nested
         public class WithQualifier {
