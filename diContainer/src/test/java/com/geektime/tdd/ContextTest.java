@@ -641,9 +641,11 @@ public class ContextTest {
         //TODO bind component as singleton scoped
         @Test
         public void should_bind_component_as_singleton() {
-            config.bind(NoSingleton.class,NoSingleton.class,new SingletonLiteral());
+            config.bind(NoSingleton.class, NoSingleton.class, new SingletonLiteral());
             Context context = config.getContext();
-            assertSame(context.get(ComponentRef.of(NoSingleton.class)).get(),context.get(ComponentRef.of(NoSingleton.class)).get());        }
+            assertSame(context.get(ComponentRef.of(NoSingleton.class)).get(), context.get(ComponentRef.of(NoSingleton.class)).get());
+        }
+
         //TODO get scope from component class
         //TODO get scope from component with qualifier
         //TODO bind component with customize scope annotation
@@ -654,6 +656,13 @@ public class ContextTest {
                 config.bind(NoSingleton.class, NoSingleton.class, new SkyWalkerLiteral());
                 Context context = config.getContext();
                 assertNotSame(context.get(ComponentRef.of(NoSingleton.class, new SkyWalkerLiteral())).get(), context.get(ComponentRef.of(NoSingleton.class, new SkyWalkerLiteral())).get());
+            }
+
+            @Test
+            public void should_bind_component_as_singleton() {
+                config.bind(NoSingleton.class, NoSingleton.class, new SingletonLiteral(), new SkyWalkerLiteral());
+                Context context = config.getContext();
+                assertSame(context.get(ComponentRef.of(NoSingleton.class, new SkyWalkerLiteral())).get(), context.get(ComponentRef.of(NoSingleton.class, new SkyWalkerLiteral())).get());
             }
         }
     }
