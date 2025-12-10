@@ -36,7 +36,10 @@ public class ContextConfig {
                 && !q.annotationType().isAnnotationPresent(Scope.class))) {
             throw new IllegalComponentException();
         }
-        for (Annotation qualifier : annotations) {
+//        List<? extends Class<? extends Annotation>> qualifiers = stream(annotations).map(Annotation::annotationType).filter(a -> a.isAnnotationPresent(Qualifier.class)).toList();
+        List<Annotation> qualifiers = stream(annotations).filter(a -> a.annotationType().isAnnotationPresent(Qualifier.class)).toList();
+
+        for (Annotation qualifier : qualifiers) {
             components.put(new Component(type, qualifier), new InjectionProvider<>(implementation));
         }
     }
