@@ -3,6 +3,7 @@ package com.geektime.tdd;
 import jakarta.inject.Inject;
 import jakarta.inject.Provider;
 import jakarta.inject.Qualifier;
+import jakarta.inject.Singleton;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -160,6 +161,7 @@ public class ContextTest {
 
 
             }
+
             @Test
             public void should_retrieve_empty_if_no_matched_qualifier() {
                 config.bind(TestComponent.class, new TestComponent() {
@@ -622,18 +624,27 @@ public class ContextTest {
         }
 
     }
+
     @Nested
     public class WithScope {
         static class NoSingleton {
 
         }
+
         @Test
         public void should_not_be_singleton_scope_by_default() {
-            config.bind(NoSingleton.class,NoSingleton.class);
+            config.bind(NoSingleton.class, NoSingleton.class);
             Context context = config.getContext();
-            assertNotSame(context.get(ComponentRef.of(NoSingleton.class)).get(),context.get(ComponentRef.of(NoSingleton.class)).get());
+            assertNotSame(context.get(ComponentRef.of(NoSingleton.class)).get(), context.get(ComponentRef.of(NoSingleton.class)).get());
         }
+
         //TODO bind component as singleton scoped
+        @Test
+        public void should_bind_component_as_singleton() {
+            config.bind(NoSingleton.class, NoSingleton.class, new SingletonLiteral());
+            Context context = config.getContext();
+            assertSame(context.get(ComponentRef.of(NoSingleton.class, new SingletonLiteral())).get(), context.get(ComponentRef.of(NoSingleton.class, new SingletonLiteral())).get());
+        }
         //TODO get scope from component class
         //TODO get scope from component with qualifier
         //TODO bind component with customize scope annotation
@@ -641,9 +652,9 @@ public class ContextTest {
         public class WithQualifier {
             @Test
             public void should_not_be_singleton_scope_by_default() {
-                config.bind(NoSingleton.class,NoSingleton.class,new SkyWalkerLiteral());
+                config.bind(NoSingleton.class, NoSingleton.class, new SkyWalkerLiteral());
                 Context context = config.getContext();
-                assertNotSame(context.get(ComponentRef.of(NoSingleton.class,new SkyWalkerLiteral())).get(),context.get(ComponentRef.of(NoSingleton.class,new SkyWalkerLiteral())).get());
+                assertNotSame(context.get(ComponentRef.of(NoSingleton.class, new SkyWalkerLiteral())).get(), context.get(ComponentRef.of(NoSingleton.class, new SkyWalkerLiteral())).get());
             }
         }
     }
@@ -654,6 +665,14 @@ public class ContextTest {
 @Retention(RUNTIME)
 @interface SkyWalker {
 
+}
+
+record SingletonLiteral() implements Singleton {
+
+    @Override
+    public Class<? extends Annotation> annotationType() {
+        return Singleton.class;
+    }
 }
 
 record SkyWalkerLiteral() implements SkyWalker {
