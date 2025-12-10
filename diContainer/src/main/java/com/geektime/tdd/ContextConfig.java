@@ -2,6 +2,7 @@ package com.geektime.tdd;
 
 import jakarta.inject.Provider;
 import jakarta.inject.Qualifier;
+import jakarta.inject.Scope;
 
 import java.lang.annotation.Annotation;
 import java.util.*;
@@ -31,7 +32,8 @@ public class ContextConfig {
 
     public <Type, Implementation extends Type>
     void bind(Class<Type> type, Class<Implementation> implementation, Annotation... annotations) {
-        if (stream(annotations).anyMatch(q -> !q.annotationType().isAnnotationPresent(Qualifier.class))) {
+        if (stream(annotations).anyMatch(q -> !q.annotationType().isAnnotationPresent(Qualifier.class)
+                && !q.annotationType().isAnnotationPresent(Scope.class))) {
             throw new IllegalComponentException();
         }
         for (Annotation qualifier : annotations) {
