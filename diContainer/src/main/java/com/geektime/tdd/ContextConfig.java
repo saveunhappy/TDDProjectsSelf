@@ -3,18 +3,26 @@ package com.geektime.tdd;
 import jakarta.inject.Provider;
 import jakarta.inject.Qualifier;
 import jakarta.inject.Scope;
+import jakarta.inject.Singleton;
 
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.util.*;
+import java.util.function.Function;
 
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import static java.util.Arrays.stream;
 
 public class ContextConfig {
     private Map<Component, ComponentProvider<?>> components = new HashMap<>();
+    private Map<Class<?>, Function<ComponentProvider<?>, ComponentProvider<?>>> scopes = new HashMap<>();
 
+    public ContextConfig() {
+        scope(Singleton.class, provider -> {
+            return new SingletonProvider<>(provider);
+        });
+    }
     public <Type> void bind(Class<Type> type, Type instance) {
         components.put(new Component(type, null), context -> instance);
     }
@@ -46,7 +54,7 @@ public class ContextConfig {
 
         ComponentProvider<?> injectionProvider = new InjectionProvider<>(implementation);
         ComponentProvider<?> provider = scope
-                .<ComponentProvider<?>>map(s -> new SingletonProvider<>(injectionProvider))
+                .<ComponentProvider<?>>map(s -> getScopeProvider(s, injectionProvider))
                 .orElse(injectionProvider);
         if (qualifiers.isEmpty()) {
             components.put(new Component(type, null), provider);
@@ -55,7 +63,18 @@ public class ContextConfig {
             components.put(new Component(type, qualifier), provider);
         }
     }
+    private ComponentProvider<?> getScopeProvider(Annotation scope, ComponentProvider<?> provider) {
+        //TODO 这里肯定要添加，如果不存在我们scope添加过的怎么办，抛出异常
+        //这里就是获取到scope对应的provider，然后apply到injectionProvider上，
+        //返回新的provider，apply是干什么的？当时是自己写的，用对应的SingletonProvider
+        //或者PoolProvider包装一下
+        return scopes.get(scope.annotationType()).apply(provider);
+    }
 
+    public <ScopeType extends Annotation> void scope(Class<ScopeType> scope,
+                                                     Function<ComponentProvider<?>, ComponentProvider<?>> provider) {
+        scopes.put(scope, provider);
+    }
     static class SingletonProvider<T> implements ComponentProvider<T> {
         private T singleton;
         private ComponentProvider<T> provider;
