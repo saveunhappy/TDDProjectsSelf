@@ -39,6 +39,10 @@ public class ContextConfig {
 
     public <Type, Implementation extends Type>
     void bind(Class<Type> type, Class<Implementation> implementation, Annotation... annotations) {
+        //scope
+        //qualifier
+        //illegal
+
         if (stream(annotations).anyMatch(q -> !q.annotationType().isAnnotationPresent(Qualifier.class)
                 && !q.annotationType().isAnnotationPresent(Scope.class))) {
             throw new IllegalComponentException();
@@ -60,9 +64,6 @@ public class ContextConfig {
     }
     private ComponentProvider<?> getScopeProvider(Annotation scope, ComponentProvider<?> provider) {
         //TODO 这里肯定要添加，如果不存在我们scope添加过的怎么办，抛出异常
-        //这里就是获取到scope对应的provider，然后apply到injectionProvider上，
-        //返回新的provider，apply是干什么的？当时是自己写的，用对应的SingletonProvider
-        //或者PoolProvider包装一下
         return scopes.get(scope.annotationType()).create(provider);
     }
 
