@@ -8,6 +8,7 @@ import jakarta.inject.Singleton;
 import java.lang.annotation.Annotation;
 import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 import static java.util.Arrays.stream;
 
@@ -18,6 +19,7 @@ public class ContextConfig {
     public ContextConfig() {
         scope(Singleton.class, SingletonProvider::new);
     }
+
     public <Type> void bind(Class<Type> type, Type instance) {
         components.put(new Component(type, null), context -> instance);
     }
@@ -62,6 +64,16 @@ public class ContextConfig {
             components.put(new Component(type, qualifier), provider);
         }
     }
+
+    private Class<?> typeof(Annotation annotation) {
+        Class<? extends Annotation> type = annotation.annotationType();
+        return Stream.of(Qualifier.class, Scope.class).filter(type::isAnnotationPresent).findFirst().orElse(Illegal.class);
+    }
+
+    private @interface Illegal {
+
+    }
+
     private ComponentProvider<?> getScopeProvider(Annotation scope, ComponentProvider<?> provider) {
         //TODO 这里肯定要添加，如果不存在我们scope添加过的怎么办，抛出异常
         return scopes.get(scope.annotationType()).create(provider);
