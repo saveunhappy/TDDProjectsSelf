@@ -50,11 +50,13 @@ public class ContextConfig {
         if (annotationGroups.containsKey(Illegal.class)) {
             throw new IllegalComponentException();
         }
+        Optional<Annotation> scopeFromType = stream(implementation.getAnnotations()).filter(a -> a.annotationType().isAnnotationPresent(Scope.class)).findFirst();
         //Java8有的新的方法，map如果获取不到，那么就可以给他一个默认值，如果获取不到Qualifier，那就给个空的List就好了
         //和之前的逻辑是一样的，如果OR还是空，那么也没关系，反正都是Optional的
         List<Annotation> qualifiers = annotationGroups.getOrDefault(Qualifier.class,List.of());
         Optional<Annotation> scope = stream(annotations)
-                .filter(a -> a.annotationType().isAnnotationPresent(Scope.class)).findFirst();
+                .filter(a -> a.annotationType().isAnnotationPresent(Scope.class)).findFirst()
+                .or(() -> scopeFromType);
 
         ComponentProvider<?> injectionProvider = new InjectionProvider<>(implementation);
         ComponentProvider<?> provider = scope
