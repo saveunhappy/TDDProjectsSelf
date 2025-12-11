@@ -8,6 +8,7 @@ import jakarta.inject.Singleton;
 import java.lang.annotation.Annotation;
 import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Arrays.stream;
@@ -44,6 +45,7 @@ public class ContextConfig {
         //scope
         //qualifier
         //illegal
+        Map<Class<?>, List<Annotation>> annotationGroups = stream(annotations).collect(Collectors.groupingBy(annotation -> typeof(annotation), Collectors.toList()));
 
         if (stream(annotations).anyMatch(q -> !q.annotationType().isAnnotationPresent(Qualifier.class)
                 && !q.annotationType().isAnnotationPresent(Scope.class))) {
