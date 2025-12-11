@@ -43,9 +43,10 @@ public class ContextConfig {
 //        List<? extends Class<? extends Annotation>> qualifiers = stream(annotations).map(Annotation::annotationType).filter(a -> a.isAnnotationPresent(Qualifier.class)).toList();
         List<Annotation> qualifiers = stream(annotations).filter(a -> a.annotationType().isAnnotationPresent(Qualifier.class)).toList();
         Optional<Annotation> scope = stream(annotations).filter(a -> a.annotationType().isAnnotationPresent(Scope.class)).findFirst();
-        InjectionProvider<Implementation> injectionProvider = new InjectionProvider<>(implementation);
-        ComponentProvider<Implementation> provider = scope
-                .map(e -> (ComponentProvider<Implementation>) new SingletonProvider(injectionProvider))
+
+        ComponentProvider<?> injectionProvider = new InjectionProvider<>(implementation);
+        ComponentProvider<?> provider = scope
+                .<ComponentProvider<?>>map(s -> new SingletonProvider<>(injectionProvider))
                 .orElse(injectionProvider);
         if (qualifiers.isEmpty()) {
             components.put(new Component(type, null), provider);
