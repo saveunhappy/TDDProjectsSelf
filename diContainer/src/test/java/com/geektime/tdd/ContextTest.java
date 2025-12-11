@@ -1,10 +1,8 @@
 package com.geektime.tdd;
 
-import jakarta.inject.Inject;
-import jakarta.inject.Provider;
-import jakarta.inject.Qualifier;
-import jakarta.inject.Singleton;
+import jakarta.inject.*;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Named;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -758,3 +756,40 @@ record TestLiteral() implements Test {
     }
 }
 
+
+@Scope
+@Documented
+@Retention(RUNTIME)
+@interface Pooled {
+}
+
+record PooledLiteral() implements Pooled {
+    @Override
+    public Class<? extends Annotation> annotationType() {
+        return Pooled.class;
+    }
+}
+
+class PooledProvider<T> implements ComponentProvider<T> {
+    static int MAX = 2;
+    private List<T> pool = new ArrayList<>();
+    int current;
+    private ComponentProvider<T> provider;
+
+    public PooledProvider(ComponentProvider<T> provider) {
+        this.provider = provider;
+    }
+
+    @Override
+    public T get(Context context) {
+        if (pool.size() < MAX) {
+            pool.add(provider.get(context));
+        }
+        return pool.get(current++ % MAX);
+    }
+
+    @Override
+    public List<ComponentRef<?>> getDependencies() {
+        return provider.getDependencies();
+    }
+}
