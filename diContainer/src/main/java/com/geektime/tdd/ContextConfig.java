@@ -58,13 +58,10 @@ public class ContextConfig {
     }
 
     private <Type, Implementation extends Type> ComponentProvider<?> createScopeProvider(Class<Implementation> implementation, List<Annotation> scopes) {
-        Optional<Annotation> scope = scopes.stream().findFirst()
-                .or(() -> scopeFromType(implementation));
-        ComponentProvider<?> injectionProvider = new InjectionProvider<>(implementation);
-        ComponentProvider<?> provider = scope
-                .<ComponentProvider<?>>map(s -> getScopeProvider(s, injectionProvider))
-                .orElse(injectionProvider);
-        return provider;
+        return scopes.stream().findFirst()
+                .or(() -> scopeFromType(implementation))
+                .<ComponentProvider<?>>map(s -> getScopeProvider(s, new InjectionProvider<Implementation>(implementation)))
+                .orElse(new InjectionProvider<>(implementation));
     }
 
     private <Type> void bind(Class<Type> type, List<Annotation> qualifiers, ComponentProvider<?> provider) {
