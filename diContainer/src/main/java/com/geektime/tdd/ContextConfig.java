@@ -47,8 +47,7 @@ public class ContextConfig {
         //illegal
         Map<Class<?>, List<Annotation>> annotationGroups = stream(annotations).collect(Collectors.groupingBy(annotation -> typeof(annotation), Collectors.toList()));
 
-        if (stream(annotations).anyMatch(q -> !q.annotationType().isAnnotationPresent(Qualifier.class)
-                && !q.annotationType().isAnnotationPresent(Scope.class))) {
+        if (annotationGroups.containsKey(Illegal.class)) {
             throw new IllegalComponentException();
         }
 //        List<? extends Class<? extends Annotation>> qualifiers = stream(annotations).map(Annotation::annotationType).filter(a -> a.isAnnotationPresent(Qualifier.class)).toList();
