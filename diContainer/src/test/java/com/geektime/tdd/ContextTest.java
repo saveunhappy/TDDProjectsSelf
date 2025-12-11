@@ -667,6 +667,12 @@ public class ContextTest {
             Context context = config.getContext();
             assertSame(context.get(ComponentRef.of(SingletonAnnotated.class)).get(),context.get(ComponentRef.of(SingletonAnnotated.class)).get());
         }
+        @Test
+        public void should_retrieve_scope_annotation_from_component_with_qualifier() {
+            config.bind(SingletonAnnotated.class,SingletonAnnotated.class,new SkyWalkerLiteral());
+            Context context = config.getContext();
+            assertSame(context.get(ComponentRef.of(SingletonAnnotated.class,new SkyWalkerLiteral())).get(),context.get(ComponentRef.of(SingletonAnnotated.class,new SkyWalkerLiteral())).get());
+        }
         //TODO get scope from component with qualifier
         @Test
         public void should_bind_component_as_customize_scope() {
