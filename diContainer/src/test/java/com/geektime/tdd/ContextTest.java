@@ -670,11 +670,8 @@ public class ContextTest {
         //TODO get scope from component with qualifier
         @Test
         public void should_bind_component_as_customize_scope() {
-            config.scope(Pooled.class, new Function<ComponentProvider<?>, ComponentProvider<?>>() {
-                @Override
-                public ComponentProvider<?> apply(ComponentProvider<?> provider) {
-                    return new PooledProvider<>(provider);
-                }
+            config.scope(Pooled.class, provider -> {
+                return new PooledProvider<>(provider);
             });
             config.bind(NoSingleton.class, NoSingleton.class, new PooledLiteral());
             Context context = config.getContext();

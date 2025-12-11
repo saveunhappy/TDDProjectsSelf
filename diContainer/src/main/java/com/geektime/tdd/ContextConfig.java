@@ -13,7 +13,7 @@ import static java.util.Arrays.stream;
 
 public class ContextConfig {
     private Map<Component, ComponentProvider<?>> components = new HashMap<>();
-    private Map<Class<?>, Function<ComponentProvider<?>, ComponentProvider<?>>> scopes = new HashMap<>();
+    private Map<Class<?>, ScopeProvider> scopes = new HashMap<>();
 
     public ContextConfig() {
         scope(Singleton.class, SingletonProvider::new);
@@ -63,11 +63,11 @@ public class ContextConfig {
         //这里就是获取到scope对应的provider，然后apply到injectionProvider上，
         //返回新的provider，apply是干什么的？当时是自己写的，用对应的SingletonProvider
         //或者PoolProvider包装一下
-        return scopes.get(scope.annotationType()).apply(provider);
+        return scopes.get(scope.annotationType()).create(provider);
     }
 
     public <ScopeType extends Annotation> void scope(Class<ScopeType> scope,
-                                                     Function<ComponentProvider<?>, ComponentProvider<?>> provider) {
+                                                     ScopeProvider provider) {
         scopes.put(scope, provider);
     }
 
@@ -106,6 +106,9 @@ public class ContextConfig {
         }
     }
 
+    interface ScopeProvider {
+        ComponentProvider<?> create(ComponentProvider<?> componentProvider);
+    }
 
 
 }
