@@ -151,7 +151,7 @@ record PooledLiteral() implements Pooled {
 
 class PooledProvider<T> implements ComponentProvider<T> {
     static int MAX = 2;
-    private List<T> pool;
+    private List<T> pool = new ArrayList<>();
     int current;
     private ComponentProvider<T> provider;
 
