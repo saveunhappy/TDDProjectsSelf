@@ -51,8 +51,8 @@ public class ContextConfig {
             throw new IllegalComponentException();
         }
 //        List<? extends Class<? extends Annotation>> qualifiers = stream(annotations).map(Annotation::annotationType).filter(a -> a.isAnnotationPresent(Qualifier.class)).toList();
-        List<Annotation> qualifiers = stream(annotations).filter(a -> a.annotationType().isAnnotationPresent(Qualifier.class)).toList();
-        Optional<Annotation> scope = stream(annotations).filter(a -> a.annotationType().isAnnotationPresent(Scope.class)).findFirst();
+        List<Annotation> qualifiers = annotationGroups.getOrDefault(Qualifier.class, List.of());
+        Optional<Annotation> scope = annotationGroups.getOrDefault(Scope.class, List.of()).stream().findFirst();
 
         ComponentProvider<?> injectionProvider = new InjectionProvider<>(implementation);
         ComponentProvider<?> provider = scope
