@@ -179,7 +179,7 @@ public class ContextTest {
 
             @Test
             public void should_throw_exception_if_illegal_qualifier_given_to_component() {
-                assertThrows(IllegalComponentException.class, () -> config.bind(ConstructorInjection.class, ConstructorInjection.class, new TestLiteral()));
+                assertThrows(IllegalComponentException.class, () -> config.bind(ConstructorInjection.class, ConstructorInjection.class, new TestLiteral(),new NestedLiteral()));
             }
         }
 
@@ -750,6 +750,14 @@ record TestLiteral() implements Test {
     @Override
     public Class<? extends Annotation> annotationType() {
         return Test.class;
+    }
+}
+
+record NestedLiteral() implements Nested {
+
+    @Override
+    public Class<? extends Annotation> annotationType() {
+        return Nested.class;
     }
 }
 
